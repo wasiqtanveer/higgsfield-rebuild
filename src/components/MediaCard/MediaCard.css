@@ -1,0 +1,79 @@
+.media-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+}
+
+.media-card__frame {
+  position: relative;
+  aspect-ratio: var(--ratio, 16 / 9);
+  max-width: 100%;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  transition: transform var(--d-base) var(--e-standard),
+    border-color var(--d-base) var(--e-standard),
+    box-shadow var(--d-base) var(--e-standard);
+}
+
+.media-card:hover .media-card__frame,
+.media-card:focus-visible .media-card__frame {
+  transform: translateY(-3px);
+  border-color: var(--c-hairline-strong);
+  box-shadow: var(--sh-3);
+}
+
+/* Layer 1: always painted, so a tile is never empty. */
+.media-card__tint {
+  position: absolute;
+  inset: 0;
+  background: var(--tint, var(--c-surface-2));
+}
+
+/* Layer 2: fades in only when the file actually decodes. */
+.media-card__poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--d-slow) var(--e-enter);
+}
+
+.media-card__poster.is-loaded { opacity: 1; }
+
+/* Layer 3: fetched on intent only. */
+.media-card__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--d-base) var(--e-standard);
+}
+
+.media-card__video.is-playing { opacity: 1; }
+
+.media-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--s-3) var(--s-1) 0;
+}
+
+.media-card__title {
+  font-size: var(--t-sm);
+  font-weight: 500;
+}
+
+.media-card__sub {
+  font-size: var(--t-xs);
+  color: var(--c-text-faint);
+}

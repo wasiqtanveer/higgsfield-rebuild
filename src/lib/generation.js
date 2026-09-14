@@ -44,8 +44,13 @@ export class MockProvider {
       status: "queued",
       progress: 0,
       url: clip.src,
+      src: clip.src,
       poster: clip.poster,
       title: clip.title,
+      // Carried so the pending card can paint the eventual result's palette
+      // while it generates -- the reveal then feels like the same object
+      // resolving, not a placeholder being swapped out.
+      tint: clip.tint,
       duration: Math.round(base * (weight[opts.modelId] ?? 1)),
       createdAt: Date.now(),
       ...opts,
