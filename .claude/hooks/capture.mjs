@@ -153,6 +153,13 @@ if (KIND === "prompt") {
 } else {
   text = payload.last_assistant_message ?? "";
   if (!text) fail("Stop payload carried no last_assistant_message; nothing logged");
+  // A Stop can arrive before any prompt has been counted -- the hook going live
+  // mid-turn, or a resumed session. Keep numbering 1-based rather than emitting
+  // a num=0 entry.
+  if (state.num === 0) {
+    state.num = 1;
+    state.total_exchanges = 1;
+  }
 }
 
 state.model = model;

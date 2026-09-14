@@ -1,0 +1,94 @@
+/**
+ * Design tokens. Every colour, space, radius, type step and easing used anywhere
+ * in the app resolves to a variable declared here. No hardcoded hex outside this
+ * file -- that rule is what keeps the per-component CSS coherent.
+ *
+ * Higgsfield is a dark-first product: near-black ground, high-contrast white
+ * type, and colour used sparingly so the video thumbnails carry the palette.
+ */
+
+:root {
+  /* --- ground & surfaces --------------------------------------------- */
+  --c-bg: #08080a;
+  --c-surface: #0e0e11;
+  --c-surface-2: #16161b;
+  --c-surface-3: #1e1e25;
+  --c-hairline: rgba(255, 255, 255, 0.08);
+  --c-hairline-strong: rgba(255, 255, 255, 0.16);
+
+  /* --- type ----------------------------------------------------------- */
+  --c-text: #f4f4f5;
+  --c-text-dim: #a1a1aa;
+  --c-text-faint: #6b6b76;
+
+  /* --- accent ---------------------------------------------------------
+   * One accent, used for primary action and active state only. Restraint
+   * here is deliberate: the thumbnails are the colour in this product. */
+  --c-accent: #e8e6ff;
+  --c-accent-ink: #0a0a0c;
+  --c-focus: #7c6bff;
+  --c-danger: #ff5c5c;
+
+  /* --- radii ----------------------------------------------------------- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+
+  /* --- spacing (4px base) ---------------------------------------------- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /* --- type scale ------------------------------------------------------ */
+  --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --f-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --t-xs: 0.75rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.375rem;
+  --t-xl: 1.875rem;
+  --t-2xl: 2.5rem;
+  --t-3xl: clamp(2.5rem, 6vw, 4.5rem);
+
+  /* --- motion ----------------------------------------------------------
+   * Standard = most UI transitions. Enter = things arriving. Spring-ish is
+   * for the generate flow, where a little overshoot reads as "alive". */
+  --e-standard: cubic-bezier(0.2, 0, 0, 1);
+  --e-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  --d-fast: 120ms;
+  --d-base: 200ms;
+  --d-slow: 360ms;
+  --d-slower: 600ms;
+
+  /* --- elevation -------------------------------------------------------- */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sh-2: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --sh-3: 0 16px 48px rgba(0, 0, 0, 0.6);
+
+  /* --- layout ------------------------------------------------------------ */
+  --w-page: 1280px;
+  --w-prose: 64ch;
+  --h-nav: 60px;
+  --gutter: var(--s-5);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --gutter: var(--s-4);
+    --h-nav: 54px;
+  }
+}
