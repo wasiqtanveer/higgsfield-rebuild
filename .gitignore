@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.DS_Store
+*.local
+
+# Per-session bookkeeping for the capture hook (not part of the record).
+# NOTE: .agent-logs/ is deliberately NOT ignored - it ships with the repo.
+.claude/.session-index/
