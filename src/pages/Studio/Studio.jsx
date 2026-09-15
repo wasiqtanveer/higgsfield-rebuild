@@ -326,7 +326,7 @@ export default function Studio() {
                       {r.kind === "image" ? (
                         <img src={r.url} alt={r.name} />
                       ) : r.kind === "video" ? (
-                        <video src={r.url} muted playsInline />
+                        <video src={r.url} muted loop playsInline preload="metadata" />
                       ) : (
                         <span className="studio__ref-glyph"><Wave size={18} /></span>
                       )}

@@ -51,7 +51,7 @@ export default function Footer() {
             <ul className="foot__social">
               {FOOTER_SOCIAL.map((s) => (
                 <li key={s}>
-                  <a href="#" className="foot__link foot__link--strong">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="foot__link foot__link--strong">
                     {s}
                   </a>
                 </li>
@@ -74,7 +74,7 @@ export default function Footer() {
             </li>
             {FOOTER_LEGAL.map((l) => (
               <li key={l}>
-                <a href="#">{l}</a>
+                <a href="#" onClick={(e) => e.preventDefault()}>{l}</a>
               </li>
             ))}
           </ul>

@@ -182,10 +182,10 @@ export default function Mcp() {
               <div className="mcpp__cli">
                 <p className="mcpp__cli-note">
                   {CLI_NOTE}
-                  <a href="#" className="mcpp__cli-link">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="mcpp__cli-link">
                     <Glyph name="ArrowUpRight" size={14} />
                   </a>
-                  <a href="#" className="mcpp__cli-repo">
+                  <a href="#" onClick={(e) => e.preventDefault()} className="mcpp__cli-repo">
                     <Glyph name="Terminal" size={15} />
                     GitHub
                   </a>

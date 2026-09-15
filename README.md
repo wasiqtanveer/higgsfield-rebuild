@@ -40,6 +40,7 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # -> dist/
 npm run preview
+npm run smoke    # server-renders every route, fails if one throws
 ```
 
 ## Deploying

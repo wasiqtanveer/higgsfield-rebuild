@@ -200,14 +200,14 @@ export default function Nav() {
             <span className="nav__pricing-badge">54% OFF</span>
           </Link>
 
-          <a href="#" className="nav__util-link">
+          <Link to="/pricing" className="nav__util-link">
             <Sparkle size={16} />
             Enterprise
-          </a>
+          </Link>
 
           {authed ? (
             <>
-              <a href="#" className="nav__util-link nav__assets">
+              <a href="#" onClick={(e) => e.preventDefault()} className="nav__util-link nav__assets">
                 <FolderSolid size={17} />
                 Assets
               </a>
