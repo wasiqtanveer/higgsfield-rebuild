@@ -1,0 +1,423 @@
+/* Search overlay.
+ *
+ * Not a dropdown -- a launcher. It sits above everything, dims the page hard
+ * enough that the panel is the only lit object, and holds its own scroll so a
+ * long trending grid never drags the page behind it. */
+
+.smodal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  padding: clamp(var(--s-4), 5vh, var(--s-8)) var(--gutter);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(10px);
+  animation: smodal-veil var(--d-base) var(--e-enter) both;
+}
+
+.smodal__panel {
+  width: min(100%, 1150px);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0e0e10;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-3);
+  overflow: hidden;
+  animation: smodal-rise var(--d-slow) var(--e-enter) both;
+}
+
+@keyframes smodal-veil {
+  from { opacity: 0; }
+}
+
+@keyframes smodal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smodal,
+  .smodal__panel {
+    animation: none;
+  }
+}
+
+/* Head ------------------------------------------------------------------ */
+
+.smodal__head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-4) var(--s-3);
+}
+
+.smodal__field {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  height: 56px;
+  padding-inline: var(--s-5);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  border: 1px solid transparent;
+  transition: border-color var(--d-fast) var(--e-standard);
+}
+
+.smodal__field:focus-within {
+  border-color: var(--c-hairline-strong);
+}
+
+.smodal__fieldicon {
+  flex: none;
+  color: var(--c-text-faint);
+}
+
+.smodal__input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: var(--t-md);
+  color: var(--c-text);
+}
+
+.smodal__input::placeholder {
+  color: var(--c-text-faint);
+}
+
+.smodal__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text-dim);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.smodal__close:hover {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+/* Scope chips ------------------------------------------------------------
+ * They overflow rather than wrap: a second row of filters would push the
+ * results themselves below the fold on a laptop. */
+
+.smodal__scopes {
+  display: flex;
+  gap: var(--s-2);
+  padding: 0 var(--s-4) var(--s-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.smodal__scopes::-webkit-scrollbar {
+  display: none;
+}
+
+.smodal__scope {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding-inline: var(--s-4);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.smodal__scope:hover {
+  color: var(--c-text);
+  border-color: var(--c-hairline-strong);
+}
+
+.smodal__scope.is-active {
+  background: var(--c-surface-3);
+  border-color: transparent;
+  color: var(--c-text);
+}
+
+/* Body ------------------------------------------------------------------ */
+
+.smodal__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--s-4) var(--s-5);
+}
+
+.smodal__section + .smodal__section {
+  margin-top: var(--s-5);
+}
+
+.smodal__label {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text-faint);
+  letter-spacing: 0;
+  margin-bottom: var(--s-3);
+}
+
+.smodal__labelrow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-4);
+}
+
+.smodal__seeall {
+  font-size: var(--t-base);
+  color: var(--c-text);
+  margin-bottom: var(--s-3);
+}
+
+.smodal__seeall:hover {
+  color: var(--c-accent);
+}
+
+.smodal__empty {
+  padding: var(--s-7) 0;
+  text-align: center;
+  color: var(--c-text-faint);
+}
+
+.smodal__empty strong {
+  color: var(--c-text);
+  font-weight: 500;
+}
+
+/* Rows ------------------------------------------------------------------ */
+
+.smodal__rows {
+  display: grid;
+  gap: 2px;
+}
+
+.smodal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px var(--s-5);
+}
+
+.smodal__row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2);
+  border-radius: var(--r-lg);
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.smodal__row:hover {
+  background: var(--c-surface-2);
+}
+
+.smodal__tile {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+.smodal__rowtext {
+  display: grid;
+  min-width: 0;
+}
+
+.smodal__rowname {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.smodal__rowblurb {
+  font-size: var(--t-base);
+  color: var(--c-text-faint);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.smodal__badge {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: var(--r-sm);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.smodal__badge--accent {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.smodal__badge--promo {
+  background: var(--c-promo);
+  color: #fff;
+}
+
+/* Promoted cards ---------------------------------------------------------
+ * Three identically-shaped cards; the wash is what keeps them apart at a
+ * glance, which is exactly how the real grid does it. */
+
+.smodal__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.smodal__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s-5);
+  min-height: 148px;
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-hairline);
+  overflow: hidden;
+  transition:
+    transform var(--d-base) var(--e-standard),
+    border-color var(--d-base) var(--e-standard);
+}
+
+.smodal__card:hover {
+  transform: translateY(-2px);
+  border-color: var(--c-hairline-strong);
+}
+
+.smodal__card--lime {
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(211, 246, 52, 0.42), transparent 62%),
+    linear-gradient(140deg, #2f3a0c, #0d0f06);
+}
+
+.smodal__card--mono {
+  background:
+    radial-gradient(120% 120% at 100% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(140deg, #16161a, #0a0a0c);
+}
+
+.smodal__card--azure {
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(90, 196, 255, 0.4), transparent 62%),
+    linear-gradient(140deg, #0f2b3d, #07141d);
+}
+
+.smodal__cardtop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.smodal__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px var(--s-2);
+  border-radius: var(--r-pill);
+  background: rgba(0, 0, 0, 0.42);
+  border: 1px solid var(--c-hairline);
+  font-size: var(--t-xs);
+  color: var(--c-text);
+}
+
+.smodal__cardbadge {
+  padding: 2px 7px;
+  border-radius: var(--r-sm);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.smodal__cardname {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--f-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  font-size: var(--t-lg);
+  line-height: 1.05;
+  color: var(--c-text);
+}
+
+.smodal__cardblurb {
+  font-size: var(--t-base);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.smodal__cardfoot {
+  display: grid;
+  gap: var(--s-1);
+}
+
+/* Responsive ------------------------------------------------------------ */
+
+@media (max-width: 860px) {
+  .smodal__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .smodal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .smodal {
+    padding: 0;
+  }
+
+  .smodal__panel {
+    border-radius: 0;
+    border: none;
+    height: 100%;
+    max-height: none;
+  }
+
+  .smodal__field,
+  .smodal__close {
+    height: 48px;
+  }
+
+  .smodal__close {
+    width: 48px;
+  }
+}

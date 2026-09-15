@@ -1,0 +1,53 @@
+.fcloud {
+  text-align: center;
+  padding-block: var(--s-8);
+}
+
+.fcloud__title {
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  color: var(--c-text);
+  margin-bottom: var(--s-6);
+}
+
+/* The cloud is an index, not a column. Letting it run close to the full page
+   width is what keeps it three or four short rows instead of a tall stack --
+   the narrow cap was making the tail of the page read longer than the
+   sections that actually sell something. */
+.fcloud__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2);
+  margin: 0 auto;
+  max-width: min(100%, 1400px);
+  padding-inline: var(--gutter);
+}
+
+.fcloud__tag {
+  display: inline-flex;
+  padding: 7px var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  line-height: 1.3;
+  white-space: nowrap;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.fcloud__tag:hover {
+  background: var(--c-surface-3);
+  border-color: var(--c-hairline-strong);
+  color: var(--c-text);
+}
+
+@media (max-width: 640px) {
+  .fcloud__tag {
+    font-size: var(--t-sm);
+    padding: 6px 10px;
+  }
+}

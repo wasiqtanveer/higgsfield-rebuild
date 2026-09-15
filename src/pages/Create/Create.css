@@ -1,105 +1,106 @@
-.create {
-  padding-block: var(--s-7) var(--s-9);
-}
+/* Create.
+ *
+ * A stage and a bar. The stage carries either the pitch or the results; the
+ * bar holds the bottom of the screen throughout, because the composer is the
+ * product on this page and scrolling it away would hide the only control that
+ * matters. */
 
-.create__inner {
+.create {
   display: flex;
   flex-direction: column;
-  gap: var(--s-6);
-  max-width: 1040px;
+  min-height: calc(100dvh - var(--h-nav));
 }
 
-.create__head {
+.create__stage {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: var(--w-page);
+  margin-inline: auto;
+  padding: var(--s-7) var(--gutter) var(--s-6);
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.create__hero {
   text-align: center;
+  padding-bottom: var(--s-9);
+}
+
+.create__fan {
+  position: relative;
+  height: 190px;
+  margin-bottom: var(--s-5);
+}
+
+.create__fancard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 148px;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--sh-3);
+  transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--rot));
+  transition: transform var(--d-slow) var(--e-standard);
+}
+
+.create__fancard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The fan opens a little on hover. It is the only thing on an empty stage, so
+   it is worth making it feel touchable. */
+.create__hero:hover .create__fancard {
+  transform: translate(-50%, -50%) translate(calc(var(--x) * 1.06), var(--y))
+    rotate(calc(var(--rot) * 1.15));
 }
 
 .create__title {
-  font-size: var(--t-2xl);
+  font-size: clamp(1.7rem, 4vw, 2.7rem);
+  line-height: 1.12;
+  text-transform: uppercase;
+}
+
+.create__title em {
+  font-style: normal;
+  color: var(--c-accent);
 }
 
 .create__sub {
-  margin-top: var(--s-2);
+  margin-top: var(--s-4);
+  font-size: var(--t-md);
   color: var(--c-text-dim);
-  font-size: var(--t-base);
 }
 
-/* Empty state -------------------------------------------------------------
- * Teaches the flow instead of sitting blank: four real presets that fill the
- * composer, plus the keyboard affordance people otherwise never discover. */
-.create__empty {
-  text-align: center;
-  padding-top: var(--s-4);
+/* Results ----------------------------------------------------------------- */
+
+.create__results {
+  align-self: stretch;
+  width: 100%;
 }
 
-.create__empty-title {
-  font-size: var(--t-lg);
-}
-
-.create__empty-sub {
-  margin-top: var(--s-2);
-  color: var(--c-text-faint);
-  font-size: var(--t-sm);
-}
-
-.create__starters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: var(--s-3);
-  margin-top: var(--s-5);
-  text-align: left;
-}
-
-.create__starter {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  padding: var(--s-4);
-  border-radius: var(--r-md);
-  background: var(--c-surface);
-  border: 1px solid var(--c-hairline);
-  transition:
-    border-color var(--d-fast) var(--e-standard),
-    background var(--d-fast) var(--e-standard),
-    transform var(--d-fast) var(--e-standard);
-}
-
-.create__starter:hover {
-  border-color: var(--c-hairline-strong);
-  background: var(--c-surface-2);
-  transform: translateY(-2px);
-}
-
-.create__starter-name {
-  font-size: var(--t-sm);
-  font-weight: 500;
-}
-
-.create__starter-prompt {
-  font-size: var(--t-xs);
-  color: var(--c-text-faint);
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Results ------------------------------------------------------------------ */
 .create__results-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: var(--s-4);
   margin-bottom: var(--s-4);
 }
 
 .create__results-title {
-  font-size: var(--t-sm);
-  font-weight: 500;
+  font-size: var(--t-md);
   color: var(--c-text-dim);
+  font-weight: 500;
 }
 
 .create__clear {
-  font-size: var(--t-xs);
+  font-size: var(--t-base);
   color: var(--c-text-faint);
   transition: color var(--d-fast) var(--e-standard);
 }
@@ -111,10 +112,51 @@
 .create__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: var(--s-5);
+  gap: var(--s-4);
 }
 
-@media (max-width: 640px) {
+/* Bar --------------------------------------------------------------------- */
+
+.create__bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  padding: var(--s-4) var(--gutter) var(--s-5);
+  /* Fades the results out behind the bar rather than cutting them with a hard
+     edge, so the page reads as continuing underneath it. */
+  background: linear-gradient(to bottom, transparent, var(--c-bg) 38%);
+}
+
+.create__barinner {
+  width: 100%;
+  max-width: var(--w-page);
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .create__fancard,
+  .create__hero:hover .create__fancard {
+    transition: none;
+    transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--rot));
+  }
+}
+
+@media (max-width: 720px) {
+  .create__fan {
+    height: 150px;
+  }
+
+  .create__fancard {
+    width: 108px;
+    transform: translate(-50%, -50%) translate(calc(var(--x) * 0.6), var(--y))
+      rotate(var(--rot));
+  }
+
+  .create__hero:hover .create__fancard {
+    transform: translate(-50%, -50%) translate(calc(var(--x) * 0.6), var(--y))
+      rotate(var(--rot));
+  }
+
   .create__grid {
     grid-template-columns: 1fr;
   }

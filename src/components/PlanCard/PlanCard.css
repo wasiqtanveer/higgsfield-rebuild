@@ -1,0 +1,555 @@
+/* Plan card.
+ *
+ * Three cards with identical structure, separated only by a tint: neutral,
+ * lime for the plan being pushed, magenta for the top tier. The tint is the
+ * whole hierarchy -- no card is scaled up or lifted, because a card that
+ * changes size changes the rhythm of the row it sits in. */
+
+.plan {
+  --tint: transparent;
+  --edge: var(--c-hairline);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--edge);
+  background:
+    linear-gradient(180deg, var(--tint), transparent 58%),
+    var(--c-surface);
+}
+
+.plan--lime {
+  --tint: rgba(211, 246, 52, 0.12);
+  --edge: rgba(211, 246, 52, 0.22);
+}
+
+.plan--magenta {
+  --tint: rgba(255, 45, 120, 0.16);
+  --edge: rgba(255, 45, 120, 0.26);
+}
+
+/* Head ------------------------------------------------------------------ */
+
+.plan__name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  font-family: var(--f-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  font-size: var(--t-lg);
+}
+
+.plan__tagline {
+  margin-top: 2px;
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+/* Pills ----------------------------------------------------------------- */
+
+.plan__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: var(--r-sm);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.plan__pill--promo {
+  background: var(--c-promo);
+  color: #fff;
+}
+
+.plan__pill--accent {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.plan__pill--mute {
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+  font-style: normal;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.plan__pill--flag {
+  background: #2f7dff;
+  color: #fff;
+}
+
+/* Credits --------------------------------------------------------------- */
+
+.plan__credits {
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--c-hairline);
+}
+
+.plan__creditline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+}
+
+.plan__creditsub {
+  margin-left: var(--s-5);
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+.plan__fixed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  padding: var(--s-2);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+/* Slider ----------------------------------------------------------------
+ * A real range input, restyled. Drawing a fake track out of divs would lose
+ * keyboard stepping, which is the only way some people can use it at all. */
+
+.plan__slider {
+  margin-top: var(--s-4);
+}
+
+.plan__slider input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: none;
+  cursor: pointer;
+}
+
+.plan__slider input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    to right,
+    var(--c-accent) var(--fill, 0%),
+    var(--c-hairline-strong) var(--fill, 0%)
+  );
+}
+
+.plan__slider input[type="range"]::-moz-range-track {
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-hairline-strong);
+}
+
+.plan__slider input[type="range"]::-moz-range-progress {
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+}
+
+.plan__slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8.5px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  box-shadow: var(--sh-1);
+}
+
+.plan__slider input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.plan__ticks {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  margin-top: 2px;
+}
+
+.plan__tick {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--t-base);
+  color: var(--c-text-faint);
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.plan__tick:hover,
+.plan__tick.is-active {
+  color: var(--c-text);
+}
+
+/* Price ----------------------------------------------------------------- */
+
+.plan__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.plan__was {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: var(--t-xl);
+  color: var(--c-promo);
+  text-decoration-thickness: 2px;
+}
+
+.plan__amount {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: var(--t-xl);
+  letter-spacing: var(--ls-display);
+}
+
+.plan__per {
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+/* CTA ------------------------------------------------------------------- */
+
+.plan__cta {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  border-radius: var(--r-md);
+  font-weight: 600;
+  transition:
+    filter var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-standard);
+}
+
+.plan__cta:hover {
+  filter: brightness(1.08);
+}
+
+.plan__cta:active {
+  transform: translateY(1px);
+}
+
+.plan__cta--light {
+  background: #fff;
+  color: #000;
+}
+
+.plan__cta--accent {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.plan__cta--promo {
+  background: linear-gradient(90deg, #ff2d78, #ff4fd8);
+  color: #fff;
+}
+
+.plan__saving {
+  margin-top: calc(var(--s-4) * -1 + var(--s-2));
+  padding: var(--s-2);
+  text-align: center;
+  font-size: var(--t-base);
+  color: var(--c-text-faint);
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.plan__saving strong {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+/* Blocks ---------------------------------------------------------------- */
+
+.plan__block,
+.plan__seedance {
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-hairline);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* A plan that has none of this keeps the block rather than hiding it -- the
+   absence is the selling point for the tier above. */
+.plan__block.is-locked {
+  opacity: 0.45;
+}
+
+.plan__blocktitle {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  font-family: var(--f-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: var(--t-sm);
+  letter-spacing: 0.01em;
+}
+
+.plan__info {
+  margin-left: auto;
+  color: var(--c-text-faint);
+}
+
+.plan__row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-block: 7px;
+  font-size: var(--t-base);
+  border-top: 1px solid var(--c-hairline);
+}
+
+.plan__row:first-of-type {
+  border-top: none;
+}
+
+.plan__rowname {
+  margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan__mark {
+  flex: none;
+}
+
+.plan__mark--on {
+  color: var(--c-text-dim);
+}
+
+.plan__mark--off {
+  color: var(--c-text-faint);
+}
+
+.plan__more {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-top: var(--s-3);
+  margin-top: var(--s-1);
+  border-top: 1px solid var(--c-hairline);
+  font-size: var(--t-base);
+  color: var(--c-accent);
+}
+
+.plan__morechev {
+  margin-left: auto;
+  color: var(--c-text-faint);
+}
+
+/* Seedance -------------------------------------------------------------- */
+
+.plan__seedance--blue {
+  border-color: rgba(47, 125, 255, 0.35);
+  background: linear-gradient(160deg, #123a7a, #0b1c3a);
+}
+
+.plan__seedance--none {
+  opacity: 0.65;
+}
+
+.plan__seedhead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+
+.plan__seedtitle {
+  font-family: var(--f-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: var(--t-md);
+  letter-spacing: var(--ls-display);
+}
+
+.plan__seedtitle em {
+  font-style: normal;
+  color: #7ec8ff;
+}
+
+.plan__seedblurb {
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+.plan__seedglyph {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.plan__seedrows {
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.plan__seedance--none .plan__seedrows {
+  background: var(--c-surface-2);
+}
+
+/* Feature list ---------------------------------------------------------- */
+
+.plan__features {
+  display: grid;
+  gap: var(--s-2);
+  margin: 0;
+}
+
+.plan__features li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+}
+
+.plan__features li.is-off {
+  color: var(--c-text-faint);
+}
+
+.plan__flink {
+  text-decoration: underline;
+  text-decoration-color: var(--c-hairline-strong);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .plan {
+    padding: var(--s-4);
+  }
+}
+
+/* Business variant ------------------------------------------------------
+ * Same skeleton, different instrument: seats instead of credits, per-seat
+ * pricing, and an admin group the individual ladder has no use for. */
+
+.plan--azure {
+  --tint: rgba(47, 125, 255, 0.18);
+  --edge: rgba(47, 125, 255, 0.3);
+}
+
+/* Enterprise is the one card with a lit edge and no wash -- it is not being
+   discounted, it is being escalated to a conversation. */
+.plan--outline {
+  --tint: transparent;
+  --edge: rgba(255, 255, 255, 0.75);
+}
+
+.plan__cta--azure {
+  background: #1f6bff;
+  color: #fff;
+}
+
+/* Seat stepper ----------------------------------------------------------- */
+
+.plan__seats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--c-hairline);
+  font-size: var(--t-base);
+  font-weight: 500;
+}
+
+.plan__seats button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-sm);
+  color: var(--c-text-dim);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.plan__seats button:hover:not(:disabled) {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+/* Disabled at the ends rather than wrapping: a plan that silently jumps from
+   9 seats back to 2 is a bug the buyer finds at checkout. */
+.plan__seats button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.plan__secondary {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--c-hairline-strong);
+  font-weight: 600;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.plan__secondary:hover {
+  background: var(--c-surface-2);
+}
+
+/* The lead feature list sits above the blocks on business cards, so it needs
+   the breathing room the individual list gets from the seedance panel. */
+.plan__features--lead {
+  padding-block: var(--s-1);
+}
+
+.plan__learn {
+  margin-left: auto;
+  font-size: var(--t-sm);
+  font-weight: 400;
+  text-transform: none;
+  font-family: var(--f-sans);
+  color: var(--c-text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.plan__learn:hover {
+  color: var(--c-text);
+}
+
+.plan__adminlabel {
+  margin-bottom: var(--s-3);
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--c-text-faint);
+}

@@ -1,1 +1,137 @@
-.explore-placeholder { color: var(--c-text-dim); }
+.explore {
+  padding-block: var(--s-5) var(--s-9);
+}
+
+/* 47/53 rather than an even split: the offer block needs room for a display
+   headline, the tile grid needs three readable columns, and an even split
+   starves whichever one the viewport shrinks. */
+.explore__promo-row {
+  display: grid;
+  grid-template-columns: minmax(0, 47fr) minmax(0, 53fr);
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+}
+
+/* One rhythm for every band on the page, so the MCP banner, the effects wall
+   and the model band read as a sequence rather than as three imports. */
+.explore__band {
+  margin-top: var(--s-9);
+}
+
+.explore__head {
+  margin-top: var(--s-9);
+  margin-bottom: var(--s-5);
+}
+
+.explore__title {
+  font-family: var(--f-display);
+  font-size: var(--t-2xl);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  font-weight: 800;
+}
+
+.explore__sub {
+  margin-top: var(--s-2);
+  color: var(--c-text-dim);
+  font-size: var(--t-sm);
+}
+
+.explore__filters {
+  display: flex;
+  gap: var(--s-2);
+  margin-bottom: var(--s-6);
+  flex-wrap: wrap;
+}
+
+.explore__filter {
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.explore__filter:hover {
+  color: var(--c-text);
+  border-color: var(--c-hairline-strong);
+}
+
+.explore__filter.is-on {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-weight: 500;
+}
+
+.explore__empty {
+  padding: var(--s-9) 0;
+  text-align: center;
+  color: var(--c-text-faint);
+}
+
+/* A dense feed: tighter gaps than the marketing grids, so it reads as a
+   library of work rather than a set of promotional cards. */
+.explore__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--s-3);
+}
+
+.explore__cell {
+  min-width: 0;
+  animation: explore-in var(--d-slow) var(--e-enter) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes explore-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Holds the side-by-side row as far down as it is readable. Below ~1200px the
+   three tile columns get too narrow for their names and the row genuinely
+   breaks; above it, a blurb wrapping to a second line is the cheaper cost --
+   a full-width promo banner reads as a mistake long before a two-line blurb
+   does. */
+/* Between the widest layout and the stack point the tiles need the room more
+   than the promo does: the promo has one long line to set, the tiles have six
+   names and six blurbs. Shifting the split buys the tiles ~30px a column,
+   which is the difference between one line and two. */
+@media (max-width: 1700px) and (min-width: 1201px) {
+  .explore__promo-row {
+    grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .explore__promo-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-4);
+  }
+
+  /* Full width, the banner no longer needs the tile grid's height to match --
+     holding 360px here just opens a band of dead art between the blurb and
+     the button. */
+  .explore__promo-row .promo {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 640px) {
+  .explore__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-2);
+  }
+}

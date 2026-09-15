@@ -27,14 +27,16 @@ const nextId = () => `job_${Date.now().toString(36)}_${(seq++).toString(36)}`;
 export class MockProvider {
   name = "mock";
 
-  /** Pick the clip deterministically, so a repeated prompt repeats its result. */
-  resolveClip(prompt, modelId) {
-    const i = hash(`${modelId}::${prompt.trim().toLowerCase()}`) % CLIPS.length;
+  /** Pick the clip deterministically, so a repeated prompt repeats its result.
+   *  `seed` separates the frames of a single multi-result run -- without it a
+   *  request for four images would return the same one four times. */
+  resolveClip(prompt, modelId, seed = 0) {
+    const i = hash(`${modelId}::${seed}::${prompt.trim().toLowerCase()}`) % CLIPS.length;
     return CLIPS[i];
   }
 
   createJob(prompt, opts = {}) {
-    const clip = this.resolveClip(prompt, opts.modelId ?? "");
+    const clip = this.resolveClip(prompt, opts.modelId ?? "", opts.seed ?? 0);
     // Heavier models take longer. Keeps the wait legible rather than uniform.
     const base = 2600 + (hash(prompt) % 1800);
     const weight = { "veo-3.1": 1.6, "kling-3.0": 1.35, "sora-2": 1.2, "wan-2.7": 0.6 };

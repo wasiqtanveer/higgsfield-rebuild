@@ -1,0 +1,541 @@
+/* Audio studio ------------------------------------------------------------
+ * Only the parts that differ from the video studio live here. The shell --
+ * rail, tabs, pane, picker, sticky Generate -- comes from Studio.css, which
+ * this page imports first.
+ */
+
+/* Composer ---------------------------------------------------------------- */
+
+.aud__upload {
+  position: relative;
+  padding-top: var(--s-2);
+}
+
+.aud__optional {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  padding: 3px var(--s-2);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.aud__optional--inline {
+  position: static;
+  flex-shrink: 0;
+}
+
+.aud__labelrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.aud__labelrow .studio__prompt-label { margin-bottom: 0; }
+
+.aud__info {
+  color: var(--c-text-faint);
+  cursor: help;
+  display: inline-flex;
+}
+
+.aud__script { height: 132px; margin-top: var(--s-2); }
+
+/* The placeholder is authored with a line break in it, and a textarea honours
+   that only if the white space is preserved. */
+.aud__script::placeholder { white-space: pre-line; }
+
+.aud__details { position: relative; }
+.aud__detailsinput { height: 76px; margin-top: var(--s-2); }
+
+.aud__counter {
+  position: absolute;
+  right: var(--s-4);
+  bottom: var(--s-3);
+  font-size: var(--t-xs);
+  color: var(--c-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Voice row -------------------------------------------------------------- */
+
+.aud__voice {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.aud__voicebtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard);
+}
+
+.aud__voicebtn:hover { border-color: var(--c-hairline-strong); }
+
+/* The ring carries the voice's colour, so a voice is identifiable before any
+   portrait loads -- and there are no portraits in this build. */
+.aud__avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--voice, var(--c-accent)) 28%, #000);
+  border: 1.5px solid var(--voice, var(--c-accent));
+  color: var(--voice, var(--c-accent));
+}
+
+.aud__avatar--sm { width: 26px; height: 26px; }
+
+.aud__voicecopy { flex: 1; min-width: 0; }
+
+.aud__voicename {
+  display: block;
+  font-size: var(--t-base);
+  font-weight: 700;
+}
+
+.aud__voicerole {
+  display: block;
+  font-size: var(--t-xs);
+  color: var(--c-text-dim);
+}
+
+.aud__voices {
+  top: auto;
+  bottom: calc(100% + var(--s-2));
+  width: 100%;
+}
+
+/* Batch stepper ---------------------------------------------------------- */
+
+.aud__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-2) var(--s-2) var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  flex-shrink: 0;
+}
+
+.aud__row-label {
+  font-size: var(--t-base);
+  font-weight: 600;
+}
+
+.aud__stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.aud__stepper button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--c-text-dim);
+  cursor: pointer;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.aud__stepper button:hover:not(:disabled) {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+.aud__stepper button:disabled {
+  color: var(--c-text-faint);
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.aud__count {
+  min-width: 34px;
+  text-align: center;
+  font-size: var(--t-base);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Advanced settings ------------------------------------------------------ */
+
+.aud__adv { flex-shrink: 0; }
+
+.aud__advbtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-2);
+  border: 0;
+  background: none;
+  color: var(--c-text);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aud__advglyph { color: var(--c-text-dim); transform: rotate(90deg); }
+
+.aud__advchev {
+  margin-left: auto;
+  color: var(--c-text-faint);
+  transform: rotate(-90deg);
+  transition: transform var(--d-base) var(--e-standard);
+}
+
+.aud__advchev.is-open { transform: rotate(0deg); }
+
+.aud__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+}
+
+.aud__slider {
+  display: grid;
+  grid-template-columns: 64px 1fr 34px;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-sm);
+}
+
+.aud__slider-label { color: var(--c-text-dim); }
+
+.aud__slider output {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.aud__slider input[type="range"] {
+  appearance: none;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  cursor: pointer;
+}
+
+.aud__slider input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--c-text);
+  border: 0;
+}
+
+.aud__slider input[type="range"]::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--c-text);
+}
+
+/* Pane header ------------------------------------------------------------ */
+
+.aud__filters {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--c-text-dim);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aud__filters:hover { color: var(--c-text); border-color: var(--c-hairline-strong); }
+
+/* How it works ----------------------------------------------------------- */
+
+/* Two panels, not three, and the copy leads rather than the picture -- the
+   audio surface sells the choice of voice before it shows one. */
+.aud__how { text-align: center; }
+
+.aud__steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-5);
+  list-style: none;
+  text-align: left;
+}
+
+.aud__step {
+  padding: var(--s-6) var(--s-6) 0;
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-2);
+  overflow: hidden;
+}
+
+.aud__step-title {
+  font-size: clamp(1.125rem, 1.35vw, 1.5rem);
+  font-weight: 700;
+  margin-bottom: var(--s-2);
+}
+
+.aud__step-blurb {
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  max-width: 34ch;
+  margin-bottom: var(--s-5);
+}
+
+.aud__art {
+  position: relative;
+  aspect-ratio: 16 / 11;
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  overflow: hidden;
+}
+
+/* 1 -- voices */
+.aud__art--voices {
+  background:
+    radial-gradient(120% 90% at 50% 120%, rgba(211, 246, 52, 0.22), transparent 62%),
+    #0a0d06;
+}
+
+.aud__pill {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4) var(--s-2) var(--s-2);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-hairline);
+  background: color-mix(in srgb, #000 62%, transparent);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.aud__pillcopy { display: flex; flex-direction: column; line-height: 1.15; }
+.aud__pillcopy b { font-size: var(--t-base); }
+.aud__pillcopy i { font-style: normal; font-size: 10px; color: var(--c-text-dim); }
+
+/* Two satellites and a hero: the middle pill is the one being chosen, so it
+   is bigger, brighter and sits above the others. */
+.aud__pill--0 { top: 8%; left: 5%; transform: scale(0.86); opacity: 0.75; }
+
+.aud__pill--1 {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.18);
+  z-index: 2;
+  border-color: var(--c-hairline-strong);
+  background: color-mix(in srgb, #000 82%, transparent);
+  box-shadow: var(--sh-3);
+}
+
+.aud__pill--2 { bottom: 10%; right: 4%; transform: scale(0.86); opacity: 0.75; }
+
+.aud__artchip {
+  position: absolute;
+  left: var(--s-4);
+  bottom: var(--s-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, #000 70%, transparent);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+/* 2 -- settings panel */
+.aud__art--panel {
+  background: var(--c-surface-3);
+  padding: var(--s-4) var(--s-4) 0;
+}
+
+.aud__mock {
+  height: 100%;
+  padding: var(--s-4);
+  border-radius: var(--r-md) var(--r-md) 0 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.aud__mock-label { font-size: var(--t-xs); color: var(--c-text-faint); }
+
+.aud__mock-text {
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+  line-height: 1.45;
+}
+
+.aud__mock-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+}
+
+.aud__mock-row span { flex: 1; min-width: 0; }
+
+.aud__mock-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.aud__mock-grid span {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-2);
+}
+
+.aud__mock-row i,
+.aud__mock-grid i {
+  display: block;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--c-text-faint);
+}
+
+.aud__mock-row b,
+.aud__mock-grid b {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+}
+
+/* Takes ------------------------------------------------------------------ */
+
+.aud__takes {
+  width: 100%;
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.take {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+}
+
+.take.is-pending { border-style: dashed; }
+
+.take__play {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1.5px solid var(--voice, var(--c-accent));
+  background: color-mix(in srgb, var(--voice, var(--c-accent)) 22%, #000);
+  color: var(--c-text);
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--e-standard);
+}
+
+.take__play:hover:not(:disabled) { transform: scale(1.06); }
+.take__play:disabled { opacity: 0.4; cursor: default; }
+
+.take__main { flex: 1; min-width: 0; }
+
+.take__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+.take__voice { font-size: var(--t-base); font-weight: 700; }
+
+.take__meta { font-size: var(--t-xs); color: var(--c-text-faint); }
+
+.take__wave {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 34px;
+}
+
+/* Bars are laid out by flex and sized by height alone, so a take of any
+   length draws the same shape at any rail width. */
+.take__bar {
+  flex: 1;
+  min-width: 2px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  transition: background var(--d-fast) linear;
+}
+
+.take__bar.is-played { background: var(--voice, var(--c-accent)); }
+
+.take.is-pending .take__bar { opacity: 0.5; }
+
+.take__script {
+  margin-top: var(--s-2);
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1080px) {
+  .aud__steps { grid-template-columns: 1fr; }
+  .aud__how { text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .take__play,
+  .aud__advchev { transition: none; }
+}

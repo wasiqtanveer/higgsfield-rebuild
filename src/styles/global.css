@@ -84,12 +84,74 @@ ul {
   border-radius: var(--r-sm);
 }
 
+/* Browser surfaces ------------------------------------------------------
+ * The parts we did not draw still belong to the design. Left at their
+ * defaults they announce that a page was assembled rather than built. */
+::selection {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+html {
+  scrollbar-color: var(--c-surface-3) var(--c-bg);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--c-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-surface-3);
+  border-radius: var(--r-pill);
+  border: 3px solid var(--c-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2e2e33;
+}
+
+input,
+textarea {
+  caret-color: var(--c-accent);
+}
+
+/* Numbers that sit in columns or tick upward must not jitter. */
+[data-numeric],
+time {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Display voice ---------------------------------------------------------
+ * Heavy, uppercase, tightly tracked -- the product's headline register. */
+/* Archivo is loaded with its wdth axis, so the condensed cut is a real axis
+   setting rather than a smaller font size. Measured against the reference:
+   its display face sets ~0.5em per character, Archivo at normal width sets
+   ~0.6em -- the headline was 30% too wide, not too large. */
+.display {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  line-height: 0.98;
+}
+
 /* Shared layout helpers ------------------------------------------------- */
 .page {
   width: 100%;
   max-width: var(--w-page);
   margin-inline: auto;
   padding-inline: var(--gutter);
+}
+
+.page--wide {
+  max-width: var(--w-page-wide);
 }
 
 .section {

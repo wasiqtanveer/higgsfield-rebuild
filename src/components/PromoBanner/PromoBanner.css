@@ -1,0 +1,133 @@
+.promo {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--r-lg);
+  min-height: 360px;
+  display: flex;
+  border: 1px solid var(--c-hairline);
+}
+
+/* Tint first, art over it: the block is never a grey hole while the poster
+   decodes, and it still looks finished if the file is missing entirely. */
+.promo__tint {
+  position: absolute;
+  inset: 0;
+  background: var(--tint, var(--c-surface-2));
+  z-index: -3;
+}
+
+.promo__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+/* Type sits top-left over a busy photograph, so the scrim is directional --
+   heavy where the words are, clear where the art should show. */
+.promo__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.7) 100%),
+    linear-gradient(100deg, rgba(0, 0, 0, 0.6) 0%, transparent 70%);
+}
+
+.promo__body {
+  flex: 1;
+  padding: var(--s-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--s-6);
+  max-width: 46rem;
+}
+
+.promo__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.promo__headline {
+  font-size: clamp(1.9rem, 3.1vw, 3.2rem);
+  line-height: 1.16;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+
+.promo__headline-accent {
+  display: block;
+  color: var(--c-accent);
+}
+
+.promo__blurb {
+  font-size: var(--t-md);
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* The badge overhangs the button's lower edge, exactly as the product does it;
+   the row reserves the overhang so nothing below is nudged. */
+.promo__action {
+  position: relative;
+  padding-bottom: var(--s-4);
+  align-self: flex-start;
+}
+
+.promo__cta {
+  display: inline-block;
+  padding: var(--s-3) var(--s-8);
+  border-radius: var(--r-md);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: var(--t-md);
+  font-weight: 700;
+  box-shadow: 0 var(--e-bevel) 0 var(--c-accent-deep);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    box-shadow var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-standard);
+}
+
+.promo__cta:hover {
+  background: var(--c-accent-hover);
+}
+
+.promo__cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--c-accent-deep);
+}
+
+.promo__clock {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  padding: 4px var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--c-promo);
+  color: #fff;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  box-shadow: var(--sh-1);
+}
+
+.promo__clock.is-done {
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+}
+
+@media (max-width: 640px) {
+  .promo {
+    min-height: 280px;
+  }
+
+  .promo__body {
+    padding: var(--s-5);
+  }
+}

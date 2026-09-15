@@ -76,9 +76,39 @@ export const MODELS = [
     resolutions: ["1K", "2K", "4K"],
     credits: 4,
   },
+  {
+    id: "gpt-image-2",
+    name: "GPT Image 2",
+    vendor: "OpenAI",
+    kind: "image",
+    blurb: "Natural light and texture, strong at text in frame.",
+    durations: [],
+    ratios: ["16:9", "9:16", "1:1", "4:5"],
+    resolutions: ["1K", "2K", "4K"],
+    credits: 6.5,
+    listCredits: 8.5,
+  },
+  {
+    id: "seedream-5",
+    name: "Seedream 5",
+    vendor: "ByteDance",
+    kind: "image",
+    blurb: "Painterly stills with deep colour.",
+    durations: [],
+    ratios: ["16:9", "9:16", "1:1", "4:5"],
+    resolutions: ["1K", "2K"],
+    credits: 4,
+  },
 ];
 
 export const DEFAULT_MODEL_ID = "seedance-2.5";
+
+/** The composer opens on a model that matches the surface you arrived from. */
+export const MODE_DEFAULT_MODEL = {
+  image: "gpt-image-2",
+  video: "seedance-2.5",
+  audio: "veo-3.1",
+};
 
 export function getModel(id) {
   return MODELS.find((m) => m.id === id) ?? MODELS[0];

@@ -1,0 +1,129 @@
+.navmenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: var(--gutter);
+  z-index: 60;
+  padding: var(--s-5);
+  border-radius: var(--r-lg);
+  background: #101012;
+  border: 1px solid var(--c-hairline);
+  box-shadow: var(--sh-3);
+  /* The panel is taller than the viewport on the Video trigger, so it scrolls
+     inside itself rather than growing the page behind it. */
+  max-height: min(72vh, 720px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-width: calc(100vw - 2 * var(--gutter));
+  animation: navmenu-in var(--d-base) var(--e-enter) both;
+}
+
+@keyframes navmenu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.navmenu__cols {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 380px);
+  gap: var(--s-6);
+  align-items: start;
+}
+
+.navmenu__label {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text-faint);
+  letter-spacing: 0;
+  margin-bottom: var(--s-3);
+  padding-left: var(--s-2);
+}
+
+.navmenu__list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+
+.navmenu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2);
+  border-radius: var(--r-md);
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.navmenu__item:hover {
+  background: var(--c-surface-2);
+}
+
+/* The badge overhangs the tile's top-left corner, so the tile needs headroom
+   it cannot claim from padding -- hence the margin on the row above. */
+.navmenu__tile {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text);
+}
+
+.navmenu__badge {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.navmenu__badge--promo {
+  background: var(--c-promo);
+  color: #fff;
+}
+
+.navmenu__badge--accent {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.navmenu__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.navmenu__name {
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.navmenu__blurb {
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+  line-height: 1.35;
+}
+
+/* Panels are a pointer affordance. Touch gets the sheet, which lists the same
+   destinations without asking anyone to hover. */
+@media (max-width: 860px) {
+  .navmenu {
+    display: none;
+  }
+}

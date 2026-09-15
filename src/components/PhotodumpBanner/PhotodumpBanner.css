@@ -1,0 +1,105 @@
+.pdump {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  min-height: 440px;
+  display: flex;
+  align-items: center;
+  padding: var(--s-7);
+  /* Cool graphite rather than the brand lime: this band is about photographs,
+     so the ground stays neutral and lets the stack carry the colour. */
+  background: linear-gradient(104deg, #5b6068 0%, #3d434c 44%, #1a1d22 78%, #0d0f12 100%);
+}
+
+.pdump__body {
+  position: relative;
+  z-index: 4;
+  max-width: 32rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.pdump__badge {
+  padding: 6px var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: var(--t-sm);
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pdump__title {
+  font-size: clamp(2rem, 3.4vw, 3.3rem);
+  line-height: 1.05;
+  color: #e9eaec;
+}
+
+.pdump__sub {
+  font-size: var(--t-md);
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.pdump__cta {
+  margin-top: var(--s-4);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-md);
+  background: #ececed;
+  color: #000;
+  font-size: var(--t-md);
+  font-weight: 700;
+  box-shadow: 0 var(--e-bevel) 0 var(--c-light-deep);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    box-shadow var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-standard);
+}
+
+.pdump__cta:hover {
+  background: #fff;
+}
+
+.pdump__cta:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--c-light-deep);
+}
+
+/* Fan ------------------------------------------------------------------- */
+.pdump__fan {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  z-index: 1;
+  width: min(54%, 660px);
+  height: auto;
+  transform: translateY(-50%);
+  /* The asset is cropped tight to the cards, so its right edge is the right
+     edge of the artwork. Letting it run off the panel is what makes the fan
+     read as continuing past the frame rather than as a pasted-in picture. */
+  transform-origin: right center;
+  pointer-events: none;
+}
+
+/* The fan needs real width to read as a fan. Below this it would sit under
+   the headline, so the band becomes type on a graphite field. */
+@media (max-width: 1100px) {
+  .pdump__fan {
+    display: none;
+  }
+
+  .pdump {
+    min-height: 0;
+    padding: var(--s-6) var(--s-5);
+  }
+}
+
+@media (max-width: 640px) {
+  .pdump {
+    border-radius: var(--r-lg);
+  }
+}

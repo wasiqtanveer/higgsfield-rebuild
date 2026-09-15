@@ -1,0 +1,925 @@
+/* Video studio -----------------------------------------------------------
+ * An app shell, not a document: the two panes divide the viewport under the
+ * sticky header and scroll independently. The document itself never scrolls
+ * here, which is what lets the Generate button sit permanently over the foot
+ * of the composer.
+ */
+
+.studio {
+  display: grid;
+  grid-template-columns: minmax(380px, 26vw) 1fr;
+  gap: var(--s-4);
+  align-items: stretch;
+  height: calc(100dvh - var(--h-nav));
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  /* The header shrinks on scroll, but nothing under it scrolls the document,
+     so the studio measures against the full height and stays put. */
+  overflow: hidden;
+}
+
+/* ---------------- composer rail ---------------- */
+
+.studio__rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.studio__tabs {
+  display: flex;
+  gap: var(--s-5);
+  padding: var(--s-4) var(--s-5) 0;
+  border-bottom: 1px solid var(--c-hairline);
+  flex-shrink: 0;
+}
+
+.studio__tab {
+  position: relative;
+  padding: 0 0 var(--s-3);
+  background: none;
+  border: 0;
+  color: var(--c-text-faint);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.studio__tab:hover { color: var(--c-text-dim); }
+.studio__tab.is-on { color: var(--c-text); }
+
+/* The underline is drawn on the tab rather than on the row so it lands flush
+   with the rail's own hairline instead of floating above it. */
+.studio__tab.is-on::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 2px;
+  background: var(--c-text);
+  border-radius: var(--r-pill);
+}
+
+.studio__rail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-4) var(--s-4) calc(var(--s-8) + var(--s-5));
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-3) transparent;
+}
+
+/* Model card ------------------------------------------------------------- */
+
+.studio__model {
+  position: relative;
+  border-radius: var(--r-md);
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.studio__model-art {
+  position: relative;
+  aspect-ratio: 16 / 7.4;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--c-surface-2);
+}
+
+.studio__model-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The label sits on the image, so the image needs a floor under the type --
+   otherwise a bright frame swallows the model name. */
+.studio__model-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 0%, rgba(0, 0, 0, 0) 58%);
+}
+
+.studio__model-copy {
+  position: absolute;
+  left: var(--s-4);
+  bottom: var(--s-3);
+  z-index: 1;
+}
+
+.studio__model-kind {
+  font-size: var(--t-lg);
+  color: var(--c-accent);
+  line-height: 1;
+}
+
+.studio__model-name {
+  margin-top: 2px;
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+}
+
+.studio__change {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-hairline-strong);
+  background: color-mix(in srgb, var(--c-bg) 62%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--c-text);
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.studio__change:hover { background: color-mix(in srgb, var(--c-bg) 84%, transparent); }
+
+.studio__picker {
+  position: absolute;
+  top: calc(100% + var(--s-2));
+  right: 0;
+  z-index: 20;
+  width: min(340px, 100%);
+  padding: var(--s-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  box-shadow: var(--sh-3);
+}
+
+.studio__pick {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--c-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.studio__pick:hover { background: var(--c-surface-3); }
+.studio__pick.is-on { color: var(--c-accent); }
+
+.studio__pick-main { flex: 1; min-width: 0; }
+
+.studio__pick-name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+  font-weight: 600;
+}
+
+.studio__pick-badge {
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.studio__pick-cost {
+  font-size: var(--t-sm);
+  font-weight: 700;
+  color: var(--c-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.studio__pick-blurb {
+  display: block;
+  margin-top: 2px;
+  color: var(--c-text-faint);
+  font-size: var(--t-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Segmented source switch ------------------------------------------------ */
+
+.studio__seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-1);
+  padding: var(--s-1);
+  background: var(--c-surface-2);
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+}
+
+.studio__seg-btn {
+  padding: var(--s-3) var(--s-2);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: none;
+  color: var(--c-text-faint);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--d-fast) var(--e-standard),
+              color var(--d-fast) var(--e-standard);
+}
+
+.studio__seg-btn:hover { color: var(--c-text-dim); }
+
+.studio__seg-btn.is-on {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+  box-shadow: var(--sh-1);
+}
+
+/* Reference drop zone ---------------------------------------------------- */
+
+.studio__drop {
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  transition: border-color var(--d-fast) var(--e-standard),
+              background var(--d-fast) var(--e-standard);
+  flex-shrink: 0;
+}
+
+.studio__drop.is-drag {
+  border-color: var(--c-accent);
+  background: color-mix(in srgb, var(--c-accent) 8%, var(--c-surface-2));
+}
+
+.studio__drop-cta {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-5) var(--s-4);
+  border: 0;
+  border-radius: var(--r-md);
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.studio__chips {
+  display: flex;
+  margin-bottom: var(--s-3);
+}
+
+/* Overlapped, not spaced: three media types reading as one affordance. */
+.studio__chip {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--c-surface-3);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text-dim);
+  transition: transform var(--d-base) var(--e-enter);
+}
+
+.studio__chip + .studio__chip { margin-left: -10px; }
+
+.studio__drop-cta:hover .studio__chip:first-child { transform: translateX(-4px) rotate(-6deg); }
+.studio__drop-cta:hover .studio__chip:last-child { transform: translateX(4px) rotate(6deg); }
+
+/* Dim line first, bright line second: the accepted formats are the part a
+   user is actually checking before they drop something. */
+.studio__drop-lead {
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+.studio__drop-kinds {
+  font-size: var(--t-base);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.studio__refs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: var(--s-2);
+  padding: var(--s-3);
+}
+
+.studio__ref {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--c-surface-3);
+  border: 1px solid var(--c-hairline);
+}
+
+.studio__ref img,
+.studio__ref video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studio__ref-glyph {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--c-text-dim);
+}
+
+.studio__ref-x {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--c-bg) 70%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--c-text);
+  cursor: pointer;
+}
+
+.studio__ref--add {
+  display: grid;
+  place-items: center;
+  color: var(--c-text-faint);
+  cursor: pointer;
+  border-style: dashed;
+}
+
+.studio__ref--add:hover { color: var(--c-text); border-color: var(--c-hairline-strong); }
+
+/* Motion control moves --------------------------------------------------- */
+
+.studio__moves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  flex-shrink: 0;
+}
+
+.studio__move {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-pill);
+  background: var(--c-surface-2);
+  color: var(--c-text-dim);
+  font: inherit;
+  font-size: var(--t-sm);
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-standard),
+              border-color var(--d-fast) var(--e-standard);
+}
+
+.studio__move:hover { color: var(--c-text); }
+
+.studio__move.is-on {
+  color: var(--c-accent);
+  border-color: var(--c-accent);
+  background: color-mix(in srgb, var(--c-accent) 10%, var(--c-surface-2));
+}
+
+/* Prompt ----------------------------------------------------------------- */
+
+.studio__prompt {
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  flex-shrink: 0;
+}
+
+.studio__prompt:focus-within { border-color: var(--c-hairline-strong); }
+
+.studio__prompt-label {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-size: var(--t-base);
+  color: var(--c-text-dim);
+}
+
+.studio__prompt-input {
+  width: 100%;
+  height: 120px;
+  resize: none;
+  border: 0;
+  background: none;
+  color: var(--c-text);
+  font: inherit;
+  font-size: var(--t-base);
+  line-height: 1.5;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-3) transparent;
+}
+
+.studio__prompt-input::placeholder { color: var(--c-text-faint); }
+.studio__prompt-input:focus { outline: none; }
+
+.studio__prompt-tools {
+  display: flex;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.studio__tool {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--c-surface-3);
+  color: var(--c-text);
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.studio__tool:hover { background: color-mix(in srgb, var(--c-text) 14%, var(--c-surface-3)); }
+
+.studio__tool-at {
+  font-weight: 700;
+  color: var(--c-text-dim);
+}
+
+/* Model row -------------------------------------------------------------- */
+
+.studio__modelrow {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.studio__modelrow-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-md);
+  background: var(--c-surface-2);
+  color: var(--c-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard);
+}
+
+.studio__modelrow-btn:hover { border-color: var(--c-hairline-strong); }
+
+.studio__modelrow-copy { flex: 1; min-width: 0; }
+
+.studio__modelrow-label {
+  display: block;
+  font-size: var(--t-sm);
+  color: var(--c-text-dim);
+}
+
+.studio__modelrow-name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: 2px;
+  font-size: var(--t-base);
+  font-weight: 700;
+}
+
+.studio__level {
+  width: 14px;
+  height: 12px;
+  fill: var(--c-accent);
+}
+
+.studio__modelrow-chev {
+  color: var(--c-text-faint);
+  transform: rotate(-90deg);
+}
+
+/* Anchored above its trigger: the row sits at the foot of the composer, so a
+   list dropping downwards would open straight into the Generate button. */
+.studio__modelrow .studio__picker {
+  top: auto;
+  bottom: calc(100% + var(--s-2));
+  width: 100%;
+}
+
+/* Generate --------------------------------------------------------------- */
+
+.studio__action {
+  position: absolute;
+  inset: auto var(--s-4) var(--s-4);
+  z-index: 5;
+}
+
+/* The product's buttons are solid objects with a lit face and a darker side,
+   so the press travels down into the bevel rather than just dimming. */
+.studio__generate {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  border: 0;
+  border-radius: var(--r-md);
+  background: var(--c-accent);
+  box-shadow: 0 var(--e-bevel) 0 var(--c-accent-deep), var(--sh-2);
+  color: var(--c-accent-ink);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--d-fast) var(--e-standard),
+              box-shadow var(--d-fast) var(--e-standard),
+              background var(--d-fast) var(--e-standard);
+}
+
+.studio__generate:hover:not(:disabled) { background: var(--c-accent-hover); }
+
+.studio__generate:active:not(:disabled) {
+  transform: translateY(var(--e-bevel));
+  box-shadow: 0 0 0 var(--c-accent-deep), var(--sh-1);
+}
+
+/* Disabled is a different object, not a faded one. Dropping the opacity let
+   the page show through the button and read as a rendering fault rather than
+   as a state, so the unavailable button gets its own solid surface. */
+.studio__generate:disabled {
+  background: var(--c-surface-3);
+  color: var(--c-text-faint);
+  box-shadow: 0 var(--e-bevel) 0 #0e0e10;
+  cursor: not-allowed;
+}
+
+.studio__generate:disabled .studio__price { color: var(--c-text-faint); }
+
+.studio__price {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+}
+
+.studio__price s {
+  opacity: 0.5;
+  font-weight: 600;
+}
+
+/* ---------------- result pane ---------------- */
+
+.studio__pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--c-surface);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.studio__panetabs {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  flex-shrink: 0;
+}
+
+.studio__panetab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--c-text-dim);
+  font: inherit;
+  font-size: var(--t-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-standard),
+              border-color var(--d-fast) var(--e-standard);
+}
+
+.studio__panetab:hover { color: var(--c-text); }
+
+.studio__panetab.is-on {
+  color: var(--c-text);
+  border-color: var(--c-hairline-strong);
+  background: var(--c-surface-2);
+}
+
+.studio__count {
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.studio__pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-6) var(--s-7) var(--s-7);
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-surface-3) transparent;
+}
+
+/* How it works ----------------------------------------------------------- */
+
+/* The block is centred in the pane rather than pinned to the top: on a wide
+   display the three panels and the headline are the whole content, and
+   hanging them off the top leaves a third of the surface dead. */
+.studio__how {
+  width: 100%;
+  max-width: 1320px;
+  /* auto block margins centre it in the scroll box without justify-content,
+     which would clip the top of the block once the content outgrows the pane. */
+  margin: auto;
+}
+
+.studio__headline {
+  font-size: clamp(1.875rem, 3.1vw, 3rem);
+  margin-bottom: var(--s-3);
+}
+
+.studio__lede {
+  max-width: 72ch;
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  margin-bottom: var(--s-6);
+}
+
+.studio__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-6);
+  list-style: none;
+}
+
+.studio__step { position: relative; }
+
+.studio__step-n {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-faint);
+}
+
+/* Each illustration is a fixed-ratio stage so the three titles sit on one
+   baseline regardless of what is inside them. */
+.studio__art {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  margin-bottom: var(--s-4);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--c-surface-2);
+}
+
+/* 1 -- add image */
+.studio__art-drop {
+  position: absolute;
+  inset: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: var(--r-md);
+  color: var(--c-text-dim);
+}
+
+.studio__art-strong {
+  margin-top: var(--s-2);
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-display);
+  font-size: var(--t-md);
+  color: var(--c-text);
+}
+
+.studio__art-dim {
+  font-size: var(--t-xs);
+  color: var(--c-text-faint);
+}
+
+/* The dragged photo overlaps the drop target -- the gesture is the point of
+   the panel, so it is drawn mid-drag rather than at rest. */
+.studio__art-photo {
+  position: absolute;
+  left: 4%;
+  bottom: -6%;
+  width: 40%;
+  aspect-ratio: 9 / 13;
+  object-fit: cover;
+  border-radius: var(--r-sm);
+  border: 2px solid var(--c-accent);
+  box-shadow: var(--sh-3);
+  transform: rotate(-5deg);
+  transition: transform var(--d-slow) var(--e-enter);
+}
+
+.studio__step:hover .studio__art-photo { transform: rotate(-2deg) translateY(-6px); }
+
+/* 2 -- choose preset */
+.studio__art-rail {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding-inline: var(--s-2);
+}
+
+.studio__art-tile {
+  position: relative;
+  width: 30%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  opacity: 0.45;
+  transition: transform var(--d-slow) var(--e-enter);
+}
+
+.studio__art-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studio__art-tile figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: var(--s-2);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.studio__art-tile.is-picked {
+  opacity: 1;
+  z-index: 1;
+  transform: scale(1.16);
+  border: 2px solid var(--c-accent);
+  box-shadow: var(--sh-3);
+}
+
+.studio__step:hover .studio__art-tile.is-picked { transform: scale(1.22); }
+
+/* 3 -- get video */
+.studio__art-frame {
+  position: absolute;
+  inset: 8%;
+  border-radius: var(--r-md);
+  border: 3px solid var(--c-text);
+  overflow: hidden;
+  box-shadow: var(--sh-3);
+}
+
+.studio__art-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studio__step-title {
+  font-size: clamp(1.0625rem, 1.15vw, 1.375rem);
+  margin-bottom: var(--s-2);
+}
+
+.studio__step-blurb {
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  max-width: 32ch;
+}
+
+/* History ---------------------------------------------------------------- */
+
+.studio__grid {
+  width: 100%;
+  margin-bottom: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--s-4);
+}
+
+.studio__empty {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--s-2);
+}
+
+.studio__empty-glyph {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--s-2);
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  color: var(--c-text-faint);
+}
+
+.studio__empty-title { font-size: var(--t-lg); }
+
+.studio__empty-sub {
+  max-width: 40ch;
+  color: var(--c-text-faint);
+  font-size: var(--t-base);
+}
+
+/* ---------------- responsive ---------------- */
+
+/* Below the two-pane threshold the shell stops being a shell: the rail and the
+   pane stack and the document scrolls again, because a 320px-tall result pane
+   on a phone is worse than no split at all. */
+@media (max-width: 1080px) {
+  .studio {
+    grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
+    padding-inline: var(--gutter);
+  }
+
+  .studio__rail { position: static; }
+
+  .studio__rail-body { overflow: visible; padding-bottom: var(--s-4); }
+
+  .studio__action {
+    position: sticky;
+    inset: auto 0 var(--s-4);
+    padding: 0 var(--s-4) var(--s-4);
+  }
+
+  .studio__pane-body {
+    overflow: visible;
+    padding: var(--s-5) var(--s-4) var(--s-7);
+  }
+
+  .studio__steps { grid-template-columns: 1fr; gap: var(--s-5); }
+
+  .studio__empty { padding-block: var(--s-8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio__chip,
+  .studio__art-photo,
+  .studio__art-tile,
+  .studio__generate {
+    transition: none;
+  }
+}

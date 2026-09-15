@@ -1,0 +1,7 @@
+/* Tabular figures are the whole trick. With proportional digits every frame
+   of the count changes the text width, so the label beside it shuffles left
+   and right for half a second and the animation reads as a glitch. */
+.anum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}

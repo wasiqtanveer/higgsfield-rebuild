@@ -23,7 +23,12 @@ export default function JobCard({ job, onRetry }) {
         >
           <div className="job__overlay">
             <span className="job__chip">{job.modelName}</span>
-            <span className="job__chip job__chip--dim">{job.ratio} · {job.seconds}s</span>
+            {/* Image jobs have no duration, so the second chip carries
+                whatever actually describes the result. */}
+            <span className="job__chip job__chip--dim">
+              {job.ratio}
+              {job.seconds ? ` · ${job.seconds}s` : job.resolution ? ` · ${job.resolution}` : ""}
+            </span>
           </div>
         </MediaCard>
         <p className="job__prompt" title={job.prompt}>{job.prompt}</p>

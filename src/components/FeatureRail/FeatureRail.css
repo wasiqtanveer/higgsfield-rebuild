@@ -1,0 +1,109 @@
+.frail {
+  position: relative;
+}
+
+/* The rail bleeds to both gutters so the clipped card reads as "keep going"
+   rather than as a layout mistake at the container edge. */
+.frail__scroll {
+  display: flex;
+  gap: var(--s-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 0;
+  scrollbar-width: none;
+  padding-bottom: var(--s-2);
+}
+
+.frail__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* 2.6 across, measured off the reference: two whole cards plus a 60% peek.
+   The peek is the only thing telling you the rail moves, so its width is a
+   real value rather than whatever falls out of the column count.
+ *
+ * Width lives on the item, not on the track. A percentage in
+ * `grid-auto-columns` inside an `overflow-x: auto` grid resolves against an
+ * indefinite size, so it silently degrades to max-content -- which sized every
+ * card to the width of its own tagline. A percentage width on a flex item
+ * resolves against the scrollport, which is definite. */
+.frail__item {
+  flex: 0 0 calc((100% - 2 * var(--s-5)) / 2.6);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.frail__link {
+  display: block;
+}
+
+.frail__title {
+  margin-top: var(--s-4);
+  font-size: var(--t-md);
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.frail__link:hover .frail__title {
+  color: var(--c-accent);
+}
+
+.frail__tagline {
+  margin-top: var(--s-1);
+  color: var(--c-text-dim);
+  font-size: var(--t-md);
+}
+
+/* Arrows ----------------------------------------------------------------
+ * Hidden at the ends rather than dimmed: a control that cannot do anything
+ * should not be there to be clicked. */
+.frail__arrow {
+  position: absolute;
+  top: calc((100% - 78px) / 2);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--c-text);
+  background: rgba(10, 10, 12, 0.72);
+  border: 1px solid var(--c-hairline-strong);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition:
+    opacity var(--d-base) var(--e-standard),
+    background var(--d-fast) var(--e-standard);
+}
+
+.frail:hover .frail__arrow,
+.frail__arrow:focus-visible {
+  opacity: 1;
+}
+
+.frail__arrow:hover {
+  background: var(--c-surface-3);
+}
+
+.frail__arrow--prev { left: var(--s-3); }
+.frail__arrow--next { right: var(--s-3); }
+
+@media (max-width: 1100px) {
+  .frail__scroll {
+    gap: var(--s-4);
+  }
+
+  .frail__item {
+    flex-basis: calc((100% - var(--s-4)) / 1.6);
+  }
+}
+
+@media (max-width: 640px) {
+  .frail__item {
+    flex-basis: 88%;
+  }
+
+  /* Touch surfaces get the swipe; the arrows are dead weight there. */
+  .frail__arrow {
+    display: none;
+  }
+}

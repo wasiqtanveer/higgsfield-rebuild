@@ -1,0 +1,62 @@
+.wreveal {
+  position: relative;
+}
+
+.wreveal__fade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 280px;
+  /* Stops short of opaque at the very bottom so the last tiles dissolve rather
+     than meeting a visible band edge. */
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--fade-to, var(--c-bg)) 55%, transparent) 42%,
+    var(--fade-to, var(--c-bg)) 82%
+  );
+  pointer-events: none;
+}
+
+.wreveal__cta {
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-6);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-md);
+  /* Sits over the fading tiles, so it takes the same tinted treatment as
+     Recreate rather than a solid fill that would block the art behind it. */
+  background: color-mix(in srgb, var(--c-accent) 17%, rgba(0, 0, 0, 0.66));
+  color: var(--c-accent);
+  font-size: var(--t-md);
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 var(--e-bevel) 0 rgba(0, 0, 0, 0.55);
+  transition:
+    background var(--d-fast) var(--e-standard),
+    box-shadow var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-standard);
+}
+
+.wreveal__cta:hover {
+  background: color-mix(in srgb, var(--c-accent) 24%, rgba(0, 0, 0, 0.62));
+}
+
+.wreveal__cta:active {
+  transform: translateX(-50%) translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 640px) {
+  .wreveal__fade {
+    height: 200px;
+  }
+
+  .wreveal__cta {
+    bottom: var(--s-4);
+  }
+}

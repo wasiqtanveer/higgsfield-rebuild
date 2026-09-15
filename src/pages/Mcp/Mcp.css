@@ -1,0 +1,850 @@
+/**
+ * MCP page.
+ *
+ * Three registers, top to bottom: a lit hero that carries the install card, a
+ * dark demo slab that reads as a screenshot of two real panes, and a pair of
+ * media walls. The setup card is the only place on the page with a raised
+ * surface -- everything below it sits flat on the ground so the card keeps its
+ * job as the thing you are meant to act on.
+ */
+
+.mcpp {
+  padding-bottom: var(--s-9);
+}
+
+/* Hero ------------------------------------------------------------------- */
+
+.mcpp__hero {
+  position: relative;
+  padding-block: var(--s-8) var(--s-7);
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* A single wide bloom behind the fan. It sits under the content and never
+   catches pointer events, so it can be as large as it needs to be. */
+.mcpp__hero-glow {
+  position: absolute;
+  inset: -30% 0 auto;
+  height: 120%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 50% 18%, rgba(211, 246, 52, 0.16), transparent 70%),
+    radial-gradient(90% 60% at 50% 0%, rgba(255, 255, 255, 0.06), transparent 75%);
+}
+
+.mcpp__fan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--s-6);
+}
+
+/* The tiles overlap into an app-icon fan. `--i` is the signed offset from the
+   centre and `--lift` its magnitude, so the arrangement falls out of two
+   numbers rather than seven hand-written rules -- and the centre tile lands
+   flat at zero on its own. The magnitude is computed in JS because the CSS
+   absolute-value function is still too new to depend on. */
+.mcpp__fan-tile {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  margin-inline: -10px;
+  border-radius: 22px;
+  background: var(--tint);
+  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: var(--sh-2);
+  transform: rotate(calc(var(--i) * 5deg)) translateY(calc(var(--lift) * 5px));
+  transition: transform var(--d-base) var(--e-standard);
+}
+
+.mcpp__fan-tile.is-lead {
+  width: 112px;
+  height: 112px;
+  border-radius: 30px;
+  z-index: 2;
+  box-shadow: 0 18px 50px rgba(211, 246, 52, 0.28), var(--sh-3);
+}
+
+.mcpp__fan:hover .mcpp__fan-tile {
+  transform: rotate(calc(var(--i) * 7deg)) translateY(calc(var(--lift) * 7px));
+}
+
+.mcpp__title {
+  text-align: center;
+  font-size: var(--t-3xl);
+  color: var(--c-accent);
+}
+
+.mcpp__lede {
+  margin-top: var(--s-4);
+  text-align: center;
+  color: var(--c-text-dim);
+  font-size: var(--t-md);
+}
+
+/* Setup card ------------------------------------------------------------- */
+
+.mcpp__setup {
+  margin-top: var(--s-7);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--c-hairline);
+  background: linear-gradient(180deg, var(--c-surface-2), var(--c-surface));
+  box-shadow: var(--sh-2);
+  overflow: hidden;
+}
+
+.mcpp__clients {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+/* The client rail scrolls rather than wraps: it is one row in the product and
+   a wrapped second row would change what the control looks like. */
+.mcpp__rail {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mcpp__rail::-webkit-scrollbar {
+  display: none;
+}
+
+.mcpp__client {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-shrink: 0;
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-pill);
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.mcpp__client:hover {
+  color: var(--c-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.mcpp__client.is-on {
+  background: #ffffff;
+  color: #000000;
+}
+
+.mcpp__transport {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-shrink: 0;
+}
+
+.mcpp__transport-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  color: var(--c-text-faint);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.mcpp__transport-btn:hover:not(:disabled) {
+  color: var(--c-text);
+}
+
+.mcpp__transport-btn.is-on {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+.mcpp__transport-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Steps ------------------------------------------------------------------ */
+
+.mcpp__steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  list-style: none;
+}
+
+.mcpp__step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-6);
+}
+
+/* One hairline between the two steps, drawn by the second cell so it never
+   appears on the outside edge when the grid collapses to one column. */
+.mcpp__step + .mcpp__step {
+  border-left: 1px solid var(--c-hairline);
+}
+
+.mcpp__step-n {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-surface-3);
+  color: var(--c-text);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+
+.mcpp__step-title {
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.mcpp__step-body {
+  color: var(--c-text-dim);
+  max-width: 44ch;
+  flex: 1;
+}
+
+.mcpp__step-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-md);
+  font-size: var(--t-base);
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    box-shadow var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-standard);
+}
+
+.mcpp__step-btn:active {
+  transform: translateY(2px);
+}
+
+.mcpp__step-btn--dark {
+  background: var(--c-surface-3);
+  color: var(--c-text);
+  border: 1px solid var(--c-hairline-strong);
+}
+
+.mcpp__step-btn--dark:hover {
+  background: #26262b;
+}
+
+.mcpp__step-btn--light {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 var(--e-bevel) 0 var(--c-light-deep);
+}
+
+.mcpp__step-btn--light:hover {
+  background: #e6e6e8;
+}
+
+.mcpp__step-btn--light:active {
+  box-shadow: 0 2px 0 var(--c-light-deep);
+}
+
+.mcpp__step-btn--accent {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+  box-shadow: 0 var(--e-bevel) 0 var(--c-accent-deep);
+}
+
+.mcpp__step-btn--accent:hover {
+  background: var(--c-accent-hover);
+}
+
+.mcpp__step-btn--accent:active {
+  box-shadow: 0 2px 0 var(--c-accent-deep);
+}
+
+/* CLI panel -------------------------------------------------------------- */
+
+.mcpp__cli {
+  padding: var(--s-6);
+}
+
+.mcpp__cli-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  color: var(--c-text-dim);
+  font-size: var(--t-base);
+}
+
+.mcpp__cli-link,
+.mcpp__cli-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--c-text-dim);
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.mcpp__cli-repo {
+  margin-left: var(--s-4);
+  font-weight: 600;
+}
+
+.mcpp__cli-link:hover,
+.mcpp__cli-repo:hover {
+  color: var(--c-text);
+}
+
+.mcpp__cmd {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  border: 1px solid var(--c-hairline);
+  background: #08080a;
+}
+
+.mcpp__cmd-text {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  color: var(--c-text);
+  scrollbar-width: thin;
+}
+
+.mcpp__cmd-caret {
+  margin-right: var(--s-3);
+  color: var(--c-accent);
+  user-select: none;
+}
+
+.mcpp__cmd-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-shrink: 0;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-sm);
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.mcpp__cmd-copy:hover {
+  background: #26262b;
+  color: var(--c-text);
+}
+
+.mcpp__cli-sub {
+  margin-top: var(--s-3);
+  text-align: center;
+  color: var(--c-text-faint);
+  font-size: var(--t-sm);
+}
+
+/* Sections --------------------------------------------------------------- */
+
+.mcpp__section {
+  padding-block: var(--s-9) 0;
+}
+
+.mcpp__h2 {
+  text-align: center;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.mcpp__h2--left {
+  text-align: left;
+}
+
+.mcpp__sub {
+  margin-top: var(--s-3);
+  text-align: center;
+  color: var(--c-text-dim);
+}
+
+/* Workflow demo ---------------------------------------------------------- */
+
+.mcpp__flowtabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin: var(--s-5) auto 0;
+  padding: var(--s-1);
+  width: max-content;
+  max-width: 100%;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+}
+
+.mcpp__flowtab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  color: var(--c-text-dim);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.mcpp__flowtab:hover {
+  color: var(--c-text);
+}
+
+.mcpp__flowtab.is-on {
+  background: #ffffff;
+  color: #000000;
+}
+
+.mcpp__demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.mcpp__chat,
+.mcpp__result {
+  border-radius: var(--r-xl);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+  padding: var(--s-5);
+}
+
+.mcpp__pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding-bottom: var(--s-5);
+  font-weight: 600;
+}
+
+.mcpp__turn {
+  margin-bottom: var(--s-4);
+  color: var(--c-text);
+  line-height: 1.55;
+}
+
+/* The tool call is a card inside the transcript, because that is what it is in
+   the client: a distinct block the assistant handed to another system. */
+.mcpp__call {
+  margin-top: var(--s-5);
+  padding: var(--s-4);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface-2);
+}
+
+.mcpp__call-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-weight: 600;
+  font-size: var(--t-base);
+}
+
+.mcpp__call-mark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.mcpp__call-body {
+  display: flex;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+.mcpp__call-thumbs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  flex-shrink: 0;
+  width: 66px;
+  padding: 3px;
+  border-radius: var(--r-sm);
+  background: #000000;
+  border: 1px solid var(--c-hairline);
+}
+
+.mcpp__call-thumb {
+  aspect-ratio: 9 / 16;
+  border-radius: 3px;
+}
+
+.mcpp__call-prompt {
+  color: var(--c-text-dim);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+}
+
+.mcpp__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-4);
+  list-style: none;
+}
+
+.mcpp__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--c-hairline);
+  color: var(--c-text-dim);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.mcpp__result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+
+/* Skills ----------------------------------------------------------------- */
+
+.mcpp__skills {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--s-5);
+  margin-top: var(--s-6);
+  align-items: start;
+}
+
+.mcpp__cats {
+  position: sticky;
+  top: calc(var(--h-nav) + var(--s-4));
+  padding: var(--s-4);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--c-hairline);
+  background: var(--c-surface);
+}
+
+.mcpp__search {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--c-hairline);
+  color: var(--c-text-faint);
+}
+
+.mcpp__search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: var(--c-text);
+  font: inherit;
+}
+
+.mcpp__search input::placeholder {
+  color: var(--c-text-faint);
+}
+
+.mcpp__catlist {
+  list-style: none;
+  margin-top: var(--s-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mcpp__cat {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  text-align: left;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.mcpp__cat:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mcpp__cat.is-on {
+  background: var(--c-surface-2);
+}
+
+.mcpp__cat-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: var(--r-md);
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+}
+
+.mcpp__cat-icon.is-lead {
+  background: var(--c-accent);
+  color: var(--c-accent-ink);
+}
+
+.mcpp__cat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mcpp__cat-text strong {
+  font-size: var(--t-base);
+  font-weight: 600;
+}
+
+.mcpp__cat-text em {
+  font-style: normal;
+  font-size: var(--t-sm);
+  color: var(--c-text-faint);
+}
+
+.mcpp__skillgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--s-5);
+}
+
+.mcpp__skill-media {
+  position: relative;
+}
+
+/* Burnt-in label on the reference tiles. It sits over the image rather than in
+   the footer because it belongs to the example, not to the skill. */
+.mcpp__skill-overline {
+  position: absolute;
+  left: var(--s-4);
+  bottom: var(--s-4);
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: var(--t-lg);
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+}
+
+.mcpp__skill-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+.mcpp__skill-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  background: var(--c-surface-3);
+  color: var(--c-text-dim);
+}
+
+.mcpp__skill-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mcpp__skill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  flex-shrink: 0;
+  color: var(--c-text-faint);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.mcpp__empty {
+  color: var(--c-text-dim);
+  padding-block: var(--s-6);
+}
+
+/* Model wall ------------------------------------------------------------- */
+
+.mcpp__models {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--s-5);
+  margin-top: var(--s-6);
+}
+
+.mcpp__model-foot {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-7) var(--s-4) var(--s-4);
+  color: #ffffff;
+  font-size: var(--t-md);
+  font-weight: 700;
+  /* The scrim is a gradient rather than a bar so the image keeps reading
+     through it at the top of the label. */
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  pointer-events: none;
+}
+
+/* Close ------------------------------------------------------------------ */
+
+.mcpp__cta {
+  margin-top: var(--s-8);
+  padding: var(--s-8) var(--s-5);
+  text-align: center;
+  border-radius: var(--r-xl);
+  border: 1px solid var(--c-hairline);
+  background:
+    radial-gradient(70% 120% at 50% 0%, rgba(211, 246, 52, 0.14), transparent 70%),
+    var(--c-surface);
+}
+
+.mcpp__cta-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  color: var(--c-accent);
+}
+
+.mcpp__cta-sub {
+  margin-top: var(--s-3);
+  color: var(--c-text-dim);
+}
+
+.mcpp__cta-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-5);
+}
+
+/* Responsive -------------------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .mcpp__skills {
+    grid-template-columns: 1fr;
+  }
+
+  .mcpp__cats {
+    position: static;
+  }
+
+  .mcpp__catlist {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .mcpp__cat {
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .mcpp__cat-text em {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .mcpp__demo,
+  .mcpp__steps {
+    grid-template-columns: 1fr;
+  }
+
+  .mcpp__step + .mcpp__step {
+    border-left: none;
+    border-top: 1px solid var(--c-hairline);
+  }
+
+  .mcpp__clients {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s-2);
+  }
+
+  .mcpp__transport {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .mcpp__fan-tile {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    margin-inline: -8px;
+  }
+
+  .mcpp__fan-tile.is-lead {
+    width: 78px;
+    height: 78px;
+    border-radius: 22px;
+  }
+
+  .mcpp__step,
+  .mcpp__cli {
+    padding: var(--s-5);
+  }
+
+  .mcpp__section {
+    padding-top: var(--s-8);
+  }
+}

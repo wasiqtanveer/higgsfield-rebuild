@@ -8,25 +8,35 @@
  */
 
 :root {
-  /* --- ground & surfaces --------------------------------------------- */
-  --c-bg: #08080a;
-  --c-surface: #0e0e11;
-  --c-surface-2: #16161b;
-  --c-surface-3: #1e1e25;
-  --c-hairline: rgba(255, 255, 255, 0.08);
-  --c-hairline-strong: rgba(255, 255, 255, 0.16);
+  /* --- ground & surfaces ---------------------------------------------
+   * Higgsfield sits on true black, not a soft charcoal. The thumbnails are
+   * full-bleed against it, which is what gives the grids their contrast. */
+  --c-bg: #000000;
+  --c-surface: #0b0b0c;
+  --c-surface-2: #141416;
+  --c-surface-3: #1c1c1f;
+  --c-hairline: rgba(255, 255, 255, 0.09);
+  --c-hairline-strong: rgba(255, 255, 255, 0.18);
 
   /* --- type ----------------------------------------------------------- */
-  --c-text: #f4f4f5;
+  --c-text: #ffffff;
   --c-text-dim: #a1a1aa;
   --c-text-faint: #6b6b76;
 
   /* --- accent ---------------------------------------------------------
-   * One accent, used for primary action and active state only. Restraint
-   * here is deliberate: the thumbnails are the colour in this product. */
-  --c-accent: #e8e6ff;
-  --c-accent-ink: #0a0a0c;
-  --c-focus: #7c6bff;
+   * Acid lime is the brand. It carries primary actions, active nav, and the
+   * display headings -- and nothing else, or it stops reading as an accent.
+   * Magenta is reserved strictly for promotional badges. */
+  --c-accent: #d3f634;
+  --c-accent-hover: #e2ff5c;
+  --c-accent-ink: #000000;
+  /* The under-edge of an extruded control. Buttons on this product are solid
+     objects with a lit top face and a darker side, not flat fills. */
+  --c-accent-deep: #8aa81c;
+  --c-light-deep: #bfbfc6;
+  --e-bevel: 4px;
+  --c-promo: #ff2d78;
+  --c-focus: #d3f634;
   --c-danger: #ff5c5c;
 
   /* --- radii ----------------------------------------------------------- */
@@ -52,6 +62,12 @@
   --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Helvetica, Arial, sans-serif;
   --f-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  /* Display face for section and hero headings. The real product sets these
+     in a heavy condensed grotesk, uppercase, tightly tracked -- Archivo at
+     800 is the closest thing available on Google Fonts. */
+  --f-display: "Archivo", "Inter", system-ui, sans-serif;
+  --ls-display: -0.02em;
 
   --t-xs: 0.75rem;
   --t-sm: 0.8125rem;
@@ -81,14 +97,20 @@
 
   /* --- layout ------------------------------------------------------------ */
   --w-page: 1280px;
+  /* Explore runs wider than the marketing pages -- it is a feed, and capping
+     it at the prose-friendly width wastes half a large display. */
+  --w-page-wide: 1880px;
   --w-prose: 64ch;
-  --h-nav: 60px;
+  --h-nav: 56px;
+  /* The header condenses once the page leaves the top. */
+  --h-nav-condensed: 46px;
   --gutter: var(--s-5);
 }
 
 @media (max-width: 640px) {
   :root {
     --gutter: var(--s-4);
-    --h-nav: 54px;
+    --h-nav: 52px;
+    --h-nav-condensed: 46px;
   }
 }

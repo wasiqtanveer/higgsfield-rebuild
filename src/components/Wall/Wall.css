@@ -1,0 +1,36 @@
+.wall {
+  columns: var(--cols, 5);
+  column-gap: var(--s-3);
+}
+
+.wall > * {
+  /* Both required: `avoid` keeps a tile from splitting across a column break,
+     and the inline-block stops the margin collapsing into the gap. */
+  break-inside: avoid;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: var(--s-3);
+}
+
+@media (max-width: 1400px) {
+  .wall {
+    columns: 4;
+  }
+}
+
+@media (max-width: 1040px) {
+  .wall {
+    columns: 3;
+  }
+}
+
+@media (max-width: 720px) {
+  .wall {
+    columns: 2;
+    column-gap: var(--s-2);
+  }
+
+  .wall > * {
+    margin-bottom: var(--s-2);
+  }
+}
