@@ -4,7 +4,7 @@ A rebuild of [higgsfield.ai](https://higgsfield.ai): the feed, the generation
 flow, the studio, and the surrounding marketing surfaces, built from scratch in
 React + Vite.
 
-**Live:** _(add deployed URL)_
+**Live:** https://higgsfield-rebuild.vercel.app
 
 ## What's in it
 
