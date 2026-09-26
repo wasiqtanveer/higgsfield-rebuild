@@ -552,3 +552,16 @@
     gap: var(--s-3);
   }
 }
+
+/* The auth slot before the session resolves. Reserves the pill's footprint so
+   the header does not jump when the answer arrives. */
+.hdr__authslot {
+  width: 104px;
+  height: var(--h-header);
+}
+
+@media (max-width: 720px) {
+  .hdr__authslot {
+    width: var(--h-header);
+  }
+}

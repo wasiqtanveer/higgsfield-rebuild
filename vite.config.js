@@ -61,6 +61,22 @@ function apiDev() {
           });
         });
 
+        /* Vercel gives handlers a parsed query and cookie jar; Node does not.
+           Both are supplied here so the same handler file runs unchanged in
+           dev and in production -- /api/auth reads cookies, and without this
+           the session would work when deployed and be dead locally. */
+        const parsed = new URL(req.url, "http://localhost");
+        const query = Object.fromEntries(parsed.searchParams);
+        const cookies = Object.fromEntries(
+          (req.headers.cookie || "")
+            .split(";")
+            .filter(Boolean)
+            .map((p) => {
+              const i = p.indexOf("=");
+              return [p.slice(0, i).trim(), decodeURIComponent(p.slice(i + 1))];
+            })
+        );
+
         // The handler contract: status().json(), setHeader().
         res.status = (code) => {
           res.statusCode = code;
@@ -73,7 +89,7 @@ function apiDev() {
         };
 
         try {
-          await handler({ ...req, body, method: req.method }, res);
+          await handler({ ...req, body, query, cookies, method: req.method }, res);
         } catch (err) {
           res.statusCode = 500;
           res.end(JSON.stringify({ error: String(err?.message || err) }));

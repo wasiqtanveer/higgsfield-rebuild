@@ -1,0 +1,224 @@
+/**
+ * The signed-in account circle.
+ *
+ * Sized to --h-header so swapping it in for the auth pill does not change the
+ * header's height or shift the nav beside it.
+ *
+ * The circle arrives with a scale-in rather than a fade. Signing in is the one
+ * moment on this product where the chrome changes what it says about you, and a
+ * control that pops into place marks that; a cross-fade would hide it.
+ */
+
+.usermenu {
+  position: relative;
+}
+
+.usermenu__circle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--h-header);
+  height: var(--h-header);
+  border-radius: var(--r-pill);
+  background: var(--c-glass);
+  border: 1px solid var(--c-line);
+  /* Lit top edge, matching the pill it replaced. */
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-1);
+  backdrop-filter: blur(12px) saturate(140%);
+  transition: transform var(--d-base) var(--e-out),
+    border-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+  animation: usermenu-land var(--d-slow) var(--e-out) both;
+}
+
+@keyframes usermenu-land {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.usermenu__circle:hover {
+  border-color: var(--c-line-strong);
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-2);
+}
+
+.usermenu.is-open .usermenu__circle {
+  border-color: var(--c-accent-wash-strong);
+}
+
+/* --- the credit ring --- */
+.usermenu__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* Starts at twelve o'clock and runs clockwise; the default zero is at three. */
+  transform: rotate(-90deg);
+}
+
+.usermenu__ring-track,
+.usermenu__ring-fill {
+  fill: none;
+  stroke-width: 1.6;
+}
+
+.usermenu__ring-track {
+  stroke: var(--c-line);
+}
+
+.usermenu__ring-fill {
+  stroke: var(--c-accent);
+  stroke-linecap: round;
+  /* The balance counts up from empty on mount, then transitions on spend. */
+  transition: stroke-dashoffset var(--d-slower) var(--e-out);
+}
+
+.usermenu__initials {
+  font-family: var(--f-display);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--c-text);
+  /* Optical centring: two caps sit visually low inside a ring. */
+  transform: translateY(-0.5px);
+}
+
+/* --- the panel --- */
+.usermenu__panel {
+  position: absolute;
+  top: calc(100% + var(--s-2));
+  right: 0;
+  z-index: 60;
+  width: 17rem;
+  padding: var(--s-2);
+  border-radius: var(--r-lg);
+  background: var(--c-glass);
+  border: 1px solid var(--c-line);
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-3);
+  backdrop-filter: blur(20px) saturate(140%);
+  /* Grows from the top-right, which is where the circle that opened it is. */
+  transform-origin: top right;
+  animation: usermenu-open var(--d-base) var(--e-out) both;
+}
+
+@keyframes usermenu-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+}
+
+.usermenu__id {
+  display: grid;
+  gap: 2px;
+  padding: var(--s-3) var(--s-3) var(--s-2);
+}
+
+.usermenu__id-name {
+  font-family: var(--f-display);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.usermenu__id-mail {
+  /* The address is authored text, so it is set in mono like every other piece
+     of authored text on this product. */
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  /* A long address should not widen the panel. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usermenu__credits {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin: var(--s-2) var(--s-1) var(--s-3);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--c-accent-wash);
+  border: 1px solid var(--c-accent-wash-strong);
+}
+
+.usermenu__credits-n {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  /* The lightened cut: the flat accent under 4.5:1 as type on this ground. */
+  color: var(--c-accent-text);
+}
+
+.usermenu__credits-label {
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--c-text-2);
+}
+
+.usermenu__items {
+  display: grid;
+  gap: 1px;
+}
+
+.usermenu__item {
+  display: grid;
+  gap: 1px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.usermenu__item:hover {
+  background: var(--c-surface-2);
+}
+
+.usermenu__item-label {
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.usermenu__item-note {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.usermenu__out {
+  width: 100%;
+  margin-top: var(--s-2);
+  padding: var(--s-3);
+  border-radius: var(--r-sm);
+  border-top: 1px solid var(--c-line);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  text-align: left;
+  color: var(--c-text-2);
+  background: transparent;
+  transition: color var(--d-fast) var(--e-standard),
+    background var(--d-fast) var(--e-standard);
+}
+
+.usermenu__out:hover {
+  /* Logging out is destructive enough to name itself on hover, not at rest --
+     a permanently red row in a menu reads as an error state. */
+  color: var(--c-danger);
+  background: var(--c-danger-wash);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usermenu__circle,
+  .usermenu__panel {
+    animation-duration: 1ms;
+  }
+
+  .usermenu__ring-fill {
+    transition: none;
+  }
+}

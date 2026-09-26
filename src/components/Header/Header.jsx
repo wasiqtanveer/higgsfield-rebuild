@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth, useAuthStatus } from "../../lib/auth.js";
+import UserMenu from "../UserMenu/UserMenu.jsx";
 import "./Header.css";
 
 /**
@@ -21,7 +23,8 @@ import "./Header.css";
  *
  * 4. Auth is a separate pill. Sign-in is not a navigation item — it is the one
  *    thing up here that changes what you are, so it does not belong in the same
- *    container as the destinations.
+ *    container as the destinations. Once signed in that slot becomes the account
+ *    circle: same footprint, so the header does not reflow on sign-in.
  */
 
 const PRIMARY = [
@@ -236,6 +239,8 @@ function AuthPill({ onAuth }) {
 export default function Header({ onAuth = () => {} }) {
   const { pathname } = useLocation();
   const { progress, condensed } = useScrollProgress();
+  const user = useAuth();
+  const authStatus = useAuthStatus();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef(null);
 
@@ -365,7 +370,16 @@ export default function Header({ onAuth = () => {} }) {
         </div>
       </nav>
 
-      <AuthPill onAuth={onAuth} />
+      {/* Until the server answers, neither control is drawn. Flashing the
+          signed-out pill at someone who is signed in is worse than a blank
+          slot for a moment, and the slot holds its width either way. */}
+      {authStatus !== "ready" ? (
+        <div className="hdr__authslot" aria-hidden="true" />
+      ) : user ? (
+        <UserMenu user={user} />
+      ) : (
+        <AuthPill onAuth={onAuth} />
+      )}
     </header>
   );
 }

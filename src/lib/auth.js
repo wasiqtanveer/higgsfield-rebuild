@@ -1,47 +1,24 @@
 /**
- * Local auth store.
+ * Auth client.
  *
- * There is no server in this build, so "signed in" is a record in
- * localStorage. It is kept here rather than in a component's state for three
- * reasons: the nav, the profile menu and the studio all need to read it; it has
- * to survive a reload, because being logged out by a refresh is the one thing
- * no real product does; and two tabs of the same app should not disagree about
- * who is signed in.
+ * The session lives in an httpOnly cookie that this file cannot read. That is
+ * deliberate: a token in localStorage is readable by every script on the page,
+ * and this module used to keep the whole user there. Now the browser holds no
+ * credential at all — it holds a *copy* of what the server last said about the
+ * user, and the server is the only thing that can answer who that is.
  *
- * Exposed as an external store rather than context -- useSyncExternalStore
- * gives every subscriber the same snapshot without wrapping the tree in a
- * provider, and it is what keeps the cross-tab `storage` event honest.
+ * Still an external store rather than context, for the reasons it always was:
+ * the nav, the account menu and the studio all read it, and useSyncExternalStore
+ * hands every subscriber the same snapshot without wrapping the tree.
+ *
+ * What changed is where the truth is. `current` is a cache; /api/auth is the
+ * record.
  */
 
 import { useSyncExternalStore } from "react";
 
-const KEY = "hf.auth";
-const STARTING_CREDITS = 250;
-
-/* Every read and write is guarded. Private windows and blocked site data both
-   throw on access, and an app that will not render because storage is
-   unavailable is worse than one that forgets who you are. */
-function read() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return null;
-    const user = JSON.parse(raw);
-    return user && typeof user.email === "string" ? user : null;
-  } catch {
-    return null;
-  }
-}
-
-function write(user) {
-  try {
-    if (user) localStorage.setItem(KEY, JSON.stringify(user));
-    else localStorage.removeItem(KEY);
-  } catch {
-    /* ignore -- the session still works, it just will not outlive the tab */
-  }
-}
-
-let current = read();
+let current = null;
+let status = "idle"; // idle -> loading -> ready
 const listeners = new Set();
 
 function emit() {
@@ -53,78 +30,106 @@ function subscribe(fn) {
   return () => listeners.delete(fn);
 }
 
-/* A sign-in in one tab is a sign-in in all of them. The storage event fires
-   only in the *other* tabs, which is exactly what is wanted here. */
-if (typeof window !== "undefined") {
-  window.addEventListener("storage", (e) => {
-    if (e.key !== KEY) return;
-    current = read();
-    emit();
-  });
-}
-
-/** Derives the display fields a server would normally return. */
-function profile(email, provider) {
-  const handle = email.split("@")[0].replace(/[._-]+/g, " ").trim();
-  const name = handle
-    .split(" ")
-    .filter(Boolean)
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join(" ");
-
-  return {
-    email,
-    provider,
-    name: name || "Creator",
-    handle: "@" + email.split("@")[0].toLowerCase().replace(/[^a-z0-9._-]/g, ""),
-    initials: (name || "C")
-      .split(" ")
-      .slice(0, 2)
-      .map((w) => w[0].toUpperCase())
-      .join(""),
-    credits: STARTING_CREDITS,
-    since: new Date().toISOString(),
-  };
-}
-
-/* Providers hand back an address in real life, so they do here too -- a
-   signed-in state with no identity behind it has nothing to show the user. */
-const PLACEHOLDER = {
-  google: "creator@gmail.com",
-  apple: "creator@icloud.com",
-  microsoft: "creator@outlook.com",
-  business: "you@studio.com",
-  email: "you@studio.com",
-};
-
-export function signIn({ provider = "email", email } = {}) {
-  const address = (email || PLACEHOLDER[provider] || PLACEHOLDER.email).trim();
-  current = profile(address, provider);
-  write(current);
+function setUser(user) {
+  current = user ?? null;
+  status = "ready";
   emit();
+}
+
+/* --- the wire ------------------------------------------------------------- */
+
+async function post(payload) {
+  const r = await fetch("/api/auth", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    // The cookie is the session, so it has to ride along. Same-origin is the
+    // default in modern browsers, but stating it means a future move to a
+    // separate API origin fails loudly rather than silently signing everyone
+    // out.
+    credentials: "same-origin",
+    body: JSON.stringify(payload),
+  });
+
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(body.error || `Request failed (${r.status})`);
+  return body;
+}
+
+/**
+ * Ask the server who we are.
+ *
+ * Called once on boot. Until it answers, `status` is "loading" and the header
+ * shows neither the pill nor the circle — flashing the signed-out state at
+ * someone who is signed in is worse than showing nothing for 200ms.
+ */
+export async function loadSession() {
+  if (status !== "idle") return current;
+  status = "loading";
+  emit();
+
+  try {
+    const r = await fetch("/api/auth", { credentials: "same-origin" });
+    const body = await r.json().catch(() => ({}));
+    setUser(body.user ?? null);
+  } catch {
+    // Offline, or /api not running. Signed out is the safe reading: it shows
+    // the door rather than a menu whose every action would fail.
+    setUser(null);
+  }
   return current;
 }
 
-export function signOut() {
-  current = null;
-  write(null);
-  emit();
+export async function signUp({ email, password, name }) {
+  const body = await post({ action: "signup", email, password, name });
+  // A project with email confirmation on returns no user: the account exists
+  // but is not usable yet, and the caller has to say so.
+  if (body.user) setUser(body.user);
+  return body;
 }
 
-/** Spend or refund credits. Returns false when the balance cannot cover it. */
-export function spendCredits(n) {
-  if (!current || n > current.credits) return false;
-  current = { ...current, credits: current.credits - n };
-  write(current);
-  emit();
-  return true;
+export async function signIn({ email, password }) {
+  const body = await post({ action: "login", email, password });
+  setUser(body.user ?? null);
+  return body;
+}
+
+export async function signOut() {
+  try {
+    await post({ action: "logout" });
+  } finally {
+    // Cleared regardless. A failed logout request must not leave the UI
+    // insisting the user is still signed in.
+    setUser(null);
+  }
+}
+
+/**
+ * Re-read the balance from the server.
+ *
+ * Credits are a derived sum on Postgres, so the client cannot compute a new one
+ * after a spend — it has to ask. Called after anything that costs credits.
+ */
+export async function refreshUser() {
+  try {
+    const r = await fetch("/api/auth", { credentials: "same-origin" });
+    const body = await r.json().catch(() => ({}));
+    setUser(body.user ?? null);
+  } catch {
+    /* leave the cached user in place; a failed refresh is not a sign-out */
+  }
+  return current;
 }
 
 export function getUser() {
   return current;
 }
 
-/** The hook every component should use. Null means signed out. */
+/** Null means signed out — but check `useAuthStatus` before drawing on that. */
 export function useAuth() {
   return useSyncExternalStore(subscribe, () => current, () => null);
+}
+
+/** "idle" | "loading" | "ready". Lets the header hold still until we know. */
+export function useAuthStatus() {
+  return useSyncExternalStore(subscribe, () => status, () => "loading");
 }

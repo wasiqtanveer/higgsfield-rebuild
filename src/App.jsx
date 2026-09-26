@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header/Header.jsx";
+import AuthModal from "./components/AuthModal/AuthModal.jsx";
+import { loadSession } from "./lib/auth.js";
 import Home from "./pages/Home/Home.jsx";
 import Credits from "./pages/Credits/Credits.jsx";
 import GraftMcp from "./pages/Mcp/Graft.jsx";
@@ -19,12 +22,24 @@ import Soon from "./pages/Soon/Soon.jsx";
  * what made the old clone's pages keep surfacing under the new nav.
  */
 export default function App() {
+  /* The dialog lives here rather than in the header: it is a page-level overlay,
+     and mounting it inside a floating pill would trap it under that pill's
+     stacking context. `null` means closed; otherwise it carries which door was
+     used, so the copy matches. */
+  const [authMode, setAuthMode] = useState(null);
+
+  /* The session is an httpOnly cookie the client cannot read, so who we are is
+     a question only the server can answer. Asked once, on boot. */
+  useEffect(() => {
+    loadSession();
+  }, []);
+
   return (
     <>
       <a className="sr-only" href="#main">
         Skip to content
       </a>
-      <Header />
+      <Header onAuth={setAuthMode} />
       <main id="main">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -52,6 +67,10 @@ export default function App() {
           <Route path="*" element={<Soon />} />
         </Routes>
       </main>
+
+      {authMode && (
+        <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
+      )}
     </>
   );
 }

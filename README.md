@@ -70,6 +70,8 @@ Yes, and it is checkable rather than claimed.
 | `POST /api/generate` | Text to image. Stateless — stores nothing. The try-it path, so experiments do not fill the feed with drafts nobody chose to publish. |
 | `POST /api/fork` | **The product.** Generates, stores the row, and records `parent_id`. Returns the generation plus its lineage, root first. |
 | `GET /api/feed` | Recent generations, newest first. |
+| `POST /api/auth` | `signup`, `login`, `logout`. Sets the session cookie. |
+| `GET /api/auth` | The current user and credit balance, or `{ user: null }`. |
 
 Hand-written route handlers on Vercel. Supabase is reached over its REST API
 with plain `fetch` — `@supabase/supabase-js` is a few hundred kilobytes to do
@@ -92,9 +94,36 @@ generations (
 not destroy them. Someone else's fork is their work, and a cascade would let one
 deletion take a whole subtree of other people's prompts with it.
 
+Two more tables carry accounts (`db/auth.sql`):
+
+```sql
+profiles (id → auth.users(id), email, name, handle, created_at)
+credit_ledger (id, user_id → auth.users(id), delta, reason, generation_id, created_at)
+```
+
+The ledger is **append-only** and a balance is `sum(delta)`, never a stored
+column: a cached balance is a second source of truth that can disagree with its
+own entries, and it throws away the reason a balance moved. The 250-credit
+signup grant is written by a trigger on `auth.users` rather than by the API, so
+the grant is tied to the account existing.
+
 Row-level security is on with no policy for the anon key, so the browser cannot
 reach the table even if that key leaks. Reads are public because the whole claim
-is that prompts are public and forkable; writes stay server-side.
+is that prompts are public and forkable; writes stay server-side. `credit_ledger`
+has no public policy at all — a ledger is nobody's business but its owner's.
+
+### Auth
+
+Supabase Auth, reached server-side over the GoTrue REST API with plain `fetch`,
+the same way `db.js` reaches Postgres. The browser never holds a token: the
+access and refresh tokens are **httpOnly cookies**, so no script on the page can
+read the session, and `src/lib/auth.js` holds only a cached copy of what the
+server last said about the user.
+
+That is why there is no `@supabase/supabase-js` and no `VITE_SUPABASE_ANON_KEY`.
+A React app calling `supabase.auth` directly would put the session in
+localStorage and make the browser a BaaS client, which is the pattern this
+backend exists to avoid.
 
 ---
 
@@ -102,16 +131,17 @@ is that prompts are public and forkable; writes stay server-side.
 
 The parts a reviewer would reasonably expect that are **not** done:
 
-- **There is no real auth.** `src/lib/auth.js` is a localStorage shim left from
-  the clone, and it shows a **fabricated 250-credit balance** in the header
-  after sign-up. Nothing server-side reads it and no route is actually gated.
-  It contradicts `/credits`, which correctly says balances are not connected
-  yet. It should be removed or built properly; it is documented here rather than
-  quietly left for someone to find.
-- **No credit ledger.** `/credits` describes append-only accounting with derived
-  balances. That is the design and the rules are specified, but the table does
-  not exist, so nothing is metered. The page describes intent; it does not
-  report a balance it cannot compute.
+- **Third-party sign-in is not enabled.** Google, Apple and Microsoft are not
+  configured on the Supabase project, so the dialog offers email and password
+  only and says so. Enabling them is dashboard work plus redirect URLs, not
+  code.
+- **Signup requires email confirmation.** The project has `mailer_autoconfirm`
+  off, so a new account is created but cannot be used until the emailed link is
+  clicked. The dialog reports that state rather than pretending the user is
+  signed in.
+- **Credits are granted but not yet spent.** The ledger is real and the signup
+  grant is real, but `/api/fork` does not debit it yet, so the balance in the
+  header only ever moves on signup.
 - **`/explore`, `/lineage`, `/library`, `/models`** are honest placeholder
   pages. Forking works, but today only the person who ran it sees the chain —
   the feed that would make lineage public is designed, not built.
@@ -146,7 +176,14 @@ SUPABASE_SERVICE_ROLE_KEY   # secret; server-side only
 
 None carry Vite's `VITE_` prefix, deliberately: anything so named is inlined
 into the browser bundle, which would hand every visitor write access to the
-database. Run `db/schema.sql` in the Supabase SQL editor once.
+database.
+
+Run both SQL files in the Supabase SQL editor once, in order:
+
+```
+db/schema.sql   # generations
+db/auth.sql     # profiles, credit_ledger, the signup-grant trigger
+```
 
 Without Cloudflare credentials the keyless fallback still answers, so the app
 runs. Without Supabase, generation works and nothing is stored.
