@@ -1,1 +1,6 @@
-/*    /index.html   200
+# API routes are serverless functions, not the SPA. This must come first:
+# a bare /* would send every /api/ request to index.html and every endpoint
+# would answer with HTML. Netlify matches rules in order.
+/api/*  /api/:splat  200
+
+/*      /index.html   200
