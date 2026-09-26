@@ -6,7 +6,7 @@ import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
 import App from "../src/App.jsx";
 
-const ROUTES = ["/", "/explore", "/landing", "/create", "/video", "/audio", "/mcp", "/pricing", "/nope-404"];
+const ROUTES = ["/", "/credits", "/mcp", "/create", "/explore", "/lineage", "/library", "/models", "/about", "/nope-404"];
 let fail = 0;
 for (const r of ROUTES) {
   try {

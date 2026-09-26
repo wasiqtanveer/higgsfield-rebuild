@@ -70,7 +70,7 @@ const MENU = [
     items: [
       { to: "/models", label: "Models", note: "What you can generate with" },
       { to: "/credits", label: "Credits", note: "Your balance and ledger" },
-      { to: "/api", label: "API & MCP", note: "Drive Graft from your own tools" },
+      { to: "/mcp", label: "API & MCP", note: "Drive Graft from your own tools" },
       { label: "Academy", note: "How to write a prompt worth forking", soon: true },
       { to: "/about", label: "About", note: "What this is and what it isn't" },
     ],

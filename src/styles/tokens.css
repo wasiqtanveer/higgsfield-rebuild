@@ -160,19 +160,6 @@
   --h-header: 50px;
   --gutter: var(--s-6);
 
-  /* --- legacy aliases ---------------------------------------------------
-   * The routes still on the previous design system reference these names. They
-   * are mapped forward so those pages stay viewable during the migration, and
-   * this block is deleted with the last of them. */
-  --c-hairline: var(--c-line);
-  --c-hairline-strong: var(--c-line-strong);
-  --c-text-dim: var(--c-text-2);
-  --c-text-faint: var(--c-text-3);
-  --c-accent-ink: var(--c-text-on-accent);
-  --c-accent-deep: #c23d08;
-  --c-light-deep: #5a6072;
-  --c-promo: #ff2d78;
-  --e-bevel: 3px;
 }
 
 @media (max-width: 720px) {
