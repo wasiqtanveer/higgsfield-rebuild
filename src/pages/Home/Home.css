@@ -1,0 +1,83 @@
+/**
+ * The page's own layer: the running order and "you are here". Each section owns
+ * its composition; this file only says where one ends and which one you are in.
+ *
+ * The placeholder slots this file used to style are gone — all four sections are
+ * built, and with them went the 44%-opacity dimming that held the page's shape
+ * while they were named boxes. Dimming a built section to under half strength
+ * means asking someone to read a prompt through a veil, which is a worse offence
+ * than a page where every band is legible at once.
+ *
+ * What survives is the cheaper half of the same idea: the band you are in gets a
+ * lamp and a lit rail, and the ones you are not in simply do not. Attention goes
+ * where the light is, and nothing is ever hidden.
+ */
+
+.home-band {
+  position: relative;
+  padding-block: var(--s-9);
+  transition: background-color var(--d-slow) var(--e-out);
+}
+
+/* Two of the four sections bring their own vertical rhythm, because they were
+   built to stand alone. Where one does, the band must not add a second helping:
+   --s-9 on top of a section that already claims its own rhythm (or, for the
+   closing call, a full 100svh) is 192px of nothing between the rail lighting up
+   and the heading it belongs to. The band still owns the lamp and the rail; the
+   section owns its padding. Only the feed relies on the band for it. */
+.home-band:has(> .fd),
+.home-band:has(> .ms),
+.home-band:has(> .cc) {
+  padding-block: 0;
+}
+
+/* The header is a floating pill that content scrolls under. That is right
+   mid-scroll — the pill is glass and the work passing beneath it is the point —
+   but a section arrived at by anchor must not land with its heading behind it. */
+.home-band,
+.home-band > [id] {
+  scroll-margin-top: calc(var(--h-header) + var(--s-6));
+}
+
+.home-band.is-focus {
+  /* A barely-there accent wash, not a panel. It tints the ground the way a lamp
+     would rather than drawing a box around the content. */
+  background: radial-gradient(
+    120% 60% at 50% 0%,
+    var(--c-accent-wash) 0%,
+    transparent 70%
+  );
+}
+
+/* The marker rail. A hairline down the left of every band that fills with accent
+   for the one in focus — the same idea as the header's progress ring, so the two
+   read as one system. */
+.home-band::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--c-line);
+  transition: background-color var(--d-slow) var(--e-out);
+}
+
+.home-band.is-focus::before {
+  background: var(--c-accent);
+  box-shadow: 0 0 18px var(--c-accent-glow);
+}
+
+/* The closing band is the end of the argument and runs straight into the foot,
+   so it carries no lamp of its own: two warm pools stacked with only a hairline
+   between them reads as a gradient down the page rather than as a section you
+   are in. */
+.home-band:last-of-type.is-focus {
+  background: none;
+}
+
+@media (max-width: 720px) {
+  .home-band {
+    padding-block: var(--s-8);
+  }
+}

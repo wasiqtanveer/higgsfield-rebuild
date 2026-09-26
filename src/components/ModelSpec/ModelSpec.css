@@ -1,0 +1,647 @@
+/**
+ * ModelSpec — #models.
+ *
+ * Read as the back panel of an instrument: a channel bank down the left, a
+ * readout to its right, one prompt held constant above both. Everything that
+ * varies between models is set as data in mono with tabular figures, so the
+ * four channels can be compared by eye down a column.
+ *
+ * Colour budget for this section is TWO things, per the accent rule: the lit
+ * channel rail on the selected tab, and the step ladder's lit run. The axis
+ * meters, the spec values and the prose are all monochrome on purpose — the
+ * moment the meters also go orange, the ladder stops being the headline and the
+ * panel reads as a dashboard rather than a comparison.
+ *
+ * Class prefix `ms-` is unique to this component. Legacy clone CSS in this repo
+ * has already collided twice; do not shorten it.
+ */
+
+/* The page band around this section contributes no padding of its own, so this
+   is the section's entire vertical breathing room. --s-9 (96px) top and bottom
+   was 192px of a 900px budget and was the single largest line item in the
+   measurement; --s-7 holds the separation from the neighbouring sections while
+   giving the panel back the room it actually needed. */
+.ms {
+  position: relative;
+  padding-block: var(--s-7);
+  background: var(--c-bg);
+  overflow: hidden;
+}
+
+/* A single cool pool behind the panel, top-left. Depth on this ground comes
+   from light, so the panel needs something to be lighter *than* — without it a
+   --c-surface card on --c-bg reads as a flat grey rectangle. Deliberately not
+   the accent: two orange blooms in one section spends the whole budget on
+   atmosphere. */
+.ms__grain {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background:
+    radial-gradient(
+      70ch 40ch at 18% 8%,
+      rgba(255, 255, 255, 0.045),
+      transparent 70%
+    ),
+    radial-gradient(
+      50ch 34ch at 88% 92%,
+      rgba(255, 92, 26, 0.05),
+      transparent 72%
+    );
+  pointer-events: none;
+}
+
+.ms__inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- head ---------------------------------------------------------------- */
+.ms-head {
+  max-width: 62ch;
+}
+
+.ms-head__kicker {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+
+/* The section number in mono. A counter rather than an eyebrow — it tells you
+   where you are in the page, which a word alone does not. */
+.ms-head__num {
+  font-family: var(--f-mono);
+  color: var(--c-accent-text);
+  letter-spacing: 0;
+}
+
+.ms-title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: var(--t-display-sm);
+  line-height: 1.02;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-4);
+}
+
+/* One word per headline in italic serif, matching the hero's rule. */
+.ms-title em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  /* The serif italic sits optically small beside a 700 geometric sans, so it is
+     set a step larger to match by eye rather than by number. */
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+  /* No accent here. The italic serif is the emphasis; the accent is
+     rationed to the primary action and the lineage thread, and a decorative
+     headline word is neither. */
+}
+
+/* Measure is capped tighter than the head's own 62ch so this sets in two lines
+   rather than three at desktop width — the third line was 26px of a budget the
+   section was overrunning, and the sentence did not need it. */
+.ms-head__lede {
+  max-width: 54ch;
+  font-size: var(--t-base);
+  line-height: 1.55;
+  color: var(--c-text-2);
+}
+
+/* --- the held-constant prompt -------------------------------------------- */
+/* Sits between the head and the bank, spanning the full width, so it reads as
+   the input to everything below rather than as a caption on the heading. */
+.ms-const {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-3) var(--s-4);
+  margin-top: var(--s-5);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-md);
+  background: var(--c-bg-2);
+}
+
+.ms-const__tag {
+  flex: none;
+  color: var(--c-text-2);
+}
+
+.ms-const__prompt {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  min-width: 0;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+
+.ms-const__sigil {
+  flex: none;
+  color: var(--c-accent);
+}
+
+/* --- the bank ------------------------------------------------------------ */
+.ms-bank {
+  display: grid;
+  /* Channel bank fixed-ish, readout takes the rest. The bank is not 1fr because
+     its widest label sets its width; letting it flex makes the four tabs jump
+     width between breakpoints for no reason. */
+  grid-template-columns: minmax(13rem, 17rem) minmax(0, 1fr);
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+}
+
+.ms-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/* A channel, not a card. Left-aligned, full-width, stacked — so the four read
+   as positions on one selector rather than as four objects to compare. */
+.ms-tab {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0 var(--s-2);
+  padding: var(--s-3) var(--s-4) var(--s-3) var(--s-5);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: var(--c-bg-2);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.ms-tab:hover {
+  background: var(--c-surface);
+}
+
+.ms-tab[aria-selected="true"] {
+  background: var(--c-surface);
+  border-color: var(--c-line);
+  border-top-color: var(--c-line-lit);
+}
+
+/* The lit rail. One of this section's two accent uses, and it is the selection
+   itself — it slides between channels via layoutId, which is what makes the
+   selector feel thrown rather than re-rendered. */
+.ms-tab__rail {
+  position: absolute;
+  left: 0;
+  top: var(--s-2);
+  bottom: var(--s-2);
+  width: 2px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  box-shadow: 0 0 12px var(--c-accent-glow);
+}
+
+.ms-tab__name {
+  font-family: var(--f-display);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text-2);
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.ms-tab[aria-selected="true"] .ms-tab__name,
+.ms-tab:hover .ms-tab__name {
+  color: var(--c-text);
+}
+
+/* The model's variant string. Mono because it is an identifier, and on its own
+   line because it is the part that distinguishes schnell from dev. */
+.ms-tab__variant {
+  grid-column: 1;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+.ms-tab__default {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 2px var(--s-2);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+/* --- the readout -------------------------------------------------------- */
+.ms-read {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--sh-2);
+}
+
+/* The panel takes focus programmatically as a tabpanel; it is not a control, so
+   it gets no ring of its own — the ring belongs on the tab you are operating. */
+.ms-read:focus {
+  outline: none;
+}
+
+/* --- row 1: steps ------------------------------------------------------- */
+.ms-read__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.ms-steps__figure {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+.ms-steps__num {
+  font-family: var(--f-display);
+  /* The largest figure in the section by a wide margin: the step count is the
+     headline difference between these four models, so it is set as a headline. */
+  /* Off the ramp on purpose: this is a display figure, not body type, and the
+     ramp's display step is sized for headlines of words rather than one glyph. */
+  font-size: clamp(2.75rem, 6vw, 4rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: var(--ls-display);
+  color: var(--c-text);
+}
+
+.ms-steps__unit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text-2);
+}
+
+/* States the ruler the ladder is drawn on, so 4 lit ticks out of 30 is not
+   mistaken for a percentage or a score. */
+.ms-steps__scale {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+.ms-ladder {
+  display: flex;
+  align-items: flex-end;
+  /* Ticks flex to fill so the ruler is always exactly the panel's width; the
+     gap is fixed so the marks stay reading as discrete counts, not a bar. */
+  gap: 3px;
+  height: 2.25rem;
+}
+
+.ms-ladder__tick {
+  flex: 1;
+  min-width: 2px;
+  height: 100%;
+  transform-origin: bottom;
+  /* Not a corner radius: 1px on a 2px-wide tick softens its end so a column of
+     thirty does not read as a row of hard bars. */
+  border-radius: 1px;
+  background: var(--c-text-3);
+}
+
+/* The lit run. The section's second and last accent use. */
+.ms-ladder__tick.is-lit {
+  background: var(--c-accent);
+  box-shadow: 0 0 10px -2px var(--c-accent-glow);
+}
+
+/* --- row 2: axes -------------------------------------------------------- */
+.ms-read__axes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--c-line);
+}
+
+/* Label and meter share a baseline row with the meter taking the slack, and the
+   hint sits under both. Stacked in three rows this cost 214px at phone width
+   for three ordinals; as a row it reads the same and costs a third of that. */
+.ms-axis {
+  display: grid;
+  grid-template-columns: auto minmax(2.5rem, 1fr);
+  align-items: center;
+  gap: var(--s-1) var(--s-3);
+  min-width: 0;
+}
+
+.ms-axis__label {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.ms-axis__meter {
+  display: flex;
+  gap: 3px;
+}
+
+/* Three segments, monochrome. Deliberately NOT the accent: these are ordinals,
+   and lighting them orange would rank them as importantly as the step count. */
+.ms-axis__seg {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--c-text-2);
+}
+
+.ms-axis__seg.is-on {
+  background: var(--c-text);
+}
+
+.ms-axis__hint {
+  /* Spans back under the label so it reads as a note on the whole axis rather
+     than as a caption on the meter alone. */
+  grid-column: 1 / -1;
+  font-size: var(--t-xs);
+  line-height: 1.4;
+  color: var(--c-text-2);
+  text-wrap: pretty;
+}
+
+/* --- row 3: hard spec --------------------------------------------------- */
+/* Two columns of term/value pairs. Mono values with tabular figures so the
+   numbers line up down the column when you switch channel — a value that
+   shifts sideways as it changes reads as a glitch. */
+/* Three columns, so the six rows land as two lines rather than three. At two
+   columns this block was 113px on desktop and 227px on mobile for six short
+   term/value pairs, which is more height than the hard spec is worth relative
+   to the ladder above it. */
+.ms-spec {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Two fixed rows rather than auto.
+     WHY THIS IS NOT `auto`: the values differ in length between models —
+     "CreativeML Open RAIL++-M" wraps where "Apache 2.0" does not — so with auto
+     rows the whole section changed height depending on which channel was
+     selected, measuring 898px on FLUX and 917px on SD3. A panel that resizes
+     when you turn a dial is both over the one-viewport budget in its worst
+     state and wrong as an object: the chassis should not move. The row height
+     reserves the two-line case, which is the tallest any value here needs. */
+  /* 3.5rem is measured, not chosen: term line box (19.2px) + 2px gap + value
+     line box (17.55px) + 16px row padding = 55px, so anything under 3.44rem
+     slices the value's descenders against the row's own overflow. If the type
+     steps here change, re-measure rather than nudging this. */
+  grid-template-rows: repeat(2, 3.5rem);
+  gap: 0 var(--s-5);
+  margin: 0;
+}
+
+/* Term over value rather than side by side: at three columns the longer values
+   ("Multimodal diffusion transformer", "CreativeML Open RAIL++-M") wrapped to
+   three lines when they had to share a line with their term, which made the
+   narrower grid taller than the wider one it replaced. */
+.ms-spec__row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-block: var(--s-2);
+  border-bottom: 1px dotted var(--c-line);
+}
+
+.ms-spec dt {
+  flex: none;
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.ms-spec dd {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  color: var(--c-text);
+  /* One line, ellipsised.
+     The rows above are a fixed height so the panel does not resize between
+     models, which means a value must not be free to wrap: two lines spilled
+     across the dotted rule into the row below, and clamping to two inside a
+     row only tall enough for one sliced the descenders. Every value in the
+     data file is short enough to fit — the `arch` strings were shortened for
+     exactly this reason — so this is the safety net for the next one somebody
+     adds. `title` carries the full string for the truncated case rather than
+     losing it. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ms-spec__dim {
+  color: var(--c-text-2);
+}
+
+/* --- row 4: the verdict ------------------------------------------------- */
+/* The two verdict lines side by side. They were stacked in a column beside a
+   paragraph; the paragraph is gone (see the JSX note) and the pair reads better
+   as two columns anyway — "reach for it" and "watch for" are a contrast, and a
+   contrast wants to be adjacent rather than sequential. */
+.ms-read__prose {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+  align-items: start;
+  /* Reserved for the same reason as the spec grid above: the verdict lines
+     differ in length between models, and letting this row size to its content
+     made the section grow by 19px on the one model with a longer caveat. This
+     is the measured tallest of the four (SD3's licence caveat wraps to three
+     lines), not a round number — over-reserving here costs the budget directly. */
+  min-height: 3.85rem;
+}
+
+.ms-verdict__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding-left: var(--s-3);
+  /* A quiet left rule instead of a box: two more bordered panels inside an
+     already-bordered panel is the third nesting level, and the ground only has
+     four steps of light to spend. */
+  border-left: 1px solid var(--c-line-strong);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--c-text-2);
+}
+
+.ms-verdict__item--for {
+  /* Not the accent. A coloured side stripe here is a second lineage
+     thread on an element that carries no lineage. */
+  border-left-color: var(--c-line-strong);
+  color: var(--c-text);
+}
+
+/* --- foot --------------------------------------------------------------- */
+.ms-foot {
+  margin-top: var(--s-4);
+}
+
+/* No measure cap: this is a provenance footnote, not prose to be read in a
+   column, and at 88ch it wrapped to two lines for the sake of a rule it did not
+   need. Full width lets it sit as the single line it is. */
+.ms-foot__note {
+  font-size: var(--t-xs);
+  line-height: 1.55;
+  color: var(--c-text-2);
+}
+
+/* --- adaptation --------------------------------------------------------- */
+@media (max-width: 1080px) {
+  .ms-spec {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .ms-bank {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The bank goes horizontal and scrolls rather than stacking four full-width
+     rows above the readout — stacked, the readout starts below the fold and the
+     section stops being one viewport, which is the constraint it is built to. */
+  .ms-tabs {
+    flex-direction: row;
+    gap: var(--s-2);
+    overflow-x: auto;
+    /* Room for the rail, which sits on the tab's left edge. */
+    padding-left: 2px;
+    scrollbar-width: none;
+  }
+
+  .ms-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ms-tab {
+    flex: 1 0 auto;
+    padding: var(--s-2) var(--s-4);
+  }
+
+  .ms-tab__default {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .ms {
+    padding-block: var(--s-6);
+  }
+
+  .ms-read {
+    padding: var(--s-4);
+    gap: var(--s-4);
+  }
+
+  /* Axes go to one column — three meters across a 390px screen leaves each hint
+     two words per line — but the axis itself stays a label/meter ROW, so three
+     ordinals cost three lines and not nine. */
+  .ms-read__axes {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  /* The spec stays two columns at phone width. One column made six short pairs
+     into 227px of scroll, which on the smallest screen is the difference
+     between the verdict being on screen and being below it. */
+  .ms-spec {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--s-4);
+  }
+
+  /* The verdict pair stacks: two 1.5-line items side by side at this width wrap
+     to four lines each and lose more height than the stack costs. */
+  .ms-read__prose {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-3);
+  }
+
+  .ms-ladder {
+    height: 1.5rem;
+  }
+
+  /* The three rows inside the readout no longer need a full --s-5 of rule-to-
+     content separation once everything above is denser. */
+  .ms-read__steps,
+  .ms-read__axes {
+    padding-bottom: var(--s-4);
+  }
+}
+
+/* Phone. The section is desktop-graded but must not become a two-screen scroll
+   here either, so the three lowest-value-per-pixel things go — in this order,
+   because it is the order of what the section can lose without losing its
+   argument. The ladder, the step count, the held-constant prompt and the
+   verdict all stay. */
+@media (max-width: 560px) {
+  /* The lede stays — it is real content and the section's own explanation, and
+     display:none would take it from screen readers as well as from the screen.
+     It is set a step down instead, which recovers about a third of its height
+     at this width and leaves the phone total inside the one-and-a-half-screen
+     ceiling without hiding anything. */
+  .ms-head__lede {
+    font-size: var(--t-sm);
+    line-height: 1.5;
+  }
+
+  /* Label and prompt share a row: the prompt is short enough to wrap to two
+     lines beside its own tag, and stacking them cost a whole line to render a
+     two-word label. */
+  .ms-const {
+    gap: var(--s-2) var(--s-3);
+    padding: var(--s-2) var(--s-3);
+  }
+
+  /* The axis hints go, not the meters. Three ordinals with their labels still
+     read as a comparison; the explanatory line under each is desktop nicety
+     and was three wrapped lines here. The axis label carries the meaning. */
+  .ms-axis__hint {
+    display: none;
+  }
+
+  .ms-axis {
+    gap: 0 var(--s-3);
+  }
+
+  /* Tighter rows. The dotted rule still separates them, so the padding was
+     doing less work than its 8px each side suggested. */
+  .ms-spec__row {
+    padding-block: var(--s-1);
+  }
+}
+
+/* Reduced motion: every transition above is driven by framer-motion and already
+   zeroed in JS via useReducedMotion, so what is left here are the CSS hover
+   transitions. They stay — a colour change on hover is not authored motion and
+   removing it makes the panel feel broken rather than calm. The composed end
+   state is what renders, with no movement. */

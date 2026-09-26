@@ -21,10 +21,10 @@ body {
   color: var(--c-text);
   font-family: var(--f-sans);
   font-size: var(--t-base);
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* The page must never scroll sideways. Wide children opt into their own
+  /* The page never scrolls sideways. Wide children opt into their own
      horizontally scrollable container instead. */
   overflow-x: hidden;
 }
@@ -57,23 +57,74 @@ a {
   text-decoration: none;
 }
 
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* Type ------------------------------------------------------------------
+ * Headings are the display face by default. That is the whole point of
+ * choosing one: it should be the page's normal voice for a heading, not a
+ * special case a component has to opt into.
+ *
+ * Weight 600, not 400 — a geometric sans at display size needs the weight to
+ * hold against a dark ground, and 400 is not among the cuts we load, so the
+ * browser would synthesise it. */
 h1,
 h2,
-h3,
-h4 {
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+h3 {
+  font-family: var(--f-display);
   font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: var(--ls-display);
   text-wrap: balance;
+}
+
+h4,
+h5,
+h6 {
+  font-family: var(--f-sans);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--ls-tight);
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-display);
+}
+
+h2 {
+  font-size: var(--t-display-sm);
+}
+
+h3 {
+  font-size: var(--t-xl);
 }
 
 p {
   text-wrap: pretty;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+/* Prompts and seeds are authored data, so they are set as data. */
+code,
+kbd,
+samp,
+.mono {
+  font-family: var(--f-mono);
+  font-size: 0.92em;
+  font-feature-settings: "liga" 0;
+}
+
+/* Small-caps label. The one place tracking opens up. Used for field labels
+   and meta rows — never as an eyebrow above a heading. */
+.label {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-3);
 }
 
 /* Focus ----------------------------------------------------------------
@@ -89,31 +140,35 @@ ul {
  * defaults they announce that a page was assembled rather than built. */
 ::selection {
   background: var(--c-accent);
-  color: var(--c-accent-ink);
+  color: var(--c-text-on-accent);
 }
 
 html {
-  scrollbar-color: var(--c-surface-3) var(--c-bg);
+  scrollbar-color: var(--c-line-strong) transparent;
   scrollbar-width: thin;
 }
 
 ::-webkit-scrollbar {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--c-bg);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--c-surface-3);
+  background: var(--c-line-strong);
   border-radius: var(--r-pill);
-  border: 3px solid var(--c-bg);
+  /* Inset with a transparent border so the thumb reads as a slim bar on the
+     paper rather than a full-width block. */
+  border: 4px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2e2e33;
+  background: rgba(255, 255, 255, 0.28);
+  background-clip: padding-box;
 }
 
 input,
@@ -121,28 +176,29 @@ textarea {
   caret-color: var(--c-accent);
 }
 
-/* Numbers that sit in columns or tick upward must not jitter. */
+/* A number that ticks or sits in a column must not shuffle its own width. */
 [data-numeric],
-time {
+time,
+.mono {
   font-variant-numeric: tabular-nums;
 }
 
-/* Display voice ---------------------------------------------------------
- * Heavy, uppercase, tightly tracked -- the product's headline register. */
-/* Archivo is loaded with its wdth axis, so the condensed cut is a real axis
-   setting rather than a smaller font size. Measured against the reference:
-   its display face sets ~0.5em per character, Archivo at normal width sets
-   ~0.6em -- the headline was 30% too wide, not too large. */
-.display {
-  font-family: var(--f-display);
-  font-weight: 800;
-  font-stretch: 80%;
-  text-transform: uppercase;
-  letter-spacing: var(--ls-display);
-  line-height: 0.98;
+/* Links inside running prose carry the accent and a considered underline —
+   the default offset collides with descenders in Inter. */
+.prose a {
+  color: var(--c-accent-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--c-accent-wash-strong);
+  transition: text-decoration-color var(--d-fast) var(--e-standard);
 }
 
-/* Shared layout helpers ------------------------------------------------- */
+.prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Layout helpers -------------------------------------------------------- */
 .page {
   width: 100%;
   max-width: var(--w-page);
@@ -154,31 +210,8 @@ time {
   max-width: var(--w-page-wide);
 }
 
-.section {
-  padding-block: var(--s-9);
-}
-
-.section__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-4);
-  margin-bottom: var(--s-6);
-  flex-wrap: wrap;
-}
-
-.section__title {
-  font-size: var(--t-xl);
-}
-
-.section__link {
-  color: var(--c-text-dim);
-  font-size: var(--t-sm);
-  transition: color var(--d-fast) var(--e-standard);
-}
-
-.section__link:hover {
-  color: var(--c-text);
+.prose {
+  max-width: var(--w-prose);
 }
 
 /* Screen-reader-only, still focusable */
@@ -194,7 +227,8 @@ time {
 }
 
 /* Motion preference -----------------------------------------------------
- * Honoured globally. Components that autoplay video also check this in JS. */
+ * Honoured globally. Components that cycle or autoplay also check this in
+ * JS, because a paused-by-CSS animation still runs its JS timer. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

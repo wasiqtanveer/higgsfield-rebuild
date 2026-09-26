@@ -1,0 +1,488 @@
+/**
+ * ForkDiff — the `#how` section.
+ *
+ * Two columns: the argument and a rail of real forks on the left, three beats
+ * down a lit thread on the right. There is no image in this section by design.
+ * It is the one place on the page where the product's actual mechanism is on
+ * show, that mechanism is text, and a photograph beside a diff sends the eye
+ * looking for the change in the wrong place.
+ *
+ * Colour budget, spent deliberately: the accent marks the insertions (the
+ * lineage arriving) and the lineage thread. Deletions are dimmed rather than
+ * red — a red strike-through reads as an error, and nothing here is wrong; the
+ * parent clause was a choice, and it was replaced by another choice.
+ */
+
+/* Denser than the --s-10 rhythm the page uses between sections: this one's
+   content is short and wide, and at --s-10 it left a screen's worth of empty
+   ground above and below the only thing worth reading. Shorter and denser beats
+   longer here. */
+.fd {
+  position: relative;
+  padding-block: var(--s-9);
+  overflow: hidden;
+}
+
+/* One cool pool behind the beats, offset right so it sits under the diff rather
+   than under the headline. On this ground a panel needs something to be lit
+   against or it reads as a hole. */
+.fd::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: -10%;
+  top: 50%;
+  width: 60vw;
+  height: 60vw;
+  max-width: 840px;
+  max-height: 840px;
+  transform: translateY(-50%);
+  background: radial-gradient(
+    circle,
+    var(--c-accent-wash) 0%,
+    rgba(255, 92, 26, 0.03) 42%,
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
+.fd-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  /* The stage takes the larger share: it holds the payload, and the left column
+     is only as wide as its longest rail label wants to be. */
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1fr);
+  gap: var(--s-8);
+  /* Top-aligned, not centred: the left column is much shorter than the panel,
+     and centring it hung the headline in the middle of its own column with
+     dead ground above and below. Aligned to the top, the headline and beat 01
+     start together, which is also the order they are meant to be read in. */
+  align-items: start;
+}
+
+/* --- left: the argument -------------------------------------------------- */
+.fd-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.fd-eyebrow {
+  margin-bottom: var(--s-4);
+}
+
+.fd-title {
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: var(--t-display-sm);
+  line-height: 1.02;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-4);
+}
+
+/* One word of italic serif per headline, matching the hero. Set a step larger
+   because the serif italic sits optically small next to a 700 geometric sans. */
+.fd-title em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+  /* No accent here. The italic serif is the emphasis; the accent is
+     rationed to the primary action and the lineage thread, and a decorative
+     headline word is neither. */
+}
+
+/* 52ch, not 42: at the narrower measure this wrapped to five short ragged
+   lines in a column twice that wide, which reads as a mistake rather than as a
+   measure. */
+.fd-lede {
+  max-width: 52ch;
+  color: var(--c-text-2);
+  font-size: var(--t-md);
+  line-height: 1.6;
+}
+
+/* --- the rail of forks --------------------------------------------------- */
+.fd-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  /* Hairline down the left so the three read as branches off one trunk. */
+  border-left: 1px solid var(--c-line);
+  padding-left: var(--s-4);
+}
+
+.fd-rail__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: none;
+  color: var(--c-text-2);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+/* The branch stub. Drawn rather than a bullet so it can meet the rail's
+   hairline exactly and carry the accent when selected. */
+.fd-rail__item::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--s-4) * -1 - 1px);
+  width: var(--s-4);
+  height: 1px;
+  background: var(--c-line);
+  transition: background-color var(--d-fast) var(--e-standard);
+}
+
+.fd-rail__item:hover {
+  color: var(--c-text-2);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.fd-rail__item[aria-selected="true"] {
+  /* Separates by getting lighter, plus a lit top edge — depth from light, not
+     shadow, which is invisible on near-black. */
+  background: var(--c-surface);
+  border-color: var(--c-line);
+  border-top-color: var(--c-line-lit);
+  color: var(--c-text);
+}
+
+.fd-rail__item[aria-selected="true"]::before {
+  background: var(--c-accent);
+}
+
+.fd-rail__what {
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  letter-spacing: -0.01em;
+}
+
+.fd-rail__meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+.fd-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  align-self: flex-start;
+  height: 2.75rem;
+  padding-inline: var(--s-5);
+  border: 1px solid var(--c-line-strong);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  background: var(--c-glass);
+  backdrop-filter: blur(14px);
+  color: var(--c-text);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  transition: border-color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.fd-cta:hover {
+  border-color: var(--c-accent);
+  background: var(--c-accent-wash);
+}
+
+/* --- right: the three beats --------------------------------------------- */
+.fd-stage {
+  position: relative;
+}
+
+.fd-beats {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  margin: 0;
+  padding: var(--s-6);
+  list-style: none;
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: linear-gradient(
+    180deg,
+    var(--c-surface) 0%,
+    var(--c-bg-2) 100%
+  );
+  box-shadow: var(--sh-3);
+}
+
+/* The lineage thread. Scales from the top, so it reads as descending through
+   the beats rather than appearing all at once. */
+.fd-thread {
+  position: absolute;
+  left: calc(var(--s-6) + 24px);
+  /* Starts below beat 01's number and ends above beat 03's, so the numbers are
+     nodes the thread runs between rather than lumps sitting on it. */
+  top: calc(var(--s-6) + 1.4rem);
+  bottom: calc(var(--s-6) + 5.5rem);
+  /* 2px, not 1: at 1px the gradient's own falloff made the lower half read as
+     the same grey as the beat hairlines, and this is the section's one
+     lineage thread — it has to be identifiably the accent. */
+  width: 2px;
+  border-radius: var(--r-pill);
+  transform-origin: top;
+  background: linear-gradient(
+    180deg,
+    var(--c-accent) 0%,
+    var(--c-accent) 45%,
+    var(--c-accent-wash-strong) 100%
+  );
+  pointer-events: none;
+}
+
+.fd-beat {
+  position: relative;
+  /* Clears the number and the thread beside it. */
+  padding-left: calc(var(--s-6) + var(--s-2));
+}
+
+.fd-beat__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+/* The step number is the node the thread runs between. The thread stops short
+   of the first and last, so nothing needs to be masked out behind it. */
+/* Left of the thread, not on it. Centring the numbers on the thread put the
+   line straight through the glyphs of 02 and 03 — the thread only skips the
+   first and last. */
+.fd-beat__n {
+  position: absolute;
+  left: 0;
+  /* Nudged to sit on the label's cap height rather than its line box top. */
+  top: 1px;
+  width: 18px;
+  /* inline-block so it can be transformed: it animates a small lift alongside
+     its opacity, and an inline element ignores translate. */
+  display: inline-block;
+  text-align: right;
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+.fd-beat__label {
+  color: var(--c-text-2);
+}
+
+.fd-beat__by {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-left: auto;
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+/* --- beat 1: the parent -------------------------------------------------- */
+.fd-parent {
+  font-size: var(--t-sm);
+  line-height: 1.65;
+  /* Dim: it is the line that already existed, and the eye should land on the
+     diff below it. Still above the 4.5:1 floor. */
+  color: var(--c-text-2);
+}
+
+/* --- beat 2: the edit ---------------------------------------------------- */
+.fd-change {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-size: var(--t-sm);
+}
+
+.fd-change__icon {
+  flex: none;
+  color: var(--c-text-2);
+  transform: translateY(2px);
+}
+
+.fd-change__what {
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+
+.fd-note {
+  margin-top: var(--s-2);
+  max-width: 52ch;
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* --- beat 3: the payload ------------------------------------------------- */
+.fd-beat--out {
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-line);
+}
+
+.fd-diff {
+  font-family: var(--f-mono);
+  font-size: var(--t-base);
+  line-height: 1.85;
+  color: var(--c-text);
+  /* The tokens are inline-blocks, so a long prompt has to be told it may wrap
+     between them. */
+  word-break: break-word;
+}
+
+.fd-tok {
+  display: inline;
+}
+
+/* Insertions and deletions each animate one property that does not reflow the
+   line: a width transition on a dozen tokens at once janks, and a line that
+   re-wraps mid-animation destroys the "one clause moved" reading. So the
+   deletion keeps its box and loses its ink, and the insertion arrives on
+   opacity and a small lift inside a box that was always there. */
+.fd-tok--del .fd-tok__inner,
+.fd-tok--ins .fd-tok__inner {
+  display: inline-block;
+  transition: opacity var(--d-slow) var(--e-out),
+    color var(--d-slow) var(--e-out),
+    transform var(--d-slow) var(--e-out),
+    filter var(--d-slow) var(--e-out);
+}
+
+/* Deletion, before it collapses: still live text, because it is the line the
+   visitor just read at beat 01. */
+.fd-tok--del .fd-tok__inner {
+  color: var(--c-text-2);
+  text-decoration-color: transparent;
+  text-decoration-line: line-through;
+  text-decoration-thickness: 1px;
+  transition: opacity var(--d-slow) var(--e-out),
+    color var(--d-slow) var(--e-out),
+    text-decoration-color var(--d-slow) var(--e-out);
+}
+
+/* …and after. Struck and dimmed rather than removed: the point of a stored diff
+   is that the parent's words are still legible. Dimmed to --c-text-3, which is
+   below the body-text floor and is correct here — the composed result is
+   printed in full beneath, and beat 01 carries the same words at full contrast,
+   so no information lives only in this state. */
+.fd-tok--del.is-done .fd-tok__inner {
+  color: var(--c-text-3);
+  text-decoration-color: var(--c-text-3);
+}
+
+/* Insertion, before it arrives: out of the flow's ink but holding its space. */
+.fd-tok--ins .fd-tok__inner {
+  color: var(--c-accent-text);
+  opacity: 0;
+  transform: translateY(0.35em);
+  filter: blur(4px);
+}
+
+.fd-tok--ins.is-done .fd-tok__inner {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  /* A hairline of the accent's own light under the new clause — this is the
+     lineage thread, in the line. Set as a text decoration rather than a
+     box-shadow so it follows the glyphs if a long prompt wraps mid-clause. */
+  text-decoration: underline var(--c-accent-wash-strong) 1px;
+  text-underline-offset: 0.3em;
+}
+
+/* The figure the section stands on, so it reads at body contrast while the raw
+   word counts stay quiet beside it. */
+.fd-legend--region {
+  color: var(--c-text);
+}
+
+.fd-legend--del {
+  color: var(--c-text-2);
+}
+
+.fd-legend--ins {
+  color: var(--c-accent-text);
+}
+
+.fd-result {
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px dashed var(--c-line);
+  font-size: var(--t-xs);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* --- reduced motion ------------------------------------------------------
+ * The composed end state, immediately, with no movement. The JS also skips the
+ * walk, so this is belt-and-braces for the paint before hydration. */
+@media (prefers-reduced-motion: reduce) {
+  .fd-tok--del .fd-tok__inner,
+  .fd-tok--ins .fd-tok__inner {
+    transition: none;
+  }
+
+  .fd-tok--ins .fd-tok__inner {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .fd-tok--del .fd-tok__inner {
+    color: var(--c-text-3);
+    text-decoration-color: var(--c-text-3);
+  }
+}
+
+/* --- narrow -------------------------------------------------------------- */
+@media (max-width: 1020px) {
+  .fd-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-7);
+  }
+
+  .fd-side {
+    gap: var(--s-5);
+  }
+}
+
+@media (max-width: 720px) {
+  .fd {
+    padding-block: var(--s-8);
+  }
+
+  .fd-beats {
+    padding: var(--s-5) var(--s-4);
+  }
+
+  .fd-thread {
+    left: calc(var(--s-4) + 24px);
+  }
+
+  /* The author/count meta drops below the label rather than squeezing the
+     label to two lines. */
+  .fd-beat__head {
+    flex-wrap: wrap;
+  }
+
+  .fd-beat__by {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}

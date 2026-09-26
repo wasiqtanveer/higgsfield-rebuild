@@ -1,0 +1,219 @@
+/**
+ * Hero.
+ *
+ * The scene on the right is a real 3D space: one perspective on the container,
+ * one rig inside it, and every card placed from two numbers — where it sits in
+ * the chain, and how far it is from the card you are reading. Selecting a
+ * different card moves the whole chain through space rather than restacking
+ * four independent elements.
+ */
+
+.hero {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: 100svh;
+  /* The header floats over this, so the top padding is the header plus room:
+     the headline must never run under the pill. */
+  padding-block: calc(var(--h-header) + var(--s-7)) var(--s-8);
+  overflow: hidden;
+}
+
+/* One dim indigo pool under the scene. Dark cards on a dark ground have nothing
+   to be lit against without it. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -25% -15% auto auto;
+  width: 78vw;
+  height: 78vw;
+  max-width: 1150px;
+  max-height: 1150px;
+  background: radial-gradient(
+    circle at 58% 45%,
+    var(--c-accent-wash) 0%,
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: var(--s-8);
+  width: 100%;
+}
+
+/* --- the argument ------------------------------------------------------- */
+.hero__say {
+  /* min-width:0 as well as max-width: as a grid item its automatic minimum is
+     its content, so a long unbroken mono line inside the prompt bar could push
+     the whole column wider than the screen. */
+  max-width: 33rem;
+  min-width: 0;
+}
+
+.hero__title {
+  /* Sized for its column, not the viewport — at the global display step it ran
+     to four lines and collided with the header. */
+  font-size: clamp(2.125rem, 3.3vw, 3.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.042em;
+  margin-bottom: var(--s-5);
+}
+
+.hero__sub {
+  max-width: 44ch;
+  font-size: var(--t-md);
+  line-height: 1.5;
+  color: var(--c-text-2);
+  margin-bottom: var(--s-6);
+}
+
+/* --- the prompt bar -------------------------------------------------------
+ * Namespaced `pbar`, not `composer`: the old build already ships a `.composer`
+ * component, and two components claiming one class name is a collision whose
+ * winner is decided by import order.
+ *
+ * The primary action is a prompt field, not a "Get started" button. On a
+ * product whose claim is that the prompt is the artifact, the first thing the
+ * visitor touches should be a prompt — and while it is empty, it writes one to
+ * itself so you can see what a good one looks like.
+ */
+.pbar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2);
+  border: 1px solid var(--c-line-strong);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  box-shadow: var(--sh-2);
+  transition: border-color var(--d-base) var(--e-standard),
+    box-shadow var(--d-base) var(--e-standard);
+}
+
+.pbar:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: var(--sh-glow);
+}
+
+/* The input and its ghost share one cell, so the typed example sits exactly
+   where the visitor's own text will appear. */
+.pbar__field {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  /* The typed example is one nowrap line and can be longer than the field. */
+  overflow: hidden;
+}
+
+.pbar__input,
+.pbar__ghost {
+  grid-area: 1 / 1;
+  height: 2.75rem;
+  padding-inline: var(--s-4);
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  line-height: 2.75rem;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.pbar__input {
+  min-width: 0;
+  border: none;
+  background: none;
+  color: var(--c-text);
+  outline: none;
+}
+
+.pbar__ghost {
+  color: var(--c-text-3);
+  pointer-events: none;
+  /* Long examples fade out at the right edge rather than being chopped mid
+     character by overflow:hidden. */
+  mask-image: linear-gradient(90deg, #000 88%, transparent 100%);
+}
+
+.pbar__caret {
+  display: inline-block;
+  width: 1px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--c-accent-text);
+  animation: caret 1.05s steps(1, end) infinite;
+}
+
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.pbar__go {
+  height: 2.75rem;
+  padding-inline: var(--s-5);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  white-space: nowrap;
+  transition: background-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+}
+
+.pbar__go:hover {
+  background: var(--c-accent-hover);
+  box-shadow: var(--sh-glow);
+}
+
+/* One-tap starts. A blank field is the hardest thing to hand someone who has
+   not decided what they want yet. */
+.pbar__starters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding-left: var(--s-2);
+  max-width: 100%;
+}
+
+.pbar__chip {
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+  transition: border-color var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.pbar__chip:hover {
+  border-color: var(--c-accent);
+  background: var(--c-accent-wash);
+  color: var(--c-text);
+}
+
+.pbar__free {
+  margin-left: auto;
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pbar__caret {
+    animation: none;
+  }
+}
+

@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-26T04:03:18Z",
+  "title": "Design System: Graft",
+  "extensions": {
+    "scope": {
+      "note": "This system describes the / route only. /explore, /create, /video, /audio, /mcp, /pricing and /landing are still legacy Higgsfield-clone surfaces on the previous dark theme. src/App.jsx carries the migration seam as const REBUILT = [\"/\"], and that list is the authority on which routes are on this system.",
+      "routesOnSystem": ["/"],
+      "routesLegacy": ["/explore", "/create", "/video", "/audio", "/mcp", "/pricing", "/landing"],
+      "migrationSeams": [
+        "src/App.jsx — const REBUILT = [\"/\"]",
+        "src/styles/tokens.css — legacy alias block (--c-hairline, --c-hairline-strong, --c-text-dim, --c-text-faint, --c-accent-ink, --c-accent-deep, --c-light-deep, --c-promo, --e-bevel), scheduled for deletion with the last legacy route"
+      ],
+      "sourceOfTruth": "src/styles/tokens.css"
+    },
+    "colorMeta": {
+      "accent": {
+        "role": "primary",
+        "displayName": "Ignition Orange",
+        "canonical": "#ff5c1a",
+        "purpose": "The primary action and the lineage thread. Nothing else.",
+        "tonalRamp": ["#2b0d02", "#4d1a05", "#75280a", "#9e3610", "#c94718", "#ff5c1a", "#ff8a54", "#ffc4a5"]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Ignition Hover",
+        "canonical": "#ff7a3d",
+        "purpose": "Hover on a surface already filled with the accent."
+      },
+      "accent-text": {
+        "role": "primary",
+        "displayName": "Lit Orange",
+        "canonical": "#ff9a63",
+        "purpose": "Orange type on the dark ground. Clears 4.5:1 where the raw accent does not."
+      },
+      "text-on-accent": {
+        "role": "primary",
+        "displayName": "Ember Ink",
+        "canonical": "#1a0d05",
+        "purpose": "Ink on anything filled with the accent. White on #ff5c1a is ~3.1:1 and fails."
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Cool Void",
+        "canonical": "#08090c",
+        "purpose": "The page ground. Blue-shifted, never neutral grey: a pure #111 next to a saturated generation reads dusty.",
+        "tonalRamp": ["#08090c", "#0d0f14", "#14171f", "#1c2029", "#262b36", "#6b7486", "#a4acbd", "#f3f5fa"]
+      },
+      "bg-2": { "role": "neutral", "displayName": "Void Step", "canonical": "#0d0f14", "purpose": "The faintest lift — the footer, an unselected channel." },
+      "surface": { "role": "neutral", "displayName": "Panel", "canonical": "#14171f", "purpose": "A panel on the page; a chip or field at rest." },
+      "surface-2": { "role": "neutral", "displayName": "Control", "canonical": "#1c2029", "purpose": "A control inside a panel; a hovered chip." },
+      "surface-3": { "role": "neutral", "displayName": "Raised Control", "canonical": "#262b36", "purpose": "The topmost step. A fifth step means the nesting is too deep." },
+      "glass": { "role": "neutral", "displayName": "Chrome Glass", "canonical": "rgba(20, 23, 31, 0.72)", "purpose": "Translucent chrome with blur(18px) saturate(1.4), so generations scroll through the pill." },
+      "line": { "role": "neutral", "displayName": "Hairline", "canonical": "rgba(255, 255, 255, 0.08)", "purpose": "White at low alpha, never a fixed grey — a grey hairline separates into a visible band." },
+      "line-strong": { "role": "neutral", "displayName": "Strong Hairline", "canonical": "rgba(255, 255, 255, 0.16)", "purpose": "A field border, a divider, an unlit tag outline." },
+      "line-lit": { "role": "neutral", "displayName": "Lit Edge", "canonical": "rgba(255, 255, 255, 0.1)", "purpose": "The 1px top edge that gives a raised control its thickness." },
+      "text": { "role": "neutral", "displayName": "Instrument White", "canonical": "#f3f5fa", "purpose": "Primary text. Never pure white — #fff blooms and vibrates on near-black." },
+      "text-2": { "role": "neutral", "displayName": "Dimmed", "canonical": "#a4acbd", "purpose": "Secondary prose and the prompt body." },
+      "text-3": { "role": "neutral", "displayName": "Faint", "canonical": "#6b7486", "purpose": "Labels, meta, unlit ladder ticks, ghost placeholders." },
+      "focus": { "role": "tertiary", "displayName": "Focus Orange", "canonical": "#ff8a50", "purpose": "The keyboard focus ring. Overridden to Ember Ink on accent-filled controls." },
+      "danger": { "role": "tertiary", "displayName": "Alarm Rose", "canonical": "#ff4d6d", "purpose": "Pulled toward red and away from the accent: a danger colour that reads as a shade of the brand accent stops warning anybody." },
+      "good": { "role": "tertiary", "displayName": "Signal Green", "canonical": "#3ddc97", "purpose": "Status affirmation only, never decoration." }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The page's opening claim. h1 gets Space Grotesk by default — choosing one display face means it is the normal voice for a heading. Weight 600 because 400 is not a loaded cut." },
+      "headline": { "displayName": "Headline", "purpose": "Band titles, at 700 rather than the global 600: a geometric sans needs the extra weight to hold at band scale on the dark ground." },
+      "title": { "displayName": "Title", "purpose": "h3 and sub-heads inside a band." },
+      "accent-word": { "displayName": "Accent Word", "purpose": "Instrument Serif italic, exactly one word per headline, never a line. Set at 1.1em because the serif italic sits optically small beside a 700 geometric sans." },
+      "body": { "displayName": "Body", "purpose": "All running prose. Capped at 68ch by .prose; ledes and footer claims cap tighter at 38-62ch." },
+      "prompt": { "displayName": "Prompt", "purpose": "JetBrains Mono with ligatures off and tabular figures. A prompt is the authored artifact, so it is set as data at reading size — mono for data, not mono as costume." },
+      "label": { "displayName": "Label", "purpose": "Field labels and meta rows. The one place tracking opens up. Not an eyebrow above a heading." }
+    },
+    "shadows": [
+      { "name": "hairline-lift", "value": "0 1px 2px rgba(0, 0, 0, 0.5)", "purpose": "The smallest seat." },
+      { "name": "floating", "value": "0 8px 24px -8px rgba(0, 0, 0, 0.7)", "purpose": "Header pills and the closing field — something genuinely off the page." },
+      { "name": "overlay", "value": "0 28px 70px -20px rgba(0, 0, 0, 0.85)", "purpose": "Mega panels, modals, and the condensed header once content runs beneath it." },
+      { "name": "accent-glow", "value": "0 0 0 1px rgba(255, 92, 26, 0.24), 0 8px 28px -10px rgba(255, 92, 26, 0.5)", "purpose": "The accent's own light on a primary control, and the one-off rim when a frame acknowledges a fork." },
+      { "name": "lit-inset", "value": "inset 0 1px 0 rgba(255, 255, 255, 0.05)", "purpose": "The top highlight under the border. The border draws the edge; this gives it thickness." },
+      { "name": "thread-glow", "value": "0 0 18px rgba(255, 92, 26, 0.5)", "purpose": "The 2px lineage thread and the lit band rail." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Arrivals and anything that should decelerate into place." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0, 0, 1)", "purpose": "Colour and background state changes." },
+      { "name": "ease-in", "value": "cubic-bezier(0.4, 0, 1, 1)", "purpose": "Exits." },
+      { "name": "element-curve", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "The one shared element curve, declared as EASE = [0.22, 1, 0.36, 1] in all five band components. Per-element delay comes from index in reading order." },
+      { "name": "duration-fast", "value": "130ms", "purpose": "Colour and hover." },
+      { "name": "duration-base", "value": "240ms", "purpose": "State changes." },
+      { "name": "duration-slow", "value": "420ms", "purpose": "Opacity on arrival." },
+      { "name": "duration-slower", "value": "720ms", "purpose": "Transform and blur on arrival." },
+      { "name": "arrive-driver", "value": "--arrive: 0 -> 1, settle at intersectionRatio 0.42", "purpose": "Section-level scroll-linked arrival: lift 64px (40px closing), scale 0.982->1 from the band's top origin, blur 6px->0, opacity 0.28->1. No transition on these — the driver is already continuous, and a transition on top of it adds lag between wheel and picture." }
+    ],
+    "breakpoints": [
+      { "name": "nav-fold", "value": "700px" },
+      { "name": "gutter-shrink", "value": "720px" },
+      { "name": "panel-column", "value": "760px" },
+      { "name": "wordmark-drop", "value": "860px" },
+      { "name": "page", "value": "1240px" },
+      { "name": "page-wide", "value": "1640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action on a screen. Accent fill with near-black ink and the accent's own glow beneath.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Open the composer <svg class=\"ds-btn-primary__arrow\" viewBox=\"0 0 16 16\" width=\"14\" height=\"14\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4.5 12 8l-3.5 3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: var(--s-2); height: 2.9rem; padding-inline: var(--s-5); border-radius: var(--r-pill); background: var(--c-accent); color: var(--c-text-on-accent); font-family: var(--f-sans); font-size: var(--t-sm); font-weight: 600; letter-spacing: var(--ls-tight); white-space: nowrap; text-decoration: none; box-shadow: 0 8px 30px -10px var(--c-accent-glow); transition: background-color var(--d-fast) var(--e-standard), box-shadow var(--d-base) var(--e-out), transform var(--d-fast) var(--e-standard); } .ds-btn-primary:hover { background: var(--c-accent-hover); box-shadow: 0 12px 40px -10px var(--c-accent-glow); } .ds-btn-primary:active { transform: scale(0.975); } .ds-btn-primary:focus-visible { outline: 2px solid var(--c-text-on-accent); outline-offset: 2px; } .ds-btn-primary__arrow { display: block; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "The secondary action beside a primary. Glass with a lit top edge; the accent arrives as an edge on hover, never as a second fill.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">See how forking works</a>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; height: 2.9rem; padding-inline: var(--s-5); border: 1px solid var(--c-line-strong); border-top-color: var(--c-line-lit); border-radius: var(--r-pill); background: var(--c-glass); backdrop-filter: blur(14px); color: var(--c-text); font-family: var(--f-sans); font-size: var(--t-sm); font-weight: 500; white-space: nowrap; text-decoration: none; transition: border-color var(--d-fast) var(--e-standard), background-color var(--d-fast) var(--e-standard); } .ds-btn-ghost:hover { border-color: var(--c-accent); background: var(--c-accent-wash); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }"
+    },
+    {
+      "name": "Fork Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "An alternative prompt line, selectable. Raised by a lit inset edge rather than a shadow; the selected chip is the only filled accent in its section.",
+      "html": "<div class=\"ds-chipset\"><button class=\"ds-chip is-on\" type=\"button\" aria-pressed=\"true\">shot on 35mm <span class=\"ds-chip__tag\">film</span></button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"false\">at golden hour <span class=\"ds-chip__tag\">light</span></button><button class=\"ds-chip\" type=\"button\" aria-pressed=\"false\">in heavy rain <span class=\"ds-chip__tag\">weather</span></button></div>",
+      "css": ".ds-chipset { display: flex; flex-wrap: wrap; gap: var(--s-2); } .ds-chip { position: relative; display: inline-flex; align-items: center; gap: var(--s-2); padding: var(--s-2) var(--s-4); font-family: var(--f-sans); font-size: var(--t-sm); color: var(--c-text-2); background: var(--c-surface); box-shadow: inset 0 1px 0 var(--c-line-lit); border: 1px solid var(--c-line); border-radius: var(--r-pill); cursor: pointer; transition: color var(--d-fast) var(--e-out), border-color var(--d-fast) var(--e-out), background-color var(--d-fast) var(--e-out); } .ds-chip:hover { color: var(--c-text); border-color: var(--c-line-strong); background: var(--c-surface-2); } .ds-chip.is-on { color: var(--c-text-on-accent); background: var(--c-accent); border-color: var(--c-accent); font-weight: 600; } .ds-chip:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; } .ds-chip.is-on:focus-visible { outline-color: var(--c-text-on-accent); } .ds-chip__tag { font-size: var(--t-xs); letter-spacing: var(--ls-caps); text-transform: uppercase; opacity: 0.6; }"
+    },
+    {
+      "name": "Prompt Field",
+      "kind": "input",
+      "refersTo": "field-prompt",
+      "description": "The page's signature control, shown here armed. Focus says the field is listening; armed says it has something — and the accent only arrives once there is a prompt.",
+      "html": "<div class=\"ds-field\" data-armed><span class=\"ds-field__sigil\" aria-hidden=\"true\">&rsaquo;</span><span class=\"ds-field__well\"><input class=\"ds-field__input\" value=\"a courier on a wet Chinatown street, shot on 35mm\" aria-label=\"Prompt\"></span><button class=\"ds-field__go\" type=\"button\" aria-label=\"Run prompt\"><svg viewBox=\"0 0 16 16\" width=\"15\" height=\"15\" aria-hidden=\"true\"><path d=\"M3 8h9M8.5 4.5 12 8l-3.5 3.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></div>",
+      "css": ".ds-field { position: relative; display: flex; align-items: center; gap: var(--s-2); width: 100%; max-width: 64ch; padding: var(--s-2); padding-left: var(--s-4); border: 1px solid var(--c-line-strong); border-top-color: var(--c-line-lit); border-radius: var(--r-pill); background: var(--c-surface); box-shadow: var(--sh-2); transition: border-color var(--d-base) var(--e-standard), box-shadow var(--d-base) var(--e-standard), background-color var(--d-base) var(--e-standard); } .ds-field[data-armed] { border-color: var(--c-accent); box-shadow: 0 0 0 1px var(--c-accent-wash-strong), 0 12px 40px -14px var(--c-accent-glow); } .ds-field__sigil { flex: none; font-family: var(--f-mono); font-size: var(--t-md); line-height: 1; color: var(--c-text-3); transition: color var(--d-base) var(--e-standard), text-shadow var(--d-base) var(--e-standard), transform var(--d-base) var(--e-out); } .ds-field[data-armed] .ds-field__sigil { color: var(--c-accent); text-shadow: 0 0 12px var(--c-accent-glow); transform: scale(1.18); } .ds-field__well { position: relative; flex: 1; min-width: 0; display: grid; } .ds-field__input { grid-area: 1 / 1; width: 100%; min-width: 0; height: 2.9rem; border: none; background: none; color: var(--c-text); font-family: var(--f-mono); font-size: var(--t-base); line-height: 1; white-space: nowrap; overflow: hidden; } .ds-field__input:focus-visible { outline: none; } .ds-field:has(.ds-field__input:focus-visible) { outline: 2px solid var(--c-focus); outline-offset: 3px; } .ds-field__go { display: grid; flex: none; place-items: center; width: 2.9rem; height: 2.9rem; border: none; border-radius: 50%; background: var(--c-surface-3); color: var(--c-text-on-accent); cursor: pointer; transition: background-color var(--d-base) var(--e-standard), box-shadow var(--d-base) var(--e-out), transform var(--d-base) var(--e-out); } .ds-field[data-armed] .ds-field__go { background: var(--c-accent); box-shadow: 0 8px 28px -10px var(--c-accent-glow); transform: scale(1.04); } .ds-field[data-armed] .ds-field__go:hover { background: var(--c-accent-hover); box-shadow: 0 12px 34px -10px var(--c-accent-glow); }"
+    },
+    {
+      "name": "Navigation Pill",
+      "kind": "nav",
+      "refersTo": "nav-pill",
+      "description": "The floating glass header. Approved and frozen. Active state is a 3px accent dot, not an underline — an underline inside a pill fights the pill's own curve.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav__brand\"><svg class=\"ds-nav__glyph\" viewBox=\"0 0 20 20\" width=\"19\" height=\"19\" aria-hidden=\"true\"><path d=\"M4 17c0-6 4-8 6-8s6 2 6-6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"/><path d=\"M10 17c0-5 3-6 6-6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\"/></svg><span class=\"ds-nav__word\">Graft</span></span><span class=\"ds-nav__rule\"></span><a class=\"ds-nav__link is-active\" href=\"#\">Explore</a><a class=\"ds-nav__link\" href=\"#\">Create</a><a class=\"ds-nav__link\" href=\"#\">Pricing</a></nav>",
+      "css": ".ds-nav { display: inline-flex; align-items: center; gap: var(--s-2); height: var(--h-header); padding-inline: var(--s-2); border: 1px solid var(--c-line); border-top-color: var(--c-line-lit); border-radius: var(--r-pill); background: var(--c-glass); backdrop-filter: blur(18px) saturate(1.4); box-shadow: var(--sh-2), inset 0 1px 0 rgba(255, 255, 255, 0.05); } .ds-nav__brand { display: inline-flex; align-items: center; gap: var(--s-2); padding-inline: var(--s-1); color: var(--c-text); } .ds-nav__glyph { display: block; } .ds-nav__word { font-family: var(--f-display); font-size: var(--t-lg); font-weight: 600; line-height: 1; letter-spacing: var(--ls-display); } .ds-nav__rule { width: 1px; height: 18px; margin-inline: var(--s-1); background: var(--c-line-strong); } .ds-nav__link { position: relative; display: inline-flex; align-items: center; padding: var(--s-2) var(--s-3); border-radius: var(--r-pill); font-family: var(--f-sans); font-size: var(--t-sm); font-weight: 500; letter-spacing: -0.005em; color: var(--c-text-2); text-decoration: none; white-space: nowrap; transition: color var(--d-fast) var(--e-standard), background-color var(--d-fast) var(--e-standard); } .ds-nav__link:hover { color: var(--c-text); background: var(--c-surface-2); } .ds-nav__link:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; } .ds-nav__link.is-active { color: var(--c-text); font-weight: 600; } .ds-nav__link.is-active::after { content: \"\"; position: absolute; left: 50%; bottom: 3px; width: 3px; height: 3px; border-radius: var(--r-pill); background: var(--c-accent); transform: translateX(-50%); }"
+    },
+    {
+      "name": "Selector Channel",
+      "kind": "custom",
+      "refersTo": "selector-channel",
+      "description": "Four models as positions on one selector rather than four cards to compare. The 2px lit rail is the selection itself.",
+      "html": "<div class=\"ds-chan-set\" role=\"tablist\"><button class=\"ds-chan\" role=\"tab\" aria-selected=\"true\"><span class=\"ds-chan__rail\" aria-hidden=\"true\"></span><span class=\"ds-chan__name\">FLUX.1</span><span class=\"ds-chan__variant\">flux-1-schnell</span><span class=\"ds-chan__default\">Default</span></button><button class=\"ds-chan\" role=\"tab\" aria-selected=\"false\"><span class=\"ds-chan__name\">SDXL</span><span class=\"ds-chan__variant\">stable-diffusion-xl-base-1.0</span></button></div>",
+      "css": ".ds-chan-set { display: flex; flex-direction: column; gap: var(--s-2); } .ds-chan { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 0 var(--s-2); padding: var(--s-3) var(--s-4) var(--s-3) var(--s-5); border: 1px solid transparent; border-radius: var(--r-md); background: var(--c-bg-2); text-align: left; cursor: pointer; transition: background-color var(--d-fast) var(--e-standard), border-color var(--d-fast) var(--e-standard); } .ds-chan:hover { background: var(--c-surface); } .ds-chan[aria-selected=\"true\"] { background: var(--c-surface); border-color: var(--c-line); border-top-color: var(--c-line-lit); } .ds-chan:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; } .ds-chan__rail { position: absolute; left: 0; top: var(--s-2); bottom: var(--s-2); width: 2px; border-radius: var(--r-pill); background: var(--c-accent); box-shadow: 0 0 12px var(--c-accent-glow); } .ds-chan__name { font-family: var(--f-display); font-size: var(--t-base); font-weight: 600; letter-spacing: var(--ls-tight); color: var(--c-text-2); transition: color var(--d-fast) var(--e-standard); } .ds-chan[aria-selected=\"true\"] .ds-chan__name, .ds-chan:hover .ds-chan__name { color: var(--c-text); } .ds-chan__variant { grid-column: 1; font-family: var(--f-mono); font-size: 0.6875rem; color: var(--c-text-3); } .ds-chan__default { grid-column: 2; grid-row: 1 / span 2; align-self: center; padding: 2px var(--s-2); border: 1px solid var(--c-line-strong); border-radius: var(--r-pill); font-family: var(--f-sans); font-size: 0.625rem; font-weight: 600; letter-spacing: var(--ls-caps); text-transform: uppercase; color: var(--c-text-3); }"
+    },
+    {
+      "name": "Prompt Block",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A prompt as the artifact: mono at reading size in the wide column, with the forkable line carrying the accent and a caret before anything is clicked.",
+      "html": "<div class=\"ds-prompt\"><span class=\"ds-prompt__line\">a courier waiting at a crossing in Chinatown,</span><span class=\"ds-prompt__line is-edit\"><span class=\"ds-prompt__caret\" aria-hidden=\"true\">&rsaquo;</span>shot on 35mm film, heavy grain</span><span class=\"ds-prompt__line\">neon spill on wet asphalt, evening</span></div>",
+      "css": ".ds-prompt { display: grid; gap: var(--s-2); font-family: var(--f-mono); font-size: var(--t-lg); font-feature-settings: \"liga\" 0; line-height: 1.45; color: var(--c-text-2); } .ds-prompt__line { position: relative; } .ds-prompt__line.is-edit { padding-left: var(--s-6); color: var(--c-accent-text); } .ds-prompt__caret { position: absolute; left: 0; top: 0.34em; color: var(--c-accent); }"
+    },
+    {
+      "name": "Lineage Thread",
+      "kind": "custom",
+      "refersTo": "selector-channel-selected",
+      "description": "The signature mark: a 2px accent line with a soft glow, used wherever the product's idea needs to be visible as a line. Unlit is a hairline; lit is accent plus glow.",
+      "html": "<div class=\"ds-thread-demo\"><span class=\"ds-thread is-lit\" aria-hidden=\"true\"></span><span class=\"ds-thread\" aria-hidden=\"true\"></span><span class=\"ds-thread\" aria-hidden=\"true\"></span></div>",
+      "css": ".ds-thread-demo { display: flex; gap: var(--s-6); align-items: stretch; height: 120px; padding: var(--s-4); } .ds-thread { width: 2px; border-radius: var(--r-pill); background: var(--c-line); transition: background-color var(--d-slow) var(--e-out), box-shadow var(--d-slow) var(--e-out); } .ds-thread.is-lit { background: var(--c-accent); box-shadow: 0 0 18px var(--c-accent-glow); }"
+    },
+    {
+      "name": "Tick Ladder",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "A step count read as a ruler. Ticks flex to fill the panel exactly; the gap is fixed so the marks stay reading as discrete counts rather than a bar. The lit run is accent.",
+      "html": "<div class=\"ds-ladder\" role=\"img\" aria-label=\"4 of 30 steps\"><i class=\"is-lit\"></i><i class=\"is-lit\"></i><i class=\"is-lit\"></i><i class=\"is-lit\"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>",
+      "css": ".ds-ladder { display: flex; align-items: flex-end; gap: 3px; height: 2.25rem; padding: var(--s-4) 0; } .ds-ladder i { flex: 1; min-width: 2px; height: 100%; transform-origin: bottom; border-radius: 1px; background: var(--c-text-3); } .ds-ladder i.is-lit { background: var(--c-accent); box-shadow: 0 0 10px -2px var(--c-accent-glow); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Lit Instrument",
+    "overview": "Graft looks like the machine it is. The ground is a cool, blue-shifted near-black (#08090c) rather than a neutral grey, because a pure #111 sitting next to a saturated generation reads dusty while a blue-shifted black reads lit. Onto that ground the system admits exactly one hot colour — a neon orange (#ff5c1a) that is, by a wide margin, the brightest thing on any screen. Every other surface is a step of the same cool near-black, separated from its neighbours by luminance and a single lit edge. The effect is an instrument panel in a dark room: you read it by where the light is.\n\nThe density is engineered rather than editorial. Type is a geometric display face with real negative tracking, an invisible UI sans, and a monospace that is not costume — on this product a prompt is the artifact, so prompts, seeds and model identifiers are set as the authored data they are, at reading size, in the wide column. One italic serif word per headline is the only ornament the system allows, and it is allowed precisely because it is rare.\n\nTwo drafts were rejected on the way here and both rejections are load-bearing. Warm paper with Instrument Serif throughout read as a print catalogue — \"too classic\" for a tool that drives a model. An electric indigo accent was replaced because on a cool near-black ground a cool accent sits in the ground instead of igniting off it. Do not reintroduce either: not warm paper, not a cool accent.",
+    "keyCharacteristics": [
+      "Cool near-black ground in four steps; depth by light, never by shadow.",
+      "One accent, rationed to the primary action and the lineage thread.",
+      "Prompts set in mono at reading size — the artifact, not a caption.",
+      "Three type voices with jobs, plus one serif italic word per headline.",
+      "Glass chrome that the work scrolls through, not over.",
+      "One motion grammar: scroll-linked section arrival, one shared curve, staggers that carry meaning."
+    ],
+    "rules": [
+      { "name": "The Rationed Accent Rule", "body": "The accent marks the primary action and the lineage thread. Two uses per section is the observed ceiling — ModelSpec spends its entire budget on the lit selector rail and the lit run of ticks, and SiteFoot spends its whole budget on one stroke of the mark. Before adding an accent, name which of the two things it is; if it is neither, it gets a neutral step.", "section": "colors" },
+      { "name": "The Ink-On-Fire Rule", "body": "Anything filled with #ff5c1a carries near-black ink (#1a0d05), never white: white on the accent sits at about 3.1:1 and fails the 4.5:1 floor. Orange type on the dark ground uses the lightened #ff9a63 cut. A filled accent control also overrides the focus ring to the ink colour, because the default focus orange is invisible against the accent it sits on.", "section": "colors" },
+      { "name": "The Earned Glow Rule", "body": "The accent arrives when there is something to acknowledge, not at rest. The closing field is a neutral pill until the visitor types; then the border takes the accent, the submit fills, and the sigil lights. A field glowing orange over an empty box has spent the page's loudest colour on nothing.", "section": "colors" },
+      { "name": "The One Word Rule", "body": "Exactly one word per headline is Instrument Serif italic, never a whole line and never two. It is set at 1.1em of its line because the serif's italic sits optically small next to a 700-weight geometric sans — match by eye, not by number. The contrast is the point, and it stops being a contrast the moment it becomes the voice.", "section": "typography" },
+      { "name": "The Prompt-Is-Data Rule", "body": "Prompts, seeds and model identifiers are set in JetBrains Mono, at reading size when they are the subject of a section. A prompt is never styled as a caption about a picture. Numbers that tick or sit in a column carry font-variant-numeric: tabular-nums so the row does not shuffle its own width.", "section": "typography" },
+      { "name": "The Label-Is-Not-An-Eyebrow Rule", "body": "The tracked uppercase label is for field labels and meta rows. It is not an eyebrow or kicker above a heading. Where a band genuinely needs to say where you are in the page, it uses a mono section counter (03) — a counter tells you your position, which a decorative word above a headline does not.", "section": "typography" },
+      { "name": "The Content-Decides-Composition Rule", "body": "Band composition is derived from what the band has to say, not from a house grid. When a ratio carries an argument, the ratio is part of the design and may not be normalised to 50/50.", "section": "layout" },
+      { "name": "The Own-Your-Rhythm Rule", "body": "A section either owns its vertical rhythm or inherits the band's 96px. Never both.", "section": "layout" },
+      { "name": "The Light-Not-Shadow Rule", "body": "To separate two surfaces, lighten the upper one and give it a 1px lit top edge (--c-line-lit). Do not reach for a drop shadow — on #08090c it does nothing, and reviewers reading this file have tried.", "section": "elevation" },
+      { "name": "The Two-Property Rule", "body": "A state change animates at least two properties together. One property at small scale is invisible on near-black: a hue shift on a single 10px glyph is the easiest change on the page to miss, so the sigil shifts colour and scales; the submit fills and grows; a fork chip changes text, border and background at once.", "section": "elevation" },
+      { "name": "The Pill Rule", "body": "Interactive things are pills. A rectangle with a small radius is a panel or a channel — something you read or select within, not something you press.", "section": "shapes" },
+      { "name": "The Never-Hide-What-You-Cannot-Reveal Rule", "body": "Every reveal applies its hidden state from JavaScript on mount. With JS broken or IntersectionObserver missing, content is simply there, composed and readable. The failure mode is \"no animation\", never \"no page\".", "section": "components" },
+      { "name": "The Fires-Once Rule", "body": "A reveal fires once and stays revealed. Re-reading something must never cost a wait, and scrolling back up must not turn the page into a light show.", "section": "components" },
+      { "name": "The Reduced-Motion-At-Source Rule", "body": "prefers-reduced-motion is honoured at source for every authored motion — in CSS and in the JS that arms it, because a CSS-paused animation still runs its JS timer, and a reveal that merely runs instantly still starts from a transformed state, which is a visible jump on a slow paint. Under the setting, nothing is armed at all. Every animating component on this surface carries this check.", "section": "components" },
+      { "name": "The Nothing-Hidden Rule", "body": "Attention is directed by adding light, never by removing legibility. The band you are reading gets a lamp and a lit rail; the others simply do not. An earlier build dimmed unread sections to 44% opacity — asking someone to read a prompt through a veil is worse than a page where every band is legible at once. Never dim content to focus other content.", "section": "components" }
+    ],
+    "dos": [
+      "Do resolve every colour, space, radius, type step, easing and duration to a variable in src/styles/tokens.css. No hardcoded hex outside that file.",
+      "Do separate surfaces by stepping up the near-black ramp and adding a 1px lit top edge (--c-line-lit).",
+      "Do carry near-black ink (--c-text-on-accent) on anything filled with the accent, and use the lightened --c-accent-text cut for orange type on the dark ground.",
+      "Do set prompts, seeds and model ids in JetBrains Mono — at reading size when the prompt is the subject.",
+      "Do use exactly one Instrument Serif italic word per headline, at 1.1em.",
+      "Do use the shared element curve [0.22, 1, 0.36, 1] and take each element's delay from its index in reading order.",
+      "Do animate at least two properties on any state change.",
+      "Do honour prefers-reduced-motion in both CSS and the JS that arms the motion.",
+      "Do keep hairlines as white at low alpha, never a fixed grey.",
+      "Do move a focus indicator when the default rectangle fights a pill — redraw it on the container, larger and higher contrast.",
+      "Do use tabular figures for any number that ticks or sits in a column."
+    ],
+    "donts": [
+      "Don't use a drop shadow to separate surfaces on the near-black ground. It is invisible there.",
+      "Don't spend the accent on anything that is not the primary action or the lineage thread — not a footer hover, not a heading, not a tag, not a decorative rule.",
+      "Don't put white type on #ff5c1a. It measures about 3.1:1 and fails.",
+      "Don't let the accent fill a control at rest. It arrives when there is something to acknowledge.",
+      "Don't reintroduce a cool accent (the rejected electric indigo) or a warm paper ground (the rejected first draft).",
+      "Don't set the serif for a whole line, or use it anywhere but the one headline word.",
+      "Don't give a band its own transform, filter or opacity — Arrive owns section-level motion, and a second one multiplies with it.",
+      "Don't dim or hide content to direct attention. Add light to the thing you want read.",
+      "Don't re-fire a reveal on re-entry, or hide content behind a reveal that JavaScript may fail to un-hide.",
+      "Don't use pure white (#fff) for text; it blooms on near-black.",
+      "Don't add a fifth step to the surface ramp. Anything that needs one is nested too deep.",
+      "Don't reference the legacy alias tokens (--c-hairline, --c-text-dim, --c-accent-ink, --c-accent-deep, --c-light-deep, --c-promo, --e-bevel) in new work. They exist to keep unmigrated routes viewable and are deleted with the last of them.",
+      "Don't put a tracked uppercase label above a heading as an eyebrow or kicker. Use a mono section counter if the reader genuinely needs to know where they are."
+    ]
+  }
+}

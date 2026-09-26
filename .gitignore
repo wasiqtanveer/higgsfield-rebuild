@@ -6,3 +6,10 @@ dist/
 # Per-session bookkeeping for the capture hook (not part of the record).
 # NOTE: .agent-logs/ is deliberately NOT ignored - it ships with the repo.
 .claude/.session-index/
+
+# Secrets. `*.local` above already catches .env.local, but that is a Vite
+# convention rather than a promise — these are spelled out so renaming a file
+# cannot quietly start committing live credentials.
+.env
+.env.*
+!.env.example

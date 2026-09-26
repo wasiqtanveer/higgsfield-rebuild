@@ -1,0 +1,421 @@
+/**
+ * Credits.
+ *
+ * A ledger is a table of numbers, so the page is built on the one thing a
+ * ledger needs and a pricing page never has: alignment. Deltas and balances sit
+ * in tabular figures in fixed columns, and the only colour on the page marks
+ * the direction of a row — money in, money out — plus the single primary
+ * action at the end.
+ *
+ * Namespaced `cr`: the legacy build already ships `.pricing`, and two
+ * components claiming one class name is a collision decided by import order.
+ */
+
+.cr {
+  padding-top: calc(var(--h-header) + var(--s-8));
+  padding-bottom: var(--s-10);
+}
+
+.cr__band {
+  padding-block: var(--s-8);
+}
+
+/* The head band sets the page's opening measure; its own bottom padding plus
+   the next band's top padding was stacking into a dead screen-height gap. */
+.cr__band--head {
+  padding-top: 0;
+  padding-bottom: var(--s-6);
+}
+
+.cr__h1 {
+  font-family: var(--f-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-5);
+}
+
+/* One serif italic word per headline, at 1.1em — the house rule. */
+.cr__serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+}
+
+.cr__lede {
+  max-width: 54ch;
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.cr__bandhead {
+  margin-bottom: var(--s-6);
+}
+
+.cr__h2 {
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-3);
+}
+
+.cr__sub {
+  max-width: 62ch;
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+/* --- the ledger ---------------------------------------------------------- */
+.cr__ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+}
+
+.cr__balance-label {
+  color: var(--c-text-3);
+  margin-bottom: var(--s-2);
+}
+
+.cr__balance-num {
+  font-family: var(--f-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  /* Tabular, so the figure does not shift sideways as it recomputes. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* The sum being performed, spelled out. This is the page's whole claim in one
+   line: the number above is these rows added up, not a stored total. */
+.cr__balance-sum {
+  margin-top: var(--s-2);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--c-text-3);
+  overflow-wrap: anywhere;
+}
+
+.cr__replay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-5);
+}
+
+.cr__step {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--c-line-strong);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  color: var(--c-text);
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.cr__step:hover:not(:disabled) {
+  border-color: var(--c-accent);
+  background: var(--c-accent-wash);
+}
+
+/* The accent arrives on the control that carries the demonstration forward,
+   and only while there is something left to apply. */
+.cr__step--go:not(:disabled) {
+  border-color: transparent;
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+}
+
+.cr__step--go:hover:not(:disabled) {
+  background: var(--c-accent-hover);
+  border-color: transparent;
+}
+
+.cr__step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* The rows. A four-column grid so time, reason, delta and balance align down
+   the whole list — a ledger whose columns wander is unreadable. */
+.cr__rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.cr__row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) 4rem 4.5rem;
+  gap: var(--s-3);
+  align-items: baseline;
+  padding: var(--s-3) var(--s-2);
+  border-bottom: 1px solid var(--c-line);
+  font-size: var(--t-sm);
+  /* Rows not yet applied are present but quiet: the list never reflows as you
+     step, because a table that changes height under a running total makes the
+     total impossible to follow. */
+  opacity: 0.32;
+  transition: opacity var(--d-base) var(--e-out),
+    background-color var(--d-base) var(--e-out);
+}
+
+.cr__row[data-on] {
+  opacity: 1;
+  background: var(--c-bg-2);
+}
+
+.cr__row:last-child {
+  border-bottom: none;
+}
+
+.cr__row-time {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.cr__row-reason {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+  min-width: 0;
+  color: var(--c-text);
+}
+
+.cr__row-ref {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.cr__row-delta,
+.cr__row-bal {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.cr__row-delta {
+  font-weight: 500;
+  color: var(--c-text-2);
+}
+
+/* Direction, not decoration: credits arriving read green, credits leaving read
+   in the body colour. Spend is the common case and should not be alarming. */
+.cr__row[data-kind="grant"] .cr__row-delta,
+.cr__row[data-kind="refund"] .cr__row-delta {
+  color: var(--c-good);
+}
+
+.cr__row-bal {
+  color: var(--c-text-3);
+}
+
+.cr__row[data-on] .cr__row-bal {
+  color: var(--c-text);
+}
+
+.cr__note {
+  margin-top: var(--s-4);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+/* --- costs ---------------------------------------------------------------- */
+.cr__costs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--s-3);
+}
+
+.cr__cost {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+}
+
+/* The cheapest model is the default one, so it is the lit one. */
+.cr__cost[data-lead] {
+  background: var(--c-surface-2);
+  border-color: var(--c-line-strong);
+}
+
+.cr__cost-model {
+  font-weight: 600;
+}
+
+.cr__cost-note {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.cr__cost-num {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  font-family: var(--f-display);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.cr__cost-unit {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--c-text-3);
+}
+
+/* --- grants --------------------------------------------------------------- */
+.cr__grants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: var(--s-4);
+}
+
+.cr__grant {
+  padding: var(--s-6);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+}
+
+.cr__grant[data-lead] {
+  background: var(--c-surface-2);
+  border-color: var(--c-line-strong);
+}
+
+.cr__grant-label {
+  color: var(--c-text-3);
+  margin-bottom: var(--s-3);
+}
+
+.cr__grant-num {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  font-family: var(--f-display);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.cr__grant-unit {
+  font-family: var(--f-sans);
+  font-size: var(--t-sm);
+  font-weight: 400;
+  letter-spacing: normal;
+  color: var(--c-text-3);
+}
+
+.cr__grant-blurb {
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+/* --- rules ---------------------------------------------------------------- */
+.cr__rules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--s-6) var(--s-7);
+}
+
+.cr__rule-title {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-2);
+}
+
+.cr__rule-body {
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+/* --- close ---------------------------------------------------------------- */
+.cr__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  padding-top: var(--s-7);
+  border-top: 1px solid var(--c-line);
+}
+
+.cr__end .cr__h2 {
+  margin-bottom: 0;
+}
+
+.cr__cta {
+  display: inline-flex;
+  align-items: center;
+  height: 2.9rem;
+  padding-inline: var(--s-6);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  box-shadow: 0 8px 30px -10px var(--c-accent-glow);
+  transition: background-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+}
+
+.cr__cta:hover {
+  background: var(--c-accent-hover);
+  box-shadow: 0 12px 40px -10px var(--c-accent-glow);
+}
+
+/* --- adaptation ----------------------------------------------------------- */
+@media (max-width: 880px) {
+  .cr__ledger {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cr__row {
+    /* Time folds away first: it is the least load-bearing column, and the
+       delta and running balance are the point. */
+    grid-template-columns: minmax(0, 1fr) 3.5rem 4rem;
+  }
+
+  .cr__row-time {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr__row {
+    transition: none;
+  }
+}

@@ -1,0 +1,24 @@
+import { chromium } from 'playwright';
+import { PNG } from 'pngjs';
+import fs from 'fs';
+const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await p.goto('http://localhost:5188/', { waitUntil: 'networkidle' });
+await p.waitForTimeout(2400);
+const buf = await p.screenshot();
+fs.writeFileSync('.shots/edge-check.png', buf);
+const png = PNG.sync.read(buf);
+const lum = (x,y) => { const i=(png.width*y+x)<<2; return 0.2126*png.data[i]+0.7152*png.data[i+1]+0.0722*png.data[i+2]; };
+const band = (name, pts) => {
+  const v = pts.map(([x,y])=>lum(x,y));
+  console.log(`${name.padEnd(14)} max ${Math.max(...v).toFixed(0).padStart(3)}  avg ${(v.reduce((a,c)=>a+c,0)/v.length).toFixed(0)}`);
+};
+const W=png.width, H=png.height;
+const col = x => Array.from({length:40},(_,i)=>[x, Math.floor(i*(H-1)/39)]);
+const row = y => Array.from({length:60},(_,i)=>[Math.floor(i*(W-1)/59), y]);
+band('left edge',  col(2));
+band('right edge', col(W-3));
+band('top edge',   row(2));
+band('bottom edge',row(H-3));
+band('right 40px', col(W-40));
+await b.close();

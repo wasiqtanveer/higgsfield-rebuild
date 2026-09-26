@@ -1,0 +1,106 @@
+/**
+ * The planned-surface and not-found page.
+ *
+ * Deliberately quiet and short. A dead end should be legible in one glance and
+ * hand you a way out — it is not an opportunity to sell anything.
+ */
+
+.soon {
+  display: grid;
+  align-items: center;
+  min-height: 100svh;
+  padding-top: calc(var(--h-header) + var(--s-8));
+  padding-bottom: var(--s-9);
+}
+
+.soon__inner {
+  max-width: 52ch;
+}
+
+/* The URL you actually asked for. On a page whose whole job is "this is not
+   what you expected", showing the path is the first useful fact. */
+.soon__path {
+  margin-bottom: var(--s-5);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  overflow-wrap: anywhere;
+}
+
+.soon__h1 {
+  font-family: var(--f-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-4);
+}
+
+/* One serif italic word per headline, at 1.1em — the house rule. */
+.soon__serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+}
+
+.soon__body {
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.soon__note {
+  margin-top: var(--s-4);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--c-text-3);
+}
+
+.soon__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-7);
+}
+
+.soon__cta {
+  display: inline-flex;
+  align-items: center;
+  height: 2.9rem;
+  padding-inline: var(--s-6);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  box-shadow: 0 8px 30px -10px var(--c-accent-glow);
+  transition: background-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+}
+
+.soon__cta:hover {
+  background: var(--c-accent-hover);
+  box-shadow: 0 12px 40px -10px var(--c-accent-glow);
+}
+
+.soon__ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 2.9rem;
+  padding-inline: var(--s-5);
+  border: 1px solid var(--c-line-strong);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text);
+  transition: border-color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.soon__ghost:hover {
+  border-color: var(--c-accent);
+  background: var(--c-accent-wash);
+}

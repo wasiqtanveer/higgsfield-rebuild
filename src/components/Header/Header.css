@@ -1,0 +1,554 @@
+/**
+ * The floating pill header.
+ *
+ * It is two objects, not one bar: the navigation pill and the auth pill, with a
+ * real gap between them. That gap is the point — sign-in is not a destination,
+ * so it does not belong in the same container as the destinations.
+ *
+ * The header is sticky rather than fixed. Fixed takes the pill out of flow and
+ * the first section then has to know the header's height to avoid sliding under
+ * it; sticky keeps the reservation in the document.
+ */
+
+.hdr {
+  /* Fixed, not sticky. Sticky keeps a reservation in the flow, which pushes the
+     first section down by the header's height — and the opening shot has to be
+     a whole screen, with the pill floating on top of it. Surfaces that are not
+     a full-bleed hero add their own top padding instead. */
+  position: fixed;
+  top: var(--s-4);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  padding-inline: var(--gutter);
+  /* The header row spans the viewport so the pills stay centred, but only the
+     pills themselves are clickable — otherwise this strip would swallow clicks
+     on the feed running underneath it. */
+  pointer-events: none;
+}
+
+.hdr > * {
+  pointer-events: auto;
+}
+
+/* --- the navigation pill ------------------------------------------------
+ * Paper-raised on paper, held by a hairline rather than a heavy shadow. The
+ * blur matters: images scroll under this pill, and without it the white goes
+ * opaque and reads as a bar again. */
+.hdr__pill {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: var(--h-header);
+  padding-inline: var(--s-2);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  background: var(--c-glass);
+  backdrop-filter: blur(18px) saturate(1.4);
+  /* An inset top highlight under the border. The border draws the pill's edge;
+     this gives it a thickness, which is what stops a translucent control
+     looking like a painted rectangle. */
+  box-shadow: var(--sh-2), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: background-color var(--d-base) var(--e-standard),
+    box-shadow var(--d-base) var(--e-standard);
+}
+
+/* Over the top of the page the pill sits on a ground it can afford to be
+   translucent against. Once content is running underneath it, it takes on more
+   body so the links stay legible over a bright image. */
+.hdr__pill.is-condensed {
+  background: rgba(16, 18, 24, 0.86);
+  box-shadow: var(--sh-3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* --- brand + progress ring --------------------------------------------- */
+.hdr__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding-inline: var(--s-1);
+  border-radius: var(--r-pill);
+}
+
+.hdr__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* Sized off the pill rather than fixed, so slimming the header never leaves
+     the ring hard against the pill's edge. */
+  width: calc(var(--h-header) - var(--s-2) - 4px);
+  height: calc(var(--h-header) - var(--s-2) - 4px);
+  flex: none;
+}
+
+/* Rotated so the ring fills from twelve o'clock, which is where anyone reads a
+   dial from. Left alone it starts at three and looks like a spinner caught
+   mid-frame. */
+.hdr__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.hdr__ring-track,
+.hdr__ring-fill {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.hdr__ring-track {
+  stroke: var(--c-line);
+}
+
+/* The accent's one job in the chrome. The ring is the only coloured thing up
+   here, so progress is the only thing colour means. */
+.hdr__ring-fill {
+  stroke: var(--c-accent);
+  transition: stroke-dashoffset var(--d-fast) linear;
+}
+
+.hdr__glyph {
+  width: 19px;
+  height: 19px;
+  color: var(--c-text);
+}
+
+.hdr__word {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  /* Collapsible: past the first screen the word gives its width back to the
+     links and the mark carries the identity alone. max-width against
+     overflow:hidden so the pill resizes smoothly instead of the word vanishing
+     and the layout jumping. */
+  max-width: 7ch;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width var(--d-base) var(--e-out),
+    opacity var(--d-fast) var(--e-standard);
+}
+
+.hdr__pill.is-condensed .hdr__word {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* The divider earns its place only while there is a wordmark to divide from. */
+.hdr__pill.is-condensed .hdr__rule {
+  width: 0;
+  margin-inline: 0;
+  opacity: 0;
+}
+
+/* --- divider ------------------------------------------------------------ */
+.hdr__rule {
+  width: 1px;
+  height: 18px;
+  margin-inline: var(--s-1);
+  background: var(--c-line-strong);
+  flex: none;
+  transition: width var(--d-base) var(--e-out),
+    margin-inline var(--d-base) var(--e-out),
+    opacity var(--d-fast) var(--e-standard);
+}
+
+@media (max-width: 860px) {
+  .hdr__word,
+  .hdr__rule {
+    display: none;
+  }
+}
+
+/* --- links -------------------------------------------------------------- */
+.hdr__links {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  margin: 0;
+}
+
+.hdr__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--c-text-2);
+  white-space: nowrap;
+  transition: color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.hdr__link:hover {
+  color: var(--c-text);
+  background: var(--c-surface-2);
+}
+
+.hdr__link.is-active {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+/* The active marker is a dot, not an underline. An underline inside a pill
+   fights the pill's own curve; a dot reads at this size and costs no height. */
+.hdr__link.is-active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 3px;
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  transform: translateX(-50%);
+}
+
+/* --- more ---------------------------------------------------------------- */
+.hdr__more {
+  position: relative;
+}
+
+.hdr__more-btn.is-open {
+  color: var(--c-text);
+  background: var(--c-surface-2);
+}
+
+.hdr__chev {
+  width: 13px;
+  height: 13px;
+  margin-left: -1px;
+  transition: transform var(--d-base) var(--e-out);
+}
+
+.hdr__chev.is-open {
+  transform: rotate(180deg);
+}
+
+.hdr__menu {
+  position: absolute;
+  top: calc(100% + var(--s-3));
+  right: 0;
+  width: min(92vw, 780px);
+  padding: var(--s-4);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: var(--sh-3);
+  animation: hdr-menu var(--d-base) var(--e-out) both;
+  /* Grows from the button it belongs to rather than from its own middle. */
+  transform-origin: top right;
+}
+
+@keyframes hdr-menu {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+.hdr__menu-item {
+  display: block;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-md);
+  transition: background-color var(--d-fast) var(--e-standard);
+}
+
+.hdr__menu-item:hover {
+  background: var(--c-surface-2);
+}
+
+.hdr__menu-label {
+  display: block;
+  font-size: var(--t-base);
+  font-weight: 500;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+/* The note is what makes this an overflow menu rather than a dumping ground:
+   every item says what it is for. */
+.hdr__menu-note {
+  display: block;
+  font-size: var(--t-xs);
+  line-height: 1.4;
+  color: var(--c-text-3);
+}
+
+/* --- the auth pill ------------------------------------------------------
+ * At rest: one rotating label, so the door is never hidden from people who
+ * already have an account. Engaged: it widens and both options resolve.
+ *
+ * The two states swap by animating max-width against overflow:hidden. The caps
+ * are in ch so they track the font rather than a guessed pixel width. */
+.authpill {
+  display: flex;
+  align-items: center;
+  height: var(--h-header);
+  padding-inline: var(--s-1);
+  /* A lit top edge rather than a uniform border. On a dark ground that single
+     highlight is what makes the pill read as a raised object; a full border
+     just draws a ring. */
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-pill);
+  /* One step lighter than the nav pill's glass, so the two pills are legibly
+     different objects rather than one bar split by a gap. */
+  background: var(--c-surface);
+  backdrop-filter: blur(18px);
+  color: var(--c-text);
+  box-shadow: var(--sh-2);
+  flex: none;
+}
+
+.authpill__cycle,
+.authpill__split {
+  display: grid;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width var(--d-base) var(--e-out),
+    opacity var(--d-fast) var(--e-standard),
+    padding-inline var(--d-base) var(--e-out);
+}
+
+/* --- resting label ---
+ * Both words occupy the same grid cell so the pill does not resize as they
+ * alternate; the cap fits the longer of the two. */
+.authpill__cycle {
+  grid-template-areas: "stack";
+  max-width: 8ch;
+  padding-inline: var(--s-3);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: var(--ls-tight);
+}
+
+.authpill__cycle-item {
+  grid-area: stack;
+  opacity: 0;
+  /* Rolls up and out; the incoming word arrives from below. */
+  transform: translateY(60%);
+  transition: opacity var(--d-base) var(--e-out),
+    transform var(--d-base) var(--e-out);
+}
+
+.authpill__cycle-item.is-current {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- resolved pair --- */
+.authpill__split {
+  grid-auto-flow: column;
+  align-items: center;
+  max-width: 0;
+  opacity: 0;
+}
+
+.authpill:is(:hover, :focus-within) .authpill__cycle,
+.authpill.is-engaged .authpill__cycle {
+  max-width: 0;
+  opacity: 0;
+  padding-inline: 0;
+}
+
+.authpill:is(:hover, :focus-within) .authpill__split,
+.authpill.is-engaged .authpill__split {
+  max-width: 22ch;
+  opacity: 1;
+}
+
+.authpill__btn {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--c-text-2);
+  white-space: nowrap;
+  transition: color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.authpill__btn:hover {
+  color: var(--c-text);
+  background: var(--c-surface-3);
+}
+
+.authpill__btn--primary {
+  color: var(--c-text-on-accent);
+  background: var(--c-accent);
+  font-weight: 600;
+  box-shadow: var(--sh-glow);
+}
+
+.authpill__btn--primary:hover {
+  background: var(--c-accent-hover);
+  color: var(--c-text-on-accent);
+}
+
+/* The default focus ring is the accent, which is invisible against the accent
+   fill it would sit on. */
+.authpill__btn:focus-visible {
+  outline-color: var(--c-text-on-accent);
+}
+
+.authpill__div {
+  width: 1px;
+  height: 18px;
+  margin-inline: var(--s-1);
+  background: var(--c-line);
+}
+
+/* --- touch and small screens -------------------------------------------
+ * There is no hover on a touch screen, so a pill that only resolves on hover
+ * never resolves at all. Show both options outright. */
+@media (hover: none) {
+  .authpill__cycle {
+    max-width: 0;
+    opacity: 0;
+    padding-inline: 0;
+  }
+
+  .authpill__split {
+    max-width: 22ch;
+    opacity: 1;
+  }
+}
+
+/* Once the links no longer have room they fold into More, which already exists
+   to hold the overflow. Sign up survives alone: on a phone the second option
+   costs more width than the ambiguity costs clarity. */
+@media (max-width: 700px) {
+  .hdr {
+    gap: var(--s-2);
+  }
+
+  .hdr__links {
+    display: none;
+  }
+
+  .authpill__btn:not(.authpill__btn--primary),
+  .authpill__div {
+    display: none;
+  }
+}
+
+/* The rotating label is decoration. The timer is stopped in JS under reduced
+   motion; this stops the word sliding when the state does change. */
+@media (prefers-reduced-motion: reduce) {
+  .authpill__cycle-item {
+    transform: none;
+  }
+}
+
+
+/* --- the mega panel -----------------------------------------------------
+ * Three columns, each headed by a verb. The old rail carried this same
+ * inventory in one nineteen-item line; the grouping is the only thing that
+ * makes it findable. */
+.hdr__menu-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+}
+
+.hdr__col-title {
+  padding-inline: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+.hdr__menu-item {
+  /* Grid rather than block: the label and its note are one row, and the tag
+     inside the label needs a baseline to sit on. */
+  display: grid;
+  gap: 1px;
+}
+
+/* A row that says what it is instead of pretending to be a link. */
+.hdr__menu-item.is-soon {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.hdr__menu-item.is-soon:hover {
+  background: none;
+}
+
+.hdr__menu-label {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.hdr__soon {
+  padding: 1px 6px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-3);
+}
+
+.hdr__menu-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-line);
+}
+
+.hdr__foot-link {
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-accent-text);
+  transition: background-color var(--d-fast) var(--e-standard);
+}
+
+.hdr__foot-link:hover {
+  background: var(--c-accent-wash);
+}
+
+.hdr__foot-note {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+/* The panel is wider than most phones, so it stops being a panel and becomes a
+   single scrolling column anchored to the pill. */
+@media (max-width: 760px) {
+  .hdr__menu {
+    right: auto;
+    left: 50%;
+    transform-origin: top center;
+    translate: -50% 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  .hdr__menu-cols {
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+}

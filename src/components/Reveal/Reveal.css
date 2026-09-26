@@ -1,0 +1,48 @@
+/**
+ * The two arrival motions.
+ *
+ * Both are opt-in via .is-armed, which JS only adds once it knows it can also
+ * take it away. Nothing here hides content by default.
+ */
+
+.reveal.is-armed {
+  opacity: 0;
+  transition: opacity var(--d-slow) var(--e-out),
+    transform var(--d-slower) var(--e-out),
+    filter var(--d-slower) var(--e-out);
+  transition-delay: var(--reveal-delay, 0ms);
+  /* The transform is the expensive part; promoting it for the duration keeps a
+     long stagger from repainting text on every frame. */
+  will-change: transform, opacity;
+}
+
+/* Text and rows. A short lift — far enough to read as motion, not so far that
+   the eye has to follow it back to where it started. */
+.reveal--rise.is-armed {
+  transform: translate3d(0, 22px, 0);
+}
+
+/* Anything that should arrive from behind the screen rather than below it.
+   The blur is what sells the depth: things far away are soft, and dropping the
+   blur as it lands does more for the illusion than the Z distance alone. */
+.reveal--depth.is-armed {
+  transform: perspective(1200px) translate3d(0, 40px, -180px) rotateX(7deg);
+  filter: blur(6px);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  will-change: auto;
+}
+
+/* Honoured here as well as globally: a reveal that merely runs instantly still
+   starts from a transformed state, and on a slow paint that is a visible jump. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal.is-armed {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}

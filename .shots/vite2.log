@@ -1,0 +1,60 @@
+Re-optimizing dependencies because lockfile has changed
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m813[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5188[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m1:09:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/PhotoWall/PhotoWall.jsx[22m
+[2m1:09:27 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/PhotoWall/PhotoWall.css[22m
+[2m1:09:54 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m__msprobe.html[22m
+[2m1:09:54 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m__msprobe.html[22m
+[2m1:10:04 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mdist-probe/index.html[22m
+[2m1:10:25 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mdist-probe/index.html[22m
+[2m1:10:40 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m__msprobe.html[22m
+[2m1:11:20 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/PhotoWall/PhotoWall.css[22m
+[2m1:12:19 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.jsx[22m
+[2m1:15:28 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m1:15:49 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:16:48 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.fd-preview.html[22m
+[2m1:16:48 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.fd-preview.html[22m
+[2m1:16:49 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m1:16:49 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:18:03 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:19:26 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:21:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m1:21:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:24:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/SiteFoot/SiteFoot.jsx[22m
+[2m1:24:05 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/SiteFoot/SiteFoot.css[22m
+[2m1:25:09 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.fd-preview.html[22m
+[2m1:25:42 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m1:28:12 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.jsx[22m
+[2m1:29:50 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m1:32:03 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.jsx[22m
+[2m1:32:19 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.css[22m
+[2m1:35:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.css[22m
+[2m1:38:08 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.css[22m
+[2m1:38:31 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.css[22m
+[2m1:40:36 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.css[22m
+[2m1:45:55 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m2:01:57 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.jsx[22m
+[2m2:02:29 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Home/Home.jsx[22m
+[2m2:12:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m2:12:55 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m2:14:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m2:15:16 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m2:16:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m2:23:15 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m9:10:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m9:10:52 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/SiteFoot/SiteFoot.css[22m
+[2m9:12:41 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.jsx[22m
+[2m9:17:21 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m9:18:32 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/CloseCall/CloseCall.css[22m
+[2m9:28:37 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/SiteFoot/SiteFoot.css[22m
+[2m10:22:38 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:24:06 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx[22m
+[2m10:31:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Credits/Credits.css[22m
+[2m10:31:07 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Mcp/Graft.css[22m
+[2m10:44:53 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Credits/Credits.css[22m
+[2m10:44:53 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Mcp/Graft.css[22m
+[2m10:47:18 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Mcp/Graft.css[22m
+[2m11:40:04 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx[22m

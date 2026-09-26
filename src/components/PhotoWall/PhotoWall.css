@@ -1,0 +1,151 @@
+/**
+ * The photo wall behind the hero.
+ *
+ * A tilted plane of drifting rows. Everything here is subordinate by
+ * construction: it is darkened hard, it never receives a pointer, and it is
+ * removed from the accessibility tree — the only job is to make the ground
+ * feel like it is made of the product's own output.
+ */
+
+/* Namespaced `pwall`, not `wall`: the legacy Higgsfield build already ships a
+   `.wall` component whose `.wall > * { width: 100% }` was pinning this scrim to
+   the viewport width and stopping its right offset from applying — which is
+   what showed as a bright wedge down the right edge. Two components claiming
+   one class name is a collision whose winner is decided by import order. */
+.pwall {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* No `contain` and no `transform` here. Both make this element a containing
+     block, and the absolutely-positioned scrim inside it then resolved against
+     a box a few pixels short of the section — which showed as a bright band of
+     ungraded tiles along the bottom and sides. The compositing win was not
+     worth a scrim that cannot be relied on to cover. */
+}
+
+/* The plane. Oversized on purpose: once it is rotated, a plane the size of its
+   container leaves bare triangles in the corners. */
+.pwall__plane {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Overshoots hard. Rotating a plane leaves bare triangles at the corners,
+     and any gap at the bottom edge shows as a hard diagonal seam where the
+     tiles stop. */
+  width: 190%;
+  height: 210%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(8px, 1.1vw, 18px);
+  transform: translate(-50%, -50%) rotate(-7deg);
+}
+
+/* Rows grow to fill the overshooting plane rather than sitting centred inside
+   it with bare bands above and below — that band was the diagonal seam. */
+.pwall__row {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Rows share the plane in different proportions, so the field has a rhythm
+   rather than reading as a uniform contact sheet. */
+.pwall__row--sm {
+  flex-grow: 0.78;
+}
+
+.pwall__row--md {
+  flex-grow: 1;
+}
+
+.pwall__row--lg {
+  flex-grow: 1.32;
+}
+
+.pwall__track {
+  display: flex;
+  flex: none;
+  gap: clamp(8px, 1.1vw, 18px);
+  /* The track holds two identical passes and travels exactly one pass, so the
+     loop closes on itself with no visible jump. */
+  animation: wall-drift linear infinite;
+  /* No will-change. Eight permanently-promoted layers this size cost more in
+     memory and compositing than the hint saves — the animation is already a
+     pure transform, which the compositor handles without being told. */
+}
+
+.pwall__track[data-reverse] {
+  animation-direction: reverse;
+}
+
+@keyframes wall-drift {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.pwall__tile {
+  display: block;
+  flex: none;
+  height: 100%;
+  /* Landscape tiles from vertical sources: the wall is texture, so a crop that
+     keeps the rhythm matters more than one that keeps a subject. */
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--c-surface);
+}
+
+.pwall__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 35%;
+  display: block;
+  /* Rasterised once when the tile decodes, not re-evaluated per frame: these
+     images never change, so the filter result is cacheable. */
+  /* Dark at the source. The scrim above shapes the field, but it must never
+     be the only thing standing between a bright tile and the type: a gradient
+     that has to reach the exact edge will leak on some viewport, and it did,
+     down the right side and along the bottom. */
+  filter: grayscale(0.7) brightness(0.3) contrast(0.95);
+}
+
+/* One scrim, not three.
+ *
+ * Grading, veil and vignette were three stacked full-viewport layers, one of
+ * them a `mix-blend-mode`, and every one of them re-composited on each scroll
+ * frame — measured at ~19 dropped frames per 175 against 6 with the wall gone.
+ * Collapsed into a single painted element they cost one composite, and the
+ * desaturation moves back onto the tiles where it is rasterised once at decode
+ * rather than per frame.
+ */
+.pwall__veil {
+  position: absolute;
+  /* Overshoots the wall generously on every side. A scrim that has to land
+     exactly on the edge is a scrim that leaks on some viewport — and it did,
+     as a bright band of ungraded tiles along the bottom and sides. It is
+     clipped by the wall's own overflow, so the overshoot costs nothing.
+
+     The gradients reach full opacity well before the edges for the same
+     reason: whatever the rounding does, the last few pixels are solid ground.
+  */
+  inset: -24px;
+  background: radial-gradient(
+      ellipse 70% 62% at 50% 46%,
+      rgba(8, 9, 12, 0.9) 0%,
+      rgba(8, 9, 12, 0.8) 55%,
+      rgba(8, 9, 12, 0.86) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      var(--c-bg) 0%,
+      rgba(8, 9, 12, 0.72) 20%,
+      rgba(8, 9, 12, 0.72) 64%,
+      var(--c-bg) 94%
+    );
+}

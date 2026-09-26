@@ -10,12 +10,16 @@
     "smoke": "esbuild scripts/smoke.jsx --bundle --platform=node --format=cjs --jsx=automatic --loader:.css=empty --outfile=node_modules/.cache/smoke.cjs --log-level=error && node node_modules/.cache/smoke.cjs"
   },
   "dependencies": {
+    "framer-motion": "^13.4.4",
+    "lucide-react": "^1.48.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
+    "playwright": "^1.63.0",
+    "pngjs": "^7.0.0",
     "vite": "^5.4.8"
   }
 }

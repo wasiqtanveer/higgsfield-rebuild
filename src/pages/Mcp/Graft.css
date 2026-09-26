@@ -1,0 +1,442 @@
+/**
+ * The MCP page.
+ *
+ * The subject is an API, so the page is set as one: tool names, arguments and
+ * return shapes in JetBrains Mono at reading size, because on this product the
+ * text *is* the thing being described rather than a decorative nod at being
+ * technical.
+ *
+ * Namespaced `gm`: the legacy build ships `.mcpp`, and two components claiming
+ * one class name is a collision decided by import order.
+ */
+
+.gm {
+  padding-top: calc(var(--h-header) + var(--s-8));
+  padding-bottom: var(--s-10);
+}
+
+.gm__band {
+  padding-block: var(--s-8);
+}
+
+/* The head band sets the page's opening measure; its own bottom padding plus
+   the next band's top padding was stacking into a dead screen-height gap. */
+.gm__band--head {
+  padding-top: 0;
+  padding-bottom: var(--s-6);
+}
+
+.gm__h1 {
+  max-width: 18ch;
+  font-family: var(--f-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-5);
+}
+
+/* One serif italic word per headline, at 1.1em — the house rule. */
+.gm__serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  letter-spacing: -0.01em;
+}
+
+.gm__lede {
+  max-width: 58ch;
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.gm__bandhead {
+  margin-bottom: var(--s-6);
+}
+
+.gm__h2 {
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: var(--ls-display);
+  margin-bottom: var(--s-3);
+}
+
+.gm__sub {
+  max-width: 62ch;
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+/* --- install -------------------------------------------------------------- */
+.gm__install {
+  display: grid;
+  grid-template-columns: minmax(0, 13rem) minmax(0, 1fr);
+  gap: var(--s-5);
+  align-items: start;
+}
+
+.gm__rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.gm__client {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  text-align: left;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: background-color var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.gm__client:hover {
+  color: var(--c-text);
+  background: var(--c-surface);
+}
+
+/* The selected client is lit rather than accented: this is a choice of which
+   instructions to read, not the page's primary action. */
+.gm__client[aria-selected="true"] {
+  background: var(--c-surface-2);
+  border-color: var(--c-line-strong);
+  color: var(--c-text);
+}
+
+.gm__cmd {
+  min-width: 0;
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+
+.gm__cmd-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--c-line);
+}
+
+.gm__cmd-label {
+  color: var(--c-text-3);
+}
+
+.gm__copy {
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  color: var(--c-text);
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard);
+}
+
+.gm__copy:hover {
+  border-color: var(--c-accent);
+  background: var(--c-accent-wash);
+}
+
+.gm__pre {
+  margin: 0;
+  padding: var(--s-4);
+  /* Commands are long and must not be re-wrapped into something that would not
+     run if pasted; they scroll instead. */
+  overflow-x: auto;
+  font-size: var(--t-sm);
+  line-height: 1.7;
+  color: var(--c-text);
+  tab-size: 2;
+}
+
+.gm__cmd-note {
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  border-top: 1px solid var(--c-line);
+}
+
+/* --- tools ---------------------------------------------------------------- */
+.gm__tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--s-4);
+}
+
+.gm__tool {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+}
+
+.gm__tool-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.gm__tool-name {
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.gm__tool-tags {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.gm__tag {
+  padding: 2px var(--s-2);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-xs);
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-3);
+}
+
+/* A tool that writes, and especially one that spends, is worth marking — but
+   with light rather than the accent, which belongs to the primary action. */
+.gm__tag[data-kind="write"] {
+  border-color: var(--c-line-strong);
+  color: var(--c-text-2);
+}
+
+.gm__tag[data-kind="cost"] {
+  border-color: var(--c-line-strong);
+  background: var(--c-surface-3);
+  color: var(--c-text);
+}
+
+.gm__tool-blurb {
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+.gm__sig {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-top: auto;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-line);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+}
+
+.gm__sig div {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--s-2);
+}
+
+.gm__sig dt {
+  color: var(--c-text-3);
+}
+
+.gm__sig dd {
+  margin: 0;
+  color: var(--c-text-2);
+  overflow-wrap: anywhere;
+}
+
+/* --- the exchange --------------------------------------------------------- */
+.gm__flowtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
+}
+
+.gm__flowtab {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard),
+    background-color var(--d-fast) var(--e-standard),
+    color var(--d-fast) var(--e-standard);
+}
+
+.gm__flowtab:hover {
+  border-color: var(--c-line-strong);
+  color: var(--c-text);
+}
+
+.gm__flowtab[aria-selected="true"] {
+  border-color: var(--c-line-strong);
+  background: var(--c-surface-2);
+  color: var(--c-text);
+}
+
+.gm__flowblurb {
+  margin-bottom: var(--s-5);
+  color: var(--c-text-3);
+  font-size: var(--t-sm);
+}
+
+.gm__chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+}
+
+.gm__turn {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: var(--s-4);
+  align-items: baseline;
+  /* Turns arrive in reading order, on the shared element curve, keyed to the
+     flow so switching tabs replays rather than snapping. */
+  animation: gm-turn var(--d-slow) var(--e-out) backwards;
+  animation-delay: calc(var(--i) * 90ms);
+}
+
+@keyframes gm-turn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.gm__turn-who {
+  color: var(--c-text-3);
+  text-align: right;
+}
+
+.gm__turn-text {
+  min-width: 0;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.gm__turn[data-role="you"] .gm__turn-text {
+  color: var(--c-text);
+  font-weight: 500;
+}
+
+.gm__turn[data-role="ai"] .gm__turn-text {
+  color: var(--c-text-2);
+}
+
+/* The tool call is the one line that is literally code, so it is the one line
+   set as code — in a box, to separate the machine's turn from the people's. */
+.gm__turn[data-role="tool"] .gm__turn-text {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-sm);
+  background: var(--c-bg-2);
+  font-size: var(--t-xs);
+  color: var(--c-accent-text);
+}
+
+/* --- why ------------------------------------------------------------------ */
+.gm__why {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: var(--s-6) var(--s-7);
+}
+
+.gm__reason-title {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  margin-bottom: var(--s-2);
+}
+
+.gm__reason-body {
+  color: var(--c-text-2);
+  line-height: 1.6;
+}
+
+/* --- close ---------------------------------------------------------------- */
+.gm__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  padding-top: var(--s-7);
+  border-top: 1px solid var(--c-line);
+}
+
+.gm__end .gm__h2 {
+  margin-bottom: 0;
+}
+
+.gm__cta {
+  display: inline-flex;
+  align-items: center;
+  height: 2.9rem;
+  padding-inline: var(--s-6);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  box-shadow: 0 8px 30px -10px var(--c-accent-glow);
+  transition: background-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+}
+
+.gm__cta:hover {
+  background: var(--c-accent-hover);
+  box-shadow: 0 12px 40px -10px var(--c-accent-glow);
+}
+
+/* --- adaptation ----------------------------------------------------------- */
+@media (max-width: 880px) {
+  .gm__install {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gm__rail {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .gm__turn {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-1);
+  }
+
+  .gm__turn-who {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gm__turn {
+    animation: none;
+  }
+}

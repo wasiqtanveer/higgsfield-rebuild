@@ -1,52 +1,119 @@
 /**
- * Design tokens. Every colour, space, radius, type step and easing used anywhere
- * in the app resolves to a variable declared here. No hardcoded hex outside this
- * file -- that rule is what keeps the per-component CSS coherent.
+ * Design tokens — Graft.
  *
- * Higgsfield is a dark-first product: near-black ground, high-contrast white
- * type, and colour used sparingly so the video thumbnails carry the palette.
+ * The direction: a dark instrument. Cool near-black ground, one electric indigo,
+ * glass chrome that the work shows through, and type that reads as engineered
+ * rather than printed. This is a tool for driving a model, and it should look
+ * like the machine it is — the earlier warm-paper draft read as a print
+ * catalogue, which is a lovely thing to be and the wrong thing here.
+ *
+ * Two rules keep a dark UI from turning to mud:
+ *   1. Ground is cool, not neutral. A pure grey #111 next to a saturated
+ *      generation looks dusty; a blue-shifted black looks lit.
+ *   2. Depth comes from light, not shadow. On black a drop shadow is invisible,
+ *      so surfaces separate by getting *lighter* and by a 1px top highlight.
+ *
+ * Colour is rationed hard. Every generated image on this product is full-bleed
+ * colour, so the accent marks exactly two things: the single most important
+ * action on a screen, and the lineage thread that is the product's whole idea.
+ *
+ * Every colour, space, radius, type step and easing resolves to a variable here.
+ * No hardcoded hex outside this file.
  */
 
 :root {
-  /* --- ground & surfaces ---------------------------------------------
-   * Higgsfield sits on true black, not a soft charcoal. The thumbnails are
-   * full-bleed against it, which is what gives the grids their contrast. */
-  --c-bg: #000000;
-  --c-surface: #0b0b0c;
-  --c-surface-2: #141416;
-  --c-surface-3: #1c1c1f;
-  --c-hairline: rgba(255, 255, 255, 0.09);
-  --c-hairline-strong: rgba(255, 255, 255, 0.18);
+  /* --- ground -----------------------------------------------------------
+   * Four steps, each lighter than the last. --bg is the page; --surface is a
+   * panel on it; --surface-2 is a control inside that panel. Anything needing
+   * a fifth step is nested too deep. */
+  --c-bg: #08090c;
+  --c-bg-2: #0d0f14;
+  --c-surface: #14171f;
+  --c-surface-2: #1c2029;
+  --c-surface-3: #262b36;
 
-  /* --- type ----------------------------------------------------------- */
-  --c-text: #ffffff;
-  --c-text-dim: #a1a1aa;
-  --c-text-faint: #6b6b76;
+  /* Glass. The chrome is translucent so generations scroll *through* it, which
+     is what keeps a floating pill from reading as an opaque bar. */
+  --c-glass: rgba(20, 23, 31, 0.72);
 
-  /* --- accent ---------------------------------------------------------
-   * Acid lime is the brand. It carries primary actions, active nav, and the
-   * display headings -- and nothing else, or it stops reading as an accent.
-   * Magenta is reserved strictly for promotional badges. */
-  --c-accent: #d3f634;
-  --c-accent-hover: #e2ff5c;
-  --c-accent-ink: #000000;
-  /* The under-edge of an extruded control. Buttons on this product are solid
-     objects with a lit top face and a darker side, not flat fills. */
-  --c-accent-deep: #8aa81c;
-  --c-light-deep: #bfbfc6;
-  --e-bevel: 4px;
-  --c-promo: #ff2d78;
-  --c-focus: #d3f634;
-  --c-danger: #ff5c5c;
+  /* --- lines ------------------------------------------------------------
+   * White at low alpha, never a fixed grey — a grey hairline stops tracking
+   * whatever surface it lands on and separates into a visible band. */
+  --c-line: rgba(255, 255, 255, 0.08);
+  --c-line-strong: rgba(255, 255, 255, 0.16);
+  /* The lit top edge that gives a raised control its thickness. */
+  --c-line-lit: rgba(255, 255, 255, 0.1);
 
-  /* --- radii ----------------------------------------------------------- */
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 16px;
-  --r-xl: 24px;
-  --r-pill: 999px;
+  /* --- text -------------------------------------------------------------
+   * Never pure white. #fff on near-black blooms and vibrates at text sizes;
+   * a hair of blue in the off-white sits still and matches the ground. */
+  --c-text: #f3f5fa;
+  --c-text-2: #a4acbd;
+  --c-text-3: #6b7486;
+  /* Ink on a filled accent button. Near-black, not white: neon orange is a
+     light colour and white on it fails contrast (see the accent note below). */
+  --c-text-on-accent: #1a0d05;
 
-  /* --- spacing (4px base) ---------------------------------------------- */
+  /* --- accent -----------------------------------------------------------
+   * Neon orange. A hot ignition colour on a cool black ground: it is the
+   * brightest thing on the page by a wide margin, which is exactly why it is
+   * rationed to the primary action and the lineage thread.
+   *
+   * One consequence worth stating, because it decides a rule rather than a
+   * value: at #ff5c1a white type sits at about 3.1:1, under the 4.5:1 floor.
+   * So a *filled* accent button carries near-black ink, not white — see
+   * --c-text-on-accent. Orange-on-black type uses --c-accent-text, the
+   * lightened cut, which clears 4.5:1 comfortably.
+   *   --accent-glow is for halos, blooms and lineage threads only. */
+  --c-accent: #ff5c1a;
+  --c-accent-hover: #ff7a3d;
+  --c-accent-text: #ff9a63;
+  --c-accent-wash: rgba(255, 92, 26, 0.12);
+  --c-accent-wash-strong: rgba(255, 92, 26, 0.24);
+  --c-accent-glow: rgba(255, 92, 26, 0.5);
+
+  --c-focus: #ff8a50;
+  /* Pulled toward red and away from the accent: a danger colour that reads as
+     a shade of the brand accent stops warning anybody. */
+  --c-danger: #ff4d6d;
+  --c-danger-wash: rgba(255, 77, 109, 0.14);
+  --c-good: #3ddc97;
+
+  /* --- type -------------------------------------------------------------
+   * Three voices, each with a job.
+   *   display — Space Grotesk. Geometric, slightly mechanical, tight. It is
+   *             the face this category actually speaks in.
+   *   sans    — Inter. Everything you operate. Invisible on purpose.
+   *   mono    — JetBrains Mono. Prompts, seeds, model ids. On this product a
+   *             prompt is the artifact, so it is set as the authored text it
+   *             is — mono for data, not mono as costume.
+   *   serif   — Instrument Serif, italic only. One word per headline, never a
+   *             whole line: the contrast is the point, and it stops being a
+   *             contrast the moment it is the voice. */
+  --f-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --f-serif: "Instrument Serif", Georgia, serif;
+  --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --t-xs: 0.75rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.25rem;
+  --t-xl: 1.625rem;
+  --t-2xl: 2.25rem;
+  --t-display: clamp(2.5rem, 6.4vw, 4.75rem);
+  --t-display-sm: clamp(1.875rem, 4vw, 3rem);
+
+  /* A geometric sans set large needs real negative tracking or the counters
+     read as gaps. Three steps, because one tracking value cannot serve a 76px
+     headline and a 12px label. */
+  --ls-display: -0.035em;
+  --ls-tight: -0.014em;
+  --ls-caps: 0.09em;
+
+  /* --- spacing (4px base) ----------------------------------------------- */
   --s-1: 4px;
   --s-2: 8px;
   --s-3: 12px;
@@ -56,61 +123,61 @@
   --s-7: 48px;
   --s-8: 64px;
   --s-9: 96px;
-  --s-10: 128px;
+  --s-10: 144px;
 
-  /* --- type scale ------------------------------------------------------ */
-  --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
-  --f-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  /* --- radii ------------------------------------------------------------ */
+  --r-xs: 3px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
 
-  /* Display face for section and hero headings. The real product sets these
-     in a heavy condensed grotesk, uppercase, tightly tracked -- Archivo at
-     800 is the closest thing available on Google Fonts. */
-  --f-display: "Archivo", "Inter", system-ui, sans-serif;
-  --ls-display: -0.02em;
+  /* --- elevation --------------------------------------------------------
+   * Near-opaque black, pushed further and softer than a light theme needs: on
+   * a dark ground a shadow only reads once it is much darker than the surface
+   * casting it. --glow is the accent's own light, used on primary controls. */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --sh-2: 0 8px 24px -8px rgba(0, 0, 0, 0.7);
+  --sh-3: 0 28px 70px -20px rgba(0, 0, 0, 0.85);
+  --sh-glow: 0 0 0 1px var(--c-accent-wash-strong), 0 8px 28px -10px var(--c-accent-glow);
 
-  --t-xs: 0.75rem;
-  --t-sm: 0.8125rem;
-  --t-base: 0.9375rem;
-  --t-md: 1.0625rem;
-  --t-lg: 1.375rem;
-  --t-xl: 1.875rem;
-  --t-2xl: 2.5rem;
-  --t-3xl: clamp(2.5rem, 6vw, 4.5rem);
-
-  /* --- motion ----------------------------------------------------------
-   * Standard = most UI transitions. Enter = things arriving. Spring-ish is
-   * for the generate flow, where a little overshoot reads as "alive". */
+  /* --- motion ----------------------------------------------------------- */
+  --e-out: cubic-bezier(0.16, 1, 0.3, 1);
   --e-standard: cubic-bezier(0.2, 0, 0, 1);
-  --e-enter: cubic-bezier(0.16, 1, 0.3, 1);
-  --e-exit: cubic-bezier(0.4, 0, 1, 1);
+  --e-in: cubic-bezier(0.4, 0, 1, 1);
 
-  --d-fast: 120ms;
-  --d-base: 200ms;
-  --d-slow: 360ms;
-  --d-slower: 600ms;
-
-  /* --- elevation -------------------------------------------------------- */
-  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --sh-2: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --sh-3: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --d-fast: 130ms;
+  --d-base: 240ms;
+  --d-slow: 420ms;
+  --d-slower: 720ms;
 
   /* --- layout ------------------------------------------------------------ */
-  --w-page: 1280px;
-  /* Explore runs wider than the marketing pages -- it is a feed, and capping
-     it at the prose-friendly width wastes half a large display. */
-  --w-page-wide: 1880px;
-  --w-prose: 64ch;
-  --h-nav: 56px;
-  /* The header condenses once the page leaves the top. */
-  --h-nav-condensed: 46px;
-  --gutter: var(--s-5);
+  --w-page: 1240px;
+  --w-page-wide: 1640px;
+  --w-prose: 68ch;
+  /* The pill's height. Slimmer than a conventional header on purpose: it
+     floats over content, so every pixel of it is covering the work. */
+  --h-header: 50px;
+  --gutter: var(--s-6);
+
+  /* --- legacy aliases ---------------------------------------------------
+   * The routes still on the previous design system reference these names. They
+   * are mapped forward so those pages stay viewable during the migration, and
+   * this block is deleted with the last of them. */
+  --c-hairline: var(--c-line);
+  --c-hairline-strong: var(--c-line-strong);
+  --c-text-dim: var(--c-text-2);
+  --c-text-faint: var(--c-text-3);
+  --c-accent-ink: var(--c-text-on-accent);
+  --c-accent-deep: #c23d08;
+  --c-light-deep: #5a6072;
+  --c-promo: #ff2d78;
+  --e-bevel: 3px;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   :root {
     --gutter: var(--s-4);
-    --h-nav: 52px;
-    --h-nav-condensed: 46px;
+    --h-header: 46px;
   }
 }

@@ -1,0 +1,74 @@
+/**
+ * The section arrival.
+ *
+ * Four properties move together off one driver: the band lifts, scales up a
+ * hair, unblurs and brightens. Together they read as a plane coming forward out
+ * of the page rather than as content fading in on a flat surface — and the blur
+ * is what sells it, because depth-of-field is the cue the eye actually reads as
+ * distance. Scale and lift alone look like a slide.
+ *
+ * Not a keyframe animation: the driver is the section's own scroll position, so
+ * the band is *tied to the scroll* rather than playing a canned clip that
+ * started when a threshold tripped. Scrub the wheel slowly and the section
+ * arrives slowly, which is the difference between cinematic and animated.
+ *
+ * No transition on these properties. The driver already changes continuously,
+ * and a transition on top of a continuous driver adds lag between the wheel and
+ * the picture — the one thing that makes scroll-linked motion feel broken.
+ */
+
+.arrive.is-armed {
+  /* 0 = fully away, 1 = arrived. Set inline by JS; declared here so the
+     element is valid and composed before the observer's first callback. */
+  --arrive: 0;
+  --arrive-lift: 64px;
+
+  /* Each property reads the driver through its own curve so they do not all
+     finish on the same frame — the blur clearing slightly before the travel
+     ends is what stops the arrival reading as one mechanical move. */
+  transform: translate3d(
+      0,
+      calc((1 - var(--arrive)) * var(--arrive-lift)),
+      0
+    )
+    scale(calc(0.982 + 0.018 * var(--arrive)));
+  /* No `brightness` here, deliberately. Dimming the band darkens its whole box
+     including the ground, which draws a hard-edged rectangle over whatever the
+     band overlaps on its way in — clearly visible against the hero. Depth is
+     carried by the blur and the opacity instead, both of which leave the
+     transparent parts of the band transparent. */
+  filter: blur(calc((1 - var(--arrive)) * 6px));
+  opacity: calc(0.28 + 0.72 * var(--arrive));
+
+  /* The band is one composited layer for the duration. Without this the blur
+     forces a full repaint of every child on every frame of the scroll. */
+  will-change: transform, filter, opacity;
+  /* Scaled from its own top edge, not its bottom: the band arrives from below,
+     so growing from the bottom pushes its content up into the section above
+     while the section above is still being read. */
+  transform-origin: 50% 0%;
+}
+
+/* Arrived. The properties are dropped entirely rather than held at their end
+   values: a permanent `filter` on a section containing a fixed or sticky child
+   creates a containing block that breaks it, and `will-change` left on forever
+   pins a layer per band for the life of the page. */
+.arrive.is-settled {
+  transform: none;
+  filter: none;
+  opacity: 1;
+  will-change: auto;
+}
+
+/* A scroll-driven scale, blur and luminance sweep across whole page regions is
+   precisely the effect this setting exists to stop. JS never arms the element
+   under it, so this is the belt to that braces: if the class is ever present
+   the section still renders composed. */
+@media (prefers-reduced-motion: reduce) {
+  .arrive.is-armed {
+    transform: none;
+    filter: none;
+    opacity: 1;
+    will-change: auto;
+  }
+}

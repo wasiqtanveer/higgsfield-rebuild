@@ -1,0 +1,192 @@
+/**
+ * SiteFoot.
+ *
+ * Restrained on purpose. The section above it is a single accent-lit prompt
+ * field on a dark screen, and the footer's whole job is to end the page without
+ * competing with that. So: the same ground it sits on, one hairline to separate
+ * it, and everything else carried by type and spacing.
+ *
+ * Accent budget for this component: one stroke of the mark. Nothing else — not a
+ * hover colour, not a heading, not the tags. A footer is the cheapest place on a
+ * page to spend a rationed colour badly.
+ */
+
+.sf {
+  position: relative;
+  /* One step up from the page ground rather than a different colour: on this
+     ground a surface separates by getting lighter, and the footer wants the
+     faintest possible version of that. */
+  background: var(--c-bg-2);
+  border-top: 1px solid var(--c-line);
+  padding-top: var(--s-8);
+  font-size: var(--t-sm);
+}
+
+.sf__inner {
+  display: grid;
+  /* The brand block holds a measure of prose, so it takes a fixed-ish share and
+     the nav takes the rest — a footer where the columns and the blurb share
+     equal width leaves the blurb set too wide to read. */
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 2fr);
+  gap: var(--s-7) var(--s-8);
+  padding-bottom: var(--s-8);
+}
+
+/* --- the brand block ----------------------------------------------------- */
+.sf__brand {
+  display: grid;
+  align-content: start;
+  gap: var(--s-4);
+}
+
+.sf__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  /* Sized to its own content so the whole footer column is not a click target. */
+  justify-self: start;
+  color: var(--c-text);
+}
+
+.sf__glyph {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--c-text);
+}
+
+.sf__word {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 700;
+  letter-spacing: var(--ls-tight);
+}
+
+.sf__claim {
+  max-width: 38ch;
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* --- the columns --------------------------------------------------------- */
+.sf__nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--s-6) var(--s-5);
+}
+
+.sf__col {
+  min-width: 0;
+}
+
+.sf__label {
+  margin-bottom: var(--s-4);
+  /* The shared `.label` step. Not a heading size: these are four labels on a
+     list of eight words each, and setting them as headings makes the footer
+     read as four sections of a document. */
+  color: var(--c-text-2);
+}
+
+.sf__links {
+  display: grid;
+  gap: var(--s-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A footer link brightens rather than changing hue. Everything down here is one
+   colour family, so hover is a step up the ground's own light. */
+.sf__link {
+  display: inline-block;
+  color: var(--c-text-2);
+  transition: color var(--d-fast) var(--e-standard);
+}
+
+.sf__link:hover {
+  color: var(--c-text);
+}
+
+/* Unbuilt. Dimmer than a link and carrying a tag — it should be legible as
+   inventory and never mistaken for something you can press. */
+.sf__soon {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  color: var(--c-text-2);
+  cursor: default;
+}
+
+.sf__tag {
+  /* A neutral outline, not the accent: "coming soon" is the least important
+     thing in the footer and the accent marks the most important thing on the
+     page. */
+  padding: 1px var(--s-1);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-xs);
+  /* The ramp's smallest step. A bespoke 0.625rem here was off the system for
+     no gain — uppercase at --t-xs with open tracking already reads as a tag. */
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--c-text-2);
+  /* Baseline-aligned text inside a bordered chip sits low; this lifts it back
+     onto the label's own baseline. */
+  transform: translateY(-1px);
+}
+
+/* --- the base bar -------------------------------------------------------- */
+/* Inside the same ground rather than a second darker band underneath. The old
+   footer needed a dark bar to stop its lime panel feeling endless; there is no
+   panel here, so a second band would be a division with nothing to divide. */
+.sf__base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3) var(--s-5);
+  padding-block: var(--s-4) var(--s-6);
+  border-top: 1px solid var(--c-line);
+  font-size: var(--t-xs);
+  color: var(--c-text-2);
+}
+
+.sf__copy {
+  font-size: inherit;
+}
+
+.sf__legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sf__legal-item {
+  cursor: default;
+}
+
+/* --- narrow -------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .sf__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-7);
+  }
+
+  .sf__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .sf__base {
+    /* Stacked, and the copyright last: on one column the legal row is the row
+       you might actually reach for. */
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+}

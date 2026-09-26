@@ -1,0 +1,473 @@
+/**
+ * One prompt, live.
+ *
+ * The layout inverts the category: the prompt takes the wide column at reading
+ * size and the photograph takes the narrow one. That ratio *is* the argument —
+ * make the image the hero of the composition and the section says the image is
+ * the artifact, whatever the headline claims.
+ *
+ * Height is capped on purpose. This section is one screen and does not grow: the
+ * visitor it is built for is spending seconds, and a section that scrolls is a
+ * section they leave before the payoff.
+ */
+
+.fl {
+  display: grid;
+  gap: var(--s-6);
+}
+
+/* --- head ---------------------------------------------------------------- */
+.fl__head {
+  display: grid;
+  gap: var(--s-2);
+  max-width: 52ch;
+}
+
+.fl__title {
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: var(--ls-display);
+  color: var(--c-text);
+}
+
+/* One word in italic serif, never a line: the contrast stops being a contrast
+   the moment it becomes the voice. */
+.fl__title em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: var(--ls-tight);
+}
+
+/* --- stage --------------------------------------------------------------- */
+.fl__stage {
+  display: grid;
+  /* The prompt gets the measure, the frame gets the remainder. Not a 50/50
+     split: an equal division reads as two peers, and these are not peers. */
+  grid-template-columns: minmax(0, 1.34fr) minmax(0, 0.66fr);
+  /* Top-aligned, with the frame capped below so the two columns are close in
+     mass. Centring was worse than it looked: it dropped the prompt to the
+     vertical middle of a much taller photo column, leaving a 149px hole under
+     the headline and making the mono block read as a caption floating in space
+     while the photograph answered the headline alone. The contract says the
+     photograph is the evidence, not the subject, so the text sits at the top
+     where the headline left off and the frame carries any extra height. */
+  align-items: start;
+  gap: var(--s-8);
+}
+
+.fl__prompt-col {
+  display: grid;
+  gap: var(--s-6);
+}
+
+/* --- the prompt ---------------------------------------------------------- */
+.fl__prompt {
+  display: grid;
+  gap: var(--s-2);
+  /* The largest text in the section and the only mono set this big anywhere on
+     the page. A prompt is the authored artifact here, so it is set as authored
+     text rather than as a caption about a picture. */
+  font-size: var(--t-lg);
+  line-height: 1.45;
+  color: var(--c-text-2);
+}
+
+.fl__line {
+  position: relative;
+}
+
+/* The forkable line is the one piece of meaning in the block, so it carries the
+   accent before anything is clicked — the affordance has to be findable without
+   a hover, since the visitor may never hover at all. */
+.fl__line.is-edit {
+  padding-left: var(--s-6);
+  color: var(--c-accent-text);
+}
+
+.fl__caret {
+  position: absolute;
+  left: 0;
+  /* Centred on the x-height, not the line box: a caret on the baseline of a
+     1.45-leading line sits visibly low. */
+  top: 0.34em;
+  color: var(--c-accent);
+}
+
+/* The cursor only exists while the line is retyping. A permanently blinking
+   caret on a line nobody is editing is noise. */
+.fl__cursor {
+  display: none;
+}
+
+.fl__cursor.is-on {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--c-accent);
+  animation: fl-blink 620ms steps(2, start) infinite;
+}
+
+@keyframes fl-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* --- the alternatives ---------------------------------------------------- */
+.fl__forks {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.fl__forks-label {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+/* Lower case and untracked: it is an aside to the label, not a second label. */
+.fl__forks-hint {
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--c-text-2);
+}
+
+.fl__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.fl__chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+  background: var(--c-surface);
+  /* Lit top edge rather than a shadow: on near-black a raised control gets its
+     thickness from light. */
+  box-shadow: inset 0 1px 0 var(--c-line-lit);
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-out),
+    border-color var(--d-fast) var(--e-out),
+    background-color var(--d-fast) var(--e-out);
+}
+
+.fl__chip:hover {
+  color: var(--c-text);
+  border-color: var(--c-line-strong);
+  background: var(--c-surface-2);
+}
+
+/* The selected chip is the only filled accent in the section. Near-black ink,
+   not white: at #ff5c1a white type sits under the 4.5:1 floor. */
+.fl__chip.is-on {
+  color: var(--c-text-on-accent);
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  font-weight: 600;
+}
+
+.fl__chip-tag {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* --- meta ---------------------------------------------------------------- */
+.fl__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-4);
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+}
+
+.fl__by {
+  font-weight: 500;
+  color: var(--c-text-2);
+}
+
+.fl__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  /* Tabular figures: the count changes in place, and proportional digits make
+     the whole row shuffle sideways when it does. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* The tick. The count going up is the only other place accent appears, because
+   it is the moment the visitor's own fork was recorded. */
+.fl__stat .is-ticking {
+  color: var(--c-accent-text);
+  animation: fl-tick var(--d-slow) var(--e-out);
+}
+
+@keyframes fl-tick {
+  0% {
+    transform: translateY(0.5em);
+    opacity: 0;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* --- the frame ----------------------------------------------------------- */
+.fl__frame-col {
+  display: grid;
+  gap: var(--s-4);
+  justify-items: start;
+}
+
+.fl__frame {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  /* Capped so the section cannot outgrow one screen on a tall window: the
+     photograph is evidence and evidence does not need to be enormous.
+     4/5 rather than 3/4 because the row's height belongs to the prompt: at 3/4
+     the frame stood ~250px taller than the text beside it and left the left
+     column visibly empty whichever way it was aligned. */
+  max-height: 46vh;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-lg);
+  background: var(--c-surface-2);
+}
+
+.fl__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The crop and grade are animated by framer-motion; the element only declares
+     its origin here so a scale reads as a push-in on the subject rather than a
+     zoom out of the corner. */
+  transform-origin: 50% 38%;
+}
+
+/* The bloom behind the frame. On a near-black ground a dark photograph has
+   nothing to be lit against. */
+.fl__frame-glow {
+  position: absolute;
+  inset: -12%;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    var(--c-accent-wash) 0%,
+    transparent 64%
+  );
+  pointer-events: none;
+}
+
+/* The frame acknowledges the fork: a one-off accent rim while it re-reads, so
+   the change registers as the frame answering the line rather than as a slow
+   drift nobody notices starting. */
+.fl__frame.is-responding {
+  animation: fl-respond 860ms var(--e-out);
+}
+
+@keyframes fl-respond {
+  0% {
+    box-shadow: 0 0 0 1px var(--c-accent-wash-strong),
+      0 0 34px -6px var(--c-accent-glow);
+  }
+  100% {
+    box-shadow: 0 0 0 1px transparent, 0 0 0 0 transparent;
+  }
+}
+
+/* The thread. Draws up the left edge of the frame from the line's direction —
+   the lineage the product is about, from real data, no second photograph
+   pretending to be a child. */
+.fl__thread {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--c-accent) 0%,
+    transparent 100%
+  );
+  box-shadow: 0 0 12px var(--c-accent-glow);
+  pointer-events: none;
+}
+
+.fl__thread.is-drawn {
+  animation: fl-thread 720ms var(--e-out);
+}
+
+@keyframes fl-thread {
+  0% {
+    height: 0;
+    opacity: 1;
+  }
+  60% {
+    height: 100%;
+    opacity: 1;
+  }
+  100% {
+    height: 100%;
+    opacity: 0;
+  }
+}
+
+/* --- next prompt --------------------------------------------------------- */
+.fl__next {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  font-family: var(--f-sans);
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--d-fast) var(--e-out);
+}
+
+.fl__next:hover {
+  color: var(--c-text);
+}
+
+.fl__next-count {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-2);
+}
+
+/* --- the way out --------------------------------------------------------- */
+.fl__out {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--c-line);
+}
+
+.fl__open {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-weight: 600;
+  color: var(--c-text);
+  text-decoration: none;
+  transition: color var(--d-fast) var(--e-out);
+}
+
+.fl__open:hover {
+  color: var(--c-accent-text);
+}
+
+.fl__all {
+  font-size: var(--t-sm);
+  color: var(--c-text-2);
+  text-decoration: none;
+  transition: color var(--d-fast) var(--e-out);
+}
+
+.fl__all:hover {
+  color: var(--c-text-2);
+}
+
+/* --- narrow -------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .fl__stage {
+    /* Frame first and wide: at this measure the prompt needs the full width to
+       stay readable, and a portrait plate in a side column has nowhere to go. */
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+
+  .fl__frame-col {
+    order: -1;
+    justify-items: stretch;
+  }
+
+  /* Stacked, "Another prompt" lands between the frame and the prompt it
+     belongs to, reading as a control for the text below rather than for the
+     image above. Pinned to the frame instead: it sits on the image's own
+     bottom-right corner, where what it advances is unambiguous. */
+  .fl__frame-col {
+    position: relative;
+  }
+
+  .fl__next {
+    position: absolute;
+    right: var(--s-3);
+    bottom: var(--s-3);
+    padding: var(--s-2) var(--s-4);
+    color: var(--c-text);
+    background: var(--c-glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-pill);
+  }
+
+  .fl__frame {
+    max-height: 46vh;
+    aspect-ratio: 4 / 3;
+  }
+
+  .fl__prompt {
+    font-size: var(--t-md);
+  }
+
+  /* The band's two exit links measured 24px and 21px tall — under half the
+     44px touch target. Padded to the target rather than set larger, so the
+     type stays in the hierarchy it belongs to. */
+  .fl__out {
+    gap: var(--s-3);
+  }
+
+  .fl__open,
+  .fl__all {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* The retype, the crop and the grade are all suppressed at source in JS under
+   this setting — the section arrives composed with the published prompt. What
+   remains here is the decorative motion CSS owns. */
+@media (prefers-reduced-motion: reduce) {
+  .fl__cursor.is-on,
+  .fl__frame.is-responding,
+  .fl__thread.is-drawn,
+  .fl__stat .is-ticking {
+    animation: none;
+  }
+
+  .fl__thread.is-drawn {
+    opacity: 0;
+  }
+}
+
+/* Magnetic wraps each chip in a div of its own. Without this the wrapper is the
+   flex item and the chip inside it loses the row's alignment. */
+.fl__chips > div {
+  display: inline-flex;
+}
