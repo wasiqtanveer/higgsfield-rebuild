@@ -68,7 +68,7 @@ Yes, and it is checkable rather than claimed.
 | Endpoint | What it does |
 | --- | --- |
 | `POST /api/generate` | Text to image. Stateless — stores nothing. The try-it path, so experiments do not fill the feed with drafts nobody chose to publish. |
-| `POST /api/fork` | **The product.** Generates, stores the row, and records `parent_id`. Returns the generation plus its lineage, root first. |
+| `POST /api/fork` | **The product.** Generates, stores the row, and records `parent_id`. Costs a signed-in caller 10 credits; anonymous forks are free. Returns the generation, its lineage root first, and the balance after the charge. |
 | `GET /api/feed` | Recent generations, newest first. |
 | `POST /api/auth` | `signup`, `login`, `logout`. Sets the session cookie. |
 | `GET /api/auth` | The current user and credit balance, or `{ user: null }`. |
@@ -100,6 +100,12 @@ Two more tables carry accounts (`db/auth.sql`):
 profiles (id → auth.users(id), email, name, handle, created_at)
 credit_ledger (id, user_id → auth.users(id), delta, reason, generation_id, created_at)
 ```
+
+A fork costs **10 credits** when the caller is signed in and nothing when they
+are not — the try-it path is the front door, and pricing it would close it. The
+charge lands *after* the image exists, so a generation that failed costs nothing
+by construction rather than by a refund path, which would be a second way for
+the ledger to be wrong.
 
 The ledger is **append-only** and a balance is `sum(delta)`, never a stored
 column: a cached balance is a second source of truth that can disagree with its
@@ -139,9 +145,9 @@ The parts a reviewer would reasonably expect that are **not** done:
   off, so a new account is created but cannot be used until the emailed link is
   clicked. The dialog reports that state rather than pretending the user is
   signed in.
-- **Credits are granted but not yet spent.** The ledger is real and the signup
-  grant is real, but `/api/fork` does not debit it yet, so the balance in the
-  header only ever moves on signup.
+- **Nothing meters `/api/generate`.** The stateless try-it endpoint is free and
+  uncounted by design; only `/api/fork`, which keeps what it makes, costs
+  credits.
 - **`/explore`, `/lineage`, `/library`, `/models`** are honest placeholder
   pages. Forking works, but today only the person who ran it sees the chain —
   the feed that would make lineage public is designed, not built.

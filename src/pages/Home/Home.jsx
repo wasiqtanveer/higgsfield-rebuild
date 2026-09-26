@@ -5,7 +5,6 @@ import ForkLive from "../../components/ForkLive/ForkLive.jsx";
 import ForkDiff from "../../components/ForkDiff/ForkDiff.jsx";
 import ModelSpec from "../../components/ModelSpec/ModelSpec.jsx";
 import CloseCall from "../../components/CloseCall/CloseCall.jsx";
-import SiteFoot from "../../components/SiteFoot/SiteFoot.jsx";
 import "./Home.css";
 
 /**
@@ -113,7 +112,6 @@ export default function Home() {
         <CloseCall />
       </Arrive>
 
-      <SiteFoot />
     </>
   );
 }

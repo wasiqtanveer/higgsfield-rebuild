@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header/Header.jsx";
 import AuthModal from "./components/AuthModal/AuthModal.jsx";
+import SiteFoot from "./components/SiteFoot/SiteFoot.jsx";
 import { loadSession } from "./lib/auth.js";
 import Home from "./pages/Home/Home.jsx";
 import Credits from "./pages/Credits/Credits.jsx";
 import GraftMcp from "./pages/Mcp/Graft.jsx";
 import Create from "./pages/Create/Create.jsx";
 import About from "./pages/About/About.jsx";
+import Explore from "./pages/Explore/Explore.jsx";
 import Soon from "./pages/Soon/Soon.jsx";
 
 /**
@@ -49,7 +51,7 @@ export default function App() {
           {/* Designed, not built. These render as an honest "next" page rather
               than as links that go nowhere or land somewhere unrelated. */}
           <Route path="/create" element={<Create />} />
-          <Route path="/explore" element={<Soon />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/lineage" element={<Soon />} />
           <Route path="/library" element={<Soon />} />
           <Route path="/models" element={<Soon />} />
@@ -67,6 +69,11 @@ export default function App() {
           <Route path="*" element={<Soon />} />
         </Routes>
       </main>
+
+      {/* Mounted once here rather than per page. Two of nine surfaces carried
+          it and seven did not, which is the shape a per-page footer always
+          drifts into -- every new route is a chance to forget it. */}
+      <SiteFoot />
 
       {authMode && (
         <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />

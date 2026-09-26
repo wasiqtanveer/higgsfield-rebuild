@@ -1,5 +1,11 @@
 import { insertGeneration, uploadImage, getGeneration, lineageOf } from "./_lib/db.js";
 import { generate } from "./_lib/generate-core.js";
+import { currentUser, addLedgerEntry, creditBalance } from "./_lib/auth.js";
+
+/* What one fork costs a signed-in visitor. Anonymous forks are free, which is
+   the product's position rather than an oversight -- the try-it path is the
+   front door, and putting a price on it would close it. */
+const FORK_COST = 10;
 
 /**
  * POST /api/fork — the product.
@@ -19,6 +25,11 @@ import { generate } from "./_lib/generate-core.js";
  * whose `parent_id` points at nothing would be a lineage that cannot be read,
  * which the product principles rule out explicitly: never claim in the UI what
  * the data does not support.
+ *
+ * Credits are charged only to a signed-in caller, and only after the image
+ * exists. Debiting first would mean a failed generation still cost something,
+ * and a refund path is a second way for the ledger to be wrong -- charging
+ * last makes the failure case free by construction rather than by cleanup.
  */
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -38,6 +49,21 @@ export default async function handler(req, res) {
        would also reject a bad parent, but only after we had spent a generation
        on it — and the visitor would get a constraint violation instead of being
        told the prompt they forked is gone. */
+    /* Who is asking, and can they afford it. Resolved before generating so an
+       empty balance is refused in a millisecond rather than after a 5s model
+       call the visitor cannot pay for. */
+    const caller = await currentUser(req, res);
+    if (caller) {
+      const balance = await creditBalance(caller.user.id);
+      if (balance < FORK_COST) {
+        return res.status(402).json({
+          error: `A fork costs ${FORK_COST} credits and you have ${balance}.`,
+          credits: balance,
+          cost: FORK_COST,
+        });
+      }
+    }
+
     let parent = null;
     if (parentId) {
       parent = await getGeneration(parentId);
@@ -63,8 +89,34 @@ export default async function handler(req, res) {
       model: out.model,
       provider: out.provider,
       parent_id: parentId,
-      author,
+      /* The handle when we know it, so a fork is credited to an account rather
+         than to a name anybody could type. */
+      author: caller ? caller.profile?.handle ?? author : author,
+      user_id: caller?.user.id ?? null,
     });
+
+    /* The charge. After the row exists, so a generation that failed costs
+       nothing, and the entry carries the generation it paid for -- a ledger
+       line nobody can trace back to a picture is an unexplainable balance.
+       A failure here is logged, not thrown: the fork happened, and destroying
+       a successful generation over a bookkeeping error would be the worse
+       trade. It shows up as an unbilled fork, which is visible in the ledger
+       rather than silent. */
+    let credits = null;
+    if (caller) {
+      try {
+        await addLedgerEntry({
+          userId: caller.user.id,
+          delta: -FORK_COST,
+          reason: "fork",
+          generationId: row.id,
+        });
+        credits = await creditBalance(caller.user.id);
+      } catch (err) {
+        console.error(`ledger write failed for ${row.id}:`, String(err.message || err));
+        credits = await creditBalance(caller.user.id).catch(() => null);
+      }
+    }
 
     /* The upload is NOT awaited before answering.
      *
@@ -108,6 +160,10 @@ export default async function handler(req, res) {
          rather than having to reverse it. */
       lineage,
       depth: lineage.length,
+      /* The balance after the charge, so the header can update without a
+         second round trip. Null for an anonymous caller, who has none. */
+      credits,
+      cost: caller ? FORK_COST : 0,
     });
   } catch (err) {
     return res.status(502).json({ error: "Could not complete the fork.", detail: String(err.message || err).slice(0, 300) });

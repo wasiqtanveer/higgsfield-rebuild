@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ArrowRight, CornerDownRight, GitFork } from "lucide-react";
 import Arrive from "../../components/Arrive/Arrive.jsx";
 import Magnetic from "../../components/Magnetic/Magnetic.jsx";
-import SiteFoot from "../../components/SiteFoot/SiteFoot.jsx";
 import { NODES, TERMINUS } from "../../data/abouttree.js";
 import "./About.css";
 
@@ -401,7 +400,6 @@ export default function About() {
           )}
         </Arrive>
       </div>
-      <SiteFoot />
     </>
   );
 }

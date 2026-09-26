@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUp, GitFork, Info, RotateCcw, Sparkles } from "lucide-react";
 import { COSTS } from "../../data/credits.js";
 import "./Create.css";
+import { setCredits } from "../../lib/auth.js";
 
 /**
  * /create — the composer.
@@ -172,6 +173,10 @@ export default function Create() {
                missing value — the endpoint treats it that way too. */
             ...(parentId ? { parentId } : {}),
           }),
+          /* The session is an httpOnly cookie, and without this the server
+             sees every fork as anonymous -- which would silently skip the
+             charge and credit the work to nobody. */
+          credentials: "same-origin",
           signal: ac.signal,
         });
 
@@ -202,6 +207,10 @@ export default function Create() {
           prompt: g.prompt,
           depth: json.depth ?? 1,
         });
+        /* The server already told us the balance after the charge, so this
+           updates the header without a second round trip. Anonymous callers
+           get null and nothing moves. */
+        if (typeof json.credits === "number") setCredits(json.credits);
         setState("done");
       } catch (err) {
         if (err.name === "AbortError") return;

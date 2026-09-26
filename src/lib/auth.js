@@ -120,6 +120,20 @@ export async function refreshUser() {
   return current;
 }
 
+/**
+ * Apply a balance the server has already computed.
+ *
+ * Used after a fork, which answers with the balance *after* its charge. This is
+ * not the client doing arithmetic on credits -- that would be a second source
+ * of truth, and the whole reason the ledger derives its sum on Postgres. It is
+ * the client accepting a number it was given.
+ */
+export function setCredits(credits) {
+  if (!current || typeof credits !== "number") return;
+  current = { ...current, credits };
+  emit();
+}
+
 export function getUser() {
   return current;
 }

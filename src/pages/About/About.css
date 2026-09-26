@@ -59,6 +59,13 @@
    small dim type — at --s-9 the gap between the lede and the first thing the
    page does read as a screen of nothing, and the eye lost the thread between
    the instruction ("open any of them") and the thing to open. */
+/* Matched to the tree column below so the headline's left edge and the spine's
+   land on the same line. Without this the head keeps `.page`'s full 1240px and
+   the two columns disagree by 180px. */
+.abt .abt__head {
+  max-width: calc(880px + var(--gutter) * 2);
+}
+
 .abt__head {
   position: relative;
   z-index: 1;
@@ -109,23 +116,23 @@
    empty on the right — a wide box with all its ink in the left two thirds reads
    as a layout that ran out of content. 820px puts the mono line at roughly 76ch
    and the prose under it at its own 62ch without either fighting the other. */
-/* `.page` also sets a max-width and centres itself, and at equal specificity it
-   wins on import order, so this has to out-specify it rather than sit beside it.
-   The column is narrowed to the artifact's own measure but stays LEFT-ALIGNED
-   with the headline above: centring it inside the page put a 220px indent
-   between the head and the tree that read as an accident, and left the spine
-   stranded away from the sentence it descends from. The page has one left edge
-   and everything hangs off it. */
+/* The column is sized to the artifact, not to the page, and it is CENTRED
+   rather than pinned left.
+ *
+ * The previous version kept `.page`'s full width and gave the difference back
+ * as right padding, which is arithmetically the same as narrowing the column
+ * but not optically: it left the whole composition hugging the left edge with
+ * a 430px void beside it on a wide screen, which reads as a layout that ran
+ * out of content rather than one with a measure. Centring the narrowed column
+ * puts the same ink in the middle of the viewport and balances the gutters.
+ *
+ * The head above is centred the same way and to the same width, so the
+ * headline's left edge and the spine's still line up exactly — that alignment
+ * was the right instinct in the old rule, and it survives here. */
 .abt .abt__tree {
   position: relative;
   z-index: 1;
-  /* Keeps `.page`'s own centring so the left edge lands exactly where the
-     headline's does, then narrows on the RIGHT only: the head's full page width
-     minus the amount the column gives back. `margin-inline: 0` was wrong — with
-     no `.page` wrapper around this element it hung off the viewport edge rather
-     than the headline's. */
-  max-width: var(--w-page);
-  padding-right: calc(var(--gutter) + max(0px, (var(--w-page) - var(--gutter) * 2 - 880px)));
+  max-width: calc(880px + var(--gutter) * 2);
 }
 
 /* ---------------------------------------------------------------------------
@@ -676,7 +683,14 @@
     padding-bottom: var(--s-9);
   }
 
-  .abt__head {
+  /* Matched to the tree column below so the headline's left edge and the spine's
+   land on the same line. Without this the head keeps `.page`'s full 1240px and
+   the two columns disagree by 180px. */
+.abt .abt__head {
+  max-width: calc(880px + var(--gutter) * 2);
+}
+
+.abt__head {
     margin-bottom: var(--s-8);
   }
 
