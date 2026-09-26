@@ -1,14 +1,20 @@
 /**
  * Explore — the public record.
  *
- * A column, not a grid. The first build was a masonry of equal square tiles,
- * which is the lazy container and could not express descent: a thing coming
- * from the thing above it is a vertical idea, and a wall of tiles flattens it.
+ * Two structures failed before this one. A masonry of equal tiles could not
+ * express descent; a single full-width column expressed it but gave 22 entries
+ * identical weight, which is what turns a feed into an endless scroll.
  *
- * The page carries exactly one accent, the lineage thread, and it runs down the
- * left rail of every entry. That rail is the spine of the whole layout —
- * continuous through a fork, capped with a seam at a root — so the feed reads
- * as one descent rather than as a list of unrelated things.
+ * This is built on one idea: **a lineage is the unit, not a generation.** A
+ * root and its forks share a frame, the root large and its children beside it,
+ * so the thing this product has that the category does not is visible in one
+ * glance rather than assembled by scrolling. Everything unforked drops to a
+ * denser grid below, because a root with no chain is a picture and a prompt,
+ * not a story.
+ *
+ * Accent is rationed to the thread: the chain header's mark, the lit left edge
+ * of a lineage, and the added words in an edit. Nothing else on the page is
+ * orange.
  *
  * Namespaced `xp`.
  */
@@ -17,16 +23,11 @@
   padding-bottom: var(--s-10);
 }
 
-/* --- head ---
- * No eyebrow. The headline carries its own weight, and a label above it is a
- * category habit rather than information. */
+/* --- head --- */
 .xp__head {
-  position: relative;
-  padding-block: calc(var(--h-header) + var(--s-9)) var(--s-8);
+  padding-block: calc(var(--h-header) + var(--s-9)) var(--s-7);
   margin-bottom: var(--s-8);
   border-bottom: 1px solid var(--c-line);
-  /* The ground lifts very slightly under the masthead, so the record below
-     reads as sitting on the page rather than starting at the top of it. */
   background: linear-gradient(180deg, var(--c-bg-2), transparent);
 }
 
@@ -50,7 +51,7 @@
 }
 
 .xp__lede {
-  max-width: 62ch;
+  max-width: 64ch;
   margin-top: var(--s-4);
   font-size: var(--t-md);
   line-height: 1.6;
@@ -60,14 +61,13 @@
 .xp__tally {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--s-3);
   margin-top: var(--s-6);
   font-size: var(--t-xs);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--c-text-3);
-  /* Counts are data, so they sit on the same figures as every other number on
-     the product rather than drifting with the proportional face. */
   font-variant-numeric: tabular-nums;
 }
 
@@ -77,225 +77,118 @@
   background: var(--c-line-strong);
 }
 
-/* --- the stream --- */
-.xp__stream {
+/* ---------------------------------------------------------------------------
+ * Lineages
+ * ------------------------------------------------------------------------- */
+
+.xp__chains {
   display: grid;
-  gap: var(--s-9);
+  gap: var(--s-8);
+  margin-bottom: var(--s-10);
 }
 
-.xp__entry {
-  display: grid;
-  /* The rail is a fixed gutter; the body takes the rest and is capped for
-     reading rather than stretched to the page. `min(78ch, 100%)` rather than a
-     bare ch measure: on a narrow viewport the ch value exceeds the space
-     `.page` leaves after its gutters, and the grid then overflows by a few
-     pixels of horizontal scroll. */
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: var(--s-5);
-  width: 100%;
-  max-width: min(78ch, 100%);
-  animation: xp-rise var(--d-slower) var(--e-out) both;
+.xp__chain {
+  animation: xp-rise var(--d-slow) var(--e-out) both;
   animation-delay: calc(var(--i, 0) * 70ms);
-}
-
-/* Alternating indent. Enough to give the column rhythm, not enough to break
-   the rail's continuity down the page. */
-.xp__entry:nth-child(even) {
-  margin-left: auto;
 }
 
 @keyframes xp-rise {
   from {
     opacity: 0;
-    transform: translateY(20px);
-    filter: blur(6px);
+    transform: translateY(16px);
   }
 }
 
-/* --- the rail ---
- * The spine. One continuous hairline with a node on it: a thread mark where a
- * fork joins, a filled seed where a lineage begins. */
-.xp__rail {
-  position: relative;
-  display: grid;
-  justify-items: center;
-}
-
-/* Starts at the node and runs to the foot of the entry: the thread descends
-   FROM the node, so a line above it would point at nothing. */
-.xp__rail-line {
-  position: absolute;
-  top: 34px;
-  bottom: calc(var(--s-9) * -1);
-  width: 1px;
-  background: linear-gradient(180deg, var(--c-line-strong), transparent 92%);
-}
-
-/* A fork's thread is lit: it is the one thing on this page the accent is for. */
-.xp__entry.is-fork .xp__rail-line {
-  background: linear-gradient(
-    180deg,
-    var(--c-accent-glow),
-    var(--c-accent-wash-strong) 30%,
-    var(--c-line-strong) 70%,
-    transparent 95%
-  );
-}
-
-.xp__entry:last-child .xp__rail-line {
-  bottom: 0;
-}
-
-.xp__rail-node {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  margin-top: 2px;
-  border-radius: var(--r-pill);
-  background: var(--c-bg);
-  border: 1px solid var(--c-line);
-  color: var(--c-text-3);
-}
-
-.xp__entry.is-fork .xp__rail-node {
-  color: var(--c-accent);
-  border-color: var(--c-accent-wash-strong);
-  background: var(--c-bg-2);
-  /* Offset and blur, a real shadow rather than a halo. */
-  box-shadow: 0 6px 18px -10px var(--c-accent-glow);
-}
-
-.xp__thread-mark {
-  width: 17px;
-  height: 17px;
-}
-
-/* A root's node is a filled seed: the lineage starts here. */
-.xp__rail-seed {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--r-pill);
-  background: var(--c-text-3);
-}
-
-/* --- body --- */
-.xp__body {
-  display: grid;
-  gap: var(--s-4);
-  min-width: 0;
-}
-
-/* `min-width: 0` on the row itself: a flex container inside a grid track
-   defaults to `min-content` width, so the un-shrinkable parent prompt inside it
-   pushed the whole row past the viewport on a phone. */
-.xp__origin {
+.xp__chain-head {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--s-2);
-  min-width: 0;
-  font-size: var(--t-xs);
-  color: var(--c-text-3);
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+  color: var(--c-accent-text);
 }
 
-.xp__origin-word {
+.xp__chain-mark {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+
+.xp__chain-label {
+  font-size: var(--t-xs);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--ls-caps);
-  font-weight: 600;
-}
-
-.xp__entry.is-fork .xp__origin-word {
-  color: var(--c-accent-text);
-}
-
-/* The parent prompt, quoted small. Truncated to one line: it is context for
-   the entry, not a second artifact competing with it. */
-.xp__origin-prompt.xp__origin-prompt {
-  /* Basis 0, not 18ch: an 18ch basis is wider than the space left beside the
-     label on a narrow screen, and a flex item does not shrink below its basis
-     without this. */
-  flex: 1 1 0;
-  min-width: 0;
-  font-size: var(--t-xs);
-  color: var(--c-text-2);
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.85;
 }
 
-.xp__origin-gone {
-  font-style: italic;
-  opacity: 0.8;
+/* The rule runs out to the edge, so the header reads as the top of a frame
+   rather than as a floating label. */
+.xp__chain-rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--c-accent-wash-strong), transparent);
 }
 
-/* --- the artifact ---
- * Set at the size DESIGN.md reserves for a prompt. This is the headline of the
- * entry and the reason the page exists. */
-/* `.mono` is a global utility that sets `font-size: 0.92em`, and it is declared
-   later in global.css -- at equal specificity it wins, which silently shrank
-   the artifact to caption size. Out-specified here rather than dropping the
-   class, because the class is also what turns ligatures off and switches the
-   figures. */
-.xp__prompt.xp__prompt {
-  font-family: var(--f-mono);
-  /* The size DESIGN.md reserves for a prompt: this is the headline of the
-     entry, not a label on the picture. */
-  font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
-  font-weight: 400;
-  line-height: 1.45;
-  letter-spacing: -0.01em;
-  color: var(--c-text);
-  /* Ligatures off: a prompt is authored text and should read exactly as
-     typed. */
-  font-feature-settings: "liga" 0;
-  text-wrap: pretty;
-}
-
-/* --- the diff ---
- * The claim, made checkable. Word-level, and only rendered when a real edit
- * was found between parent and child. */
-.xp__diff {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--s-2);
-  padding: var(--s-2) var(--s-3);
-  border-radius: var(--r-sm);
-  background: var(--c-bg-2);
+/* The frame. A lit left edge marks the whole lineage as one object -- 1px, so
+   it is a hairline rather than the coloured slab the craft floor rules out. */
+.xp__chain-body {
+  display: grid;
+  /* The children column is the point of the frame, so it gets equal width
+     rather than the leftovers. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: var(--s-6);
+  align-items: start;
+  padding: var(--s-5) var(--s-5) var(--s-5) var(--s-6);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
   border: 1px solid var(--c-line);
-  font-size: var(--t-sm);
+  border-left: 1px solid var(--c-accent-wash-strong);
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-2);
 }
 
-.xp__diff-out {
-  color: var(--c-text-3);
-  text-decoration: line-through;
-  text-decoration-color: var(--c-danger);
-  text-decoration-thickness: 1px;
+/* A lineage with one fork does not need two full columns -- the children side
+   ends up mostly empty, which reads as a layout that ran out of content. The
+   lead narrows and the pair sits as a row instead. */
+.xp__chain.is-single .xp__chain-body {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
 }
 
-.xp__diff-arrow {
-  color: var(--c-text-3);
+.xp__chain.is-single .xp__shot--lead {
+  max-height: 232px;
 }
 
-.xp__diff-in {
-  color: var(--c-accent-text);
+.xp__origin-col {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  min-width: 0;
 }
 
-/* --- the shot ---
- * Evidence of what the prompt produced. Wide rather than square: a 3:2 frame
- * reads as a photograph of a result, where a square tile reads as a gallery
- * cell. */
+/* --- shots --- */
 .xp__shot {
   position: relative;
-  aspect-ratio: 3 / 2;
   overflow: hidden;
-
   border-radius: var(--r-md);
-  background: var(--c-surface);
+  background: var(--c-bg-2);
   box-shadow: inset 0 1px 0 var(--c-line-lit);
+}
+
+/* Capped. A 4:3 lead at full column width ran ~580px tall, which made one
+   lineage fill a screen and put the page straight back into the endless-scroll
+   problem this structure exists to fix. */
+.xp__shot--lead {
+  aspect-ratio: 3 / 2;
+  max-height: 340px;
+}
+
+.xp__shot--kid {
+  aspect-ratio: 1;
+  flex: none;
+  width: 92px;
+}
+
+.xp__shot--solo {
+  aspect-ratio: 4 / 3;
 }
 
 .xp__img {
@@ -303,15 +196,12 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  /* Arrives resolved rather than popping in: the frame holds its space, the
-     image un-blurs into it once decoded. */
   opacity: 0;
-  /* Scales DOWN to rest rather than up from oversize. An image that starts
-     larger than its frame still counts at its transformed width for the
-     document's scroll extent, which leaked horizontal scroll on a phone --
-     `overflow: hidden` clips the paint but not the box. */
+  /* Scales DOWN to rest. Starting larger than the frame leaks horizontal
+     scroll on a phone: `overflow: hidden` clips the paint but the transformed
+     box still counts toward the document's scroll extent. */
   transform: scale(0.97);
-  filter: blur(12px);
+  filter: blur(10px);
   transition: opacity var(--d-slow) var(--e-out),
     transform var(--d-slower) var(--e-out), filter var(--d-slow) var(--e-out);
 }
@@ -322,27 +212,127 @@
   filter: none;
 }
 
-.xp__noshot {
+.xp__shot.is-bare {
   display: grid;
   place-items: center;
-  height: 100%;
-  padding: var(--s-5);
+  padding: var(--s-4);
+  border: 1px dashed var(--c-line);
+}
+
+.xp__noshot {
+  font-size: var(--t-xs);
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--c-text-3);
+}
+
+/* --- the artifact ---
+ * `.mono` is a global utility setting `font-size: 0.92em` and it is declared
+ * later in global.css, so at equal specificity it wins and silently shrinks
+ * the prompt to caption size. Out-specified rather than dropped, because the
+ * class also kills ligatures and switches the figures. */
+.xp__prompt.xp__prompt {
+  font-family: var(--f-mono);
+  font-size: clamp(1rem, 1.15vw, 1.1875rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+  font-feature-settings: "liga" 0;
+  text-wrap: pretty;
+}
+
+/* --- children --- */
+.xp__kids {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.xp__kid {
+  display: flex;
+  gap: var(--s-4);
+  align-items: flex-start;
+  min-width: 0;
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--c-bg-2);
+  border: 1px solid var(--c-line);
+  transition: border-color var(--d-fast) var(--e-standard);
+}
+
+.xp__kid:hover {
+  border-color: var(--c-line-strong);
+}
+
+.xp__kid-text {
+  display: grid;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+/* The edit is the headline of a fork: the one thing here the category cannot
+   show. Set larger than the prompt it belongs to, deliberately. */
+.xp__edit.xp__edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-size: var(--t-base);
+  line-height: 1.4;
+  font-feature-settings: "liga" 0;
+}
+
+.xp__edit-out {
+  color: var(--c-text-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--c-danger);
+  text-decoration-thickness: 1px;
+}
+
+.xp__edit-to {
+  color: var(--c-text-3);
+}
+
+.xp__edit-in {
+  color: var(--c-accent-text);
+  font-weight: 500;
+}
+
+.xp__edit.is-same {
   font-size: var(--t-xs);
   text-transform: uppercase;
   letter-spacing: var(--ls-caps);
   color: var(--c-text-3);
-  background: var(--c-bg-2);
 }
 
-/* --- meta --- */
-.xp__meta {
+.xp__kid-prompt.xp__kid-prompt {
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--c-text-2);
+  font-feature-settings: "liga" 0;
+  /* Two lines is enough to recognise a prompt by; the full text is one click
+     away on the create page. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- facts --- */
+.xp__facts {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--s-3);
+  gap: var(--s-2);
   font-size: var(--t-xs);
   color: var(--c-text-3);
+  font-variant-numeric: tabular-nums;
 }
 
 .xp__who {
@@ -350,20 +340,16 @@
   font-weight: 500;
 }
 
-.xp__fact {
-  font-variant-numeric: tabular-nums;
-}
-
-.xp__rule {
-  width: 10px;
+.xp__sep {
+  width: 8px;
   height: 1px;
   background: var(--c-line-strong);
 }
 
-/* The one action per entry, and it names what the product does rather than
-   saying "fork" at someone who has not read the thesis yet. */
+/* --- the action --- */
 .xp__take {
-  margin-left: auto;
+  justify-self: start;
+  margin-top: var(--s-1);
   padding: var(--s-2) var(--s-4);
   border-radius: var(--r-pill);
   font-size: var(--t-xs);
@@ -383,51 +369,95 @@
   border-color: transparent;
 }
 
+.xp__take--quiet {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+ * Roots, unforked
+ * ------------------------------------------------------------------------- */
+
+.xp__solos-head {
+  display: grid;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+  padding-top: var(--s-7);
+  border-top: 1px solid var(--c-line);
+}
+
+.xp__solos-h {
+  font-family: var(--f-display);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.xp__solos-p {
+  font-size: var(--t-sm);
+  color: var(--c-text-3);
+}
+
+/* auto-fill, not auto-fit: with auto-fit a single remaining root stretches to
+   the full page width and reads as a hero. */
+.xp__solos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+  gap: var(--s-6) var(--s-5);
+}
+
+.xp__solo {
+  display: grid;
+  gap: var(--s-3);
+  align-content: start;
+  min-width: 0;
+  animation: xp-rise var(--d-base) var(--e-out) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+.xp__solo-prompt.xp__solo-prompt {
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--c-text);
+  font-feature-settings: "liga" 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* --- skeletons --- */
+.xp__skels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+  gap: var(--s-6) var(--s-5);
+}
+
 .xp__skel {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  gap: var(--s-5);
-  width: 100%;
-  max-width: min(78ch, 100%);
-  margin-bottom: var(--s-9);
-  animation: xp-rise var(--d-slow) var(--e-out) both;
-  animation-delay: calc(var(--i, 0) * 80ms);
-}
-
-.xp__skel-rail {
-  width: 1px;
-  justify-self: center;
-  background: var(--c-line);
-}
-
-.xp__skel-body {
-  display: grid;
-  gap: var(--s-4);
-}
-
-.xp__skel-line {
-  height: 13px;
-  border-radius: var(--r-xs);
-}
-
-.xp__skel-line.is-tiny {
-  width: 22%;
-  height: 9px;
-}
-
-.xp__skel-line.is-wide {
-  width: 80%;
-  height: 22px;
+  gap: var(--s-3);
+  animation: xp-rise var(--d-base) var(--e-out) both;
+  animation-delay: calc(var(--i, 0) * 60ms);
 }
 
 .xp__skel-shot {
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 3;
   border-radius: var(--r-md);
 }
 
-.xp__skel-line,
-.xp__skel-shot {
+.xp__skel-line {
+  height: 11px;
+  border-radius: var(--r-xs);
+}
+
+.xp__skel-line.is-short {
+  width: 48%;
+}
+
+.xp__skel-shot,
+.xp__skel-line {
   background: linear-gradient(
       90deg,
       var(--c-surface) 0%,
@@ -444,12 +474,13 @@
   }
 }
 
-/* --- empty and error --- */
+/* --- states --- */
 .xp__state {
   display: grid;
   justify-items: center;
   gap: var(--s-3);
-  max-width: min(78ch, 100%);
+  max-width: min(72ch, 100%);
+  margin-inline: auto;
   padding: var(--s-9) var(--s-5);
   text-align: center;
   border-radius: var(--r-lg);
@@ -477,7 +508,7 @@
   margin-top: var(--s-2);
   padding: var(--s-3) var(--s-5);
   border-radius: var(--r-pill);
-  font-size: var(--t-sm);
+  font-size: var(--t-xs);
   font-weight: 600;
   letter-spacing: var(--ls-caps);
   text-transform: uppercase;
@@ -496,11 +527,13 @@
   transform: translateY(1px);
 }
 
-@media (max-width: 860px) {
-  /* The alternating indent is a desktop rhythm; at this width it is just a
-     ragged left edge. */
-  .xp__entry:nth-child(even) {
-    margin-left: 0;
+/* --- responsive --- */
+@media (max-width: 900px) {
+  /* The two-column lineage stops working once the children column is narrower
+     than its thumbnails plus a readable edit. */
+  .xp__chain-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-5);
   }
 }
 
@@ -510,40 +543,35 @@
     margin-bottom: var(--s-7);
   }
 
-  .xp__entry,
-  .xp__skel {
-    grid-template-columns: 26px minmax(0, 1fr);
-    gap: var(--s-4);
+  .xp__chains {
+    gap: var(--s-7);
+    margin-bottom: var(--s-8);
   }
 
-  .xp__rail-node {
-    width: 26px;
-    height: 26px;
+  .xp__chain-body {
+    padding: var(--s-4);
   }
 
-  .xp__thread-mark {
-    width: 14px;
-    height: 14px;
+  .xp__shot--kid {
+    width: 84px;
   }
 
-  .xp__prompt {
-    font-size: var(--t-md);
+  .xp__solos {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--s-5) var(--s-4);
   }
 
-  .xp__stream {
-    gap: var(--s-8);
-  }
-
-  .xp__take {
-    margin-left: 0;
+  .xp__kid {
+    gap: var(--s-3);
   }
 }
 
-/* One authored moment is the entry's arrival; reduced motion drops the travel
-   and the blur but keeps the image's fade, because a picture that snaps in at
-   full size is more startling than one that resolves. */
+/* One authored moment is the arrival; reduced motion drops the travel but
+   keeps the image fade, because a picture that snaps to full opacity is more
+   startling than one that resolves. */
 @media (prefers-reduced-motion: reduce) {
-  .xp__entry,
+  .xp__chain,
+  .xp__solo,
   .xp__skel {
     animation-duration: 1ms;
     animation-delay: 0ms;
@@ -555,8 +583,8 @@
     transition: opacity var(--d-base) var(--e-standard);
   }
 
-  .xp__skel-line,
-  .xp__skel-shot {
+  .xp__skel-shot,
+  .xp__skel-line {
     animation-duration: 3s;
   }
 }

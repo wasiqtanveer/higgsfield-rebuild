@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowUp, GitFork, Info, RotateCcw, Sparkles } from "lucide-react";
 import { COSTS } from "../../data/credits.js";
 import "./Create.css";
-import { setCredits } from "../../lib/auth.js";
+import { setCredits, useAuth } from "../../lib/auth.js";
 
 /**
  * /create — the composer.
@@ -88,6 +88,9 @@ const swap = (reduced) => ({
 export default function Create() {
   const [params, setParams] = useSearchParams();
   const reduced = useReducedMotion();
+  /* Null when signed out. The composer works either way -- an anonymous run is
+     free and stores nothing against an account. */
+  const user = useAuth();
 
   /* The hero and nav link here with ?prompt= and ?from=, so those are read on
      mount rather than ignored — a link that carries a prompt and lands on an
@@ -416,16 +419,19 @@ export default function Create() {
               )}
             </motion.button>
             <p className="cmp__cost mono" id="cmp-run-hint" data-numeric>
-              {MODEL.credits} credit · {MODEL.model}
+              {MODEL.credits} credit{MODEL.credits === 1 ? "" : "s"} · {MODEL.model}
             </p>
           </motion.div>
 
-          {/* The one thing here that is not live, said out loud rather than
-              mocked with a plausible number. */}
+          {/* The ledger is live now: a signed-in run is charged against a real
+              balance, and an anonymous one is free. Both stated, because a
+              visitor who is not signed in should not be told about a balance
+              they do not have. */}
           <motion.p className="cmp__pending" {...rise(4, reduced)}>
             <Info size={12} aria-hidden="true" />
-            Your balance appears here once the ledger is connected. Runs are not
-            metered yet.
+            {user
+              ? `Charged to your balance — ${user.credits} credits left.`
+              : "Free while signed out. Sign in to keep what you make and build a lineage."}
           </motion.p>
         </form>
 

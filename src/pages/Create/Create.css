@@ -21,11 +21,24 @@
 
 /* --- head ---------------------------------------------------------------- */
 
+/* Head and grid share one measure so their left edges line up and the whole
+   composition centres as a unit. Without the cap the head keeps `.page`'s full
+   1240px while its text runs ~600px, which strands the headline at the left of
+   an empty box on a wide screen. */
+.cmp .cmp__head,
+.cmp .cmp__grid {
+  max-width: calc(1120px + var(--gutter) * 2);
+}
+
 .cmp__head {
   margin-bottom: var(--s-7);
 }
 
 .cmp__h1 {
+  /* Bounded to its own text. A headline with no measure is left-aligned inside
+     whatever box it is given, which reads as off-centre rather than as a
+     deliberate left edge. */
+  max-width: 24ch;
   font-family: var(--f-display);
   font-size: var(--t-display-sm);
   letter-spacing: var(--ls-display);

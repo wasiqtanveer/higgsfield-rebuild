@@ -2,10 +2,16 @@ import { insertGeneration, uploadImage, getGeneration, lineageOf } from "./_lib/
 import { generate } from "./_lib/generate-core.js";
 import { currentUser, addLedgerEntry, creditBalance } from "./_lib/auth.js";
 
-/* What one fork costs a signed-in visitor. Anonymous forks are free, which is
-   the product's position rather than an oversight -- the try-it path is the
-   front door, and putting a price on it would close it. */
-const FORK_COST = 10;
+/* What one fork costs a signed-in visitor.
+ *
+ * This is the number `/credits` publishes for flux-1-schnell (see COSTS in
+ * `src/data/credits.js`), not an independent figure. A backend that charges
+ * more than the price list says is the product claiming one thing and doing
+ * another, which the principles rule out explicitly.
+ *
+ * Anonymous forks are free, which is the product's position rather than an
+ * oversight -- the try-it path is the front door, and pricing it closes it. */
+const FORK_COST = 1;
 
 /**
  * POST /api/fork — the product.

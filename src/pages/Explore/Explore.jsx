@@ -141,7 +141,10 @@ function Facts({ row }) {
  */
 function Lineage({ root, children, index }) {
   return (
-    <article className="xp__chain" style={{ "--i": Math.min(index, 6) }}>
+    <article
+      className={`xp__chain${children.length === 1 ? " is-single" : ""}`}
+      style={{ "--i": Math.min(index, 6) }}
+    >
       <header className="xp__chain-head">
         <Mark className="xp__chain-mark" />
         <span className="xp__chain-label">
