@@ -1,0 +1,305 @@
+/**
+ * /models — what Graft can drive.
+ *
+ * The page's own chrome only. The spec sheet in the middle is `ModelSpec` and
+ * brings its own styles; nothing here reaches into `.ms`.
+ *
+ * The matrix is the one piece of real table on this product, so it gets what a
+ * table actually needs and a card grid never does: alignment. Figures are
+ * tabular, columns are fixed, and the only colour in the body marks the single
+ * model the backend can actually reach.
+ *
+ * Namespaced `mp` — `.models` would collide with `ModelSpec`'s own `.ms` family
+ * on any future shortening, and two components claiming one name is a bug
+ * decided by import order.
+ */
+
+.mp {
+  padding-bottom: var(--s-10);
+}
+
+/* --- head --- */
+.mp__head {
+  padding-block: calc(var(--h-header) + var(--s-9)) var(--s-7);
+  border-bottom: 1px solid var(--c-line);
+  background: linear-gradient(180deg, var(--c-bg-2), transparent);
+}
+
+.mp__h1 {
+  max-width: 18ch;
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+  line-height: 1.02;
+  color: var(--c-text);
+  text-wrap: balance;
+}
+
+.mp__serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  color: var(--c-accent-text);
+}
+
+.mp__lede {
+  max-width: 64ch;
+  margin-top: var(--s-4);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.mp__h2 {
+  font-family: var(--f-display);
+  font-size: var(--t-xl);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.mp__note {
+  max-width: 60ch;
+  margin-top: var(--s-2);
+  font-size: var(--t-sm);
+  line-height: 1.6;
+  color: var(--c-text-3);
+}
+
+/* --- the matrix --- */
+/* A grid with a zero-min track. `.page` is a plain block, and a block child
+   that declares `min-width: 720px` overflows it rather than scrolling -- the
+   scroller needs a definite size from its parent before `overflow-x` means
+   anything. `minmax(0, 1fr)` is what supplies it. */
+.mp__matrix-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-top: var(--s-9);
+}
+
+/* The table scrolls rather than wraps. A spec table that reflows into stacked
+   rows stops being readable across, which is the only reason to draw one. */
+/* `min-width` on the table makes this box's min-content width 720px, and a
+   grid/flow child defaults to that -- so the scroller grew to fit the table
+   instead of scrolling it, and pushed the page wide on a phone. `max-width`
+   pins it to the container it sits in. */
+.mp__scroll {
+  margin-top: var(--s-6);
+  max-width: 100%;
+  overflow-x: auto;
+  /* A hard paint boundary. The scroller already sized itself correctly, yet the
+     page still scrolled sideways by the amount the table's ink exceeded it --
+     `overflow-x` clips layout but Chromium still counted the painted overflow
+     toward the document's scroll extent. */
+  contain: paint;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--c-line);
+  background: var(--c-surface);
+  box-shadow: inset 0 1px 0 var(--c-line-lit);
+  /* The scrollbar is a browser surface, so it carries the design too. */
+  scrollbar-color: var(--c-surface-3) transparent;
+  scrollbar-width: thin;
+}
+
+.mp__table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+}
+
+/* No `position: sticky` here. On a four-row table it buys nothing, and inside
+   a horizontally scrolling container Chromium counts the sticky cell toward the
+   DOCUMENT's scroll extent -- which made the page itself scroll sideways to the
+   table's 720px min-width on a phone. */
+.mp__table thead th {
+  padding: var(--s-3) var(--s-4);
+  text-align: left;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--c-text-3);
+  background: var(--c-surface-2);
+  border-bottom: 1px solid var(--c-line);
+  white-space: nowrap;
+}
+
+.mp__table tbody tr {
+  border-bottom: 1px solid var(--c-line);
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.mp__table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.mp__table tbody tr:hover {
+  background: var(--c-surface-2);
+}
+
+/* The one model the backend can reach. A wash rather than a border, so the row
+   reads as marked without a coloured slab down its edge. */
+.mp__table tbody tr.is-default {
+  background: var(--c-accent-wash);
+}
+
+.mp__table tbody tr.is-default:hover {
+  background: var(--c-accent-wash-strong);
+}
+
+.mp__table td,
+.mp__table tbody th {
+  padding: var(--s-4);
+  vertical-align: middle;
+  text-align: left;
+  color: var(--c-text-2);
+}
+
+.mp__table tbody th {
+  display: grid;
+  gap: 2px;
+  font-weight: 400;
+}
+
+.mp__name {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--f-display);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.mp__badge {
+  padding: 2px var(--s-2);
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  /* The lightened cut: flat accent as type on this ground is under 4.5:1. */
+  color: var(--c-accent-text);
+  border: 1px solid var(--c-accent-wash-strong);
+  white-space: nowrap;
+}
+
+.mp__org {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.mp__num {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+
+.mp__licence {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+.mp__dash {
+  color: var(--c-text-3);
+}
+
+/* --- the ordinal ticks ---
+ * Three bars, lit to the tier. Height carries the state as well as colour: on a
+ * dark ground a colour-only change at 3px wide is easy to miss. */
+.mp__tier {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+
+.mp__tick {
+  width: 3px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--c-line-strong);
+}
+
+.mp__tick.is-lit {
+  height: 16px;
+  background: var(--c-accent);
+}
+
+.mp__tick.is-lit:nth-child(1) {
+  height: 8px;
+}
+
+.mp__tick.is-lit:nth-child(2) {
+  height: 12px;
+}
+
+/* --- what actually runs --- */
+.mp__truth-wrap {
+  padding-top: var(--s-9);
+}
+
+.mp__truth {
+  max-width: 72ch;
+  padding: var(--s-7);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-2);
+}
+
+.mp__truth-p {
+  margin-top: var(--s-4);
+  font-size: var(--t-base);
+  line-height: 1.65;
+  color: var(--c-text-2);
+}
+
+.mp__truth-p strong {
+  color: var(--c-text);
+  font-weight: 600;
+}
+
+.mp__cta {
+  display: inline-block;
+  margin-top: var(--s-6);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-on-accent);
+  background: var(--c-accent);
+  box-shadow: var(--sh-glow);
+  transition: background var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-out);
+}
+
+.mp__cta:hover {
+  background: var(--c-accent-hover);
+}
+
+.mp__cta:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 720px) {
+  .mp__head {
+    padding-block: calc(var(--h-header) + var(--s-7)) var(--s-6);
+  }
+
+  .mp__matrix-wrap,
+  .mp__truth-wrap {
+    padding-top: var(--s-8);
+  }
+
+  .mp__truth {
+    padding: var(--s-5);
+  }
+}

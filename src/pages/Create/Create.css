@@ -25,9 +25,17 @@
    composition centres as a unit. Without the cap the head keeps `.page`'s full
    1240px while its text runs ~600px, which strands the headline at the left of
    an empty box on a wide screen. */
+/* Head and grid share one measure so their left edges line up and the whole
+   composition centres as a unit.
+ *
+ * The cap is deliberately tight. The composer is a fixed 400px column, so every
+ * pixel the page gains goes to the result panel alone -- and while idle that
+ * panel is a 1:1 frame, which on a wide screen turned into a ~690px empty
+ * square beside a much shorter form. That imbalance is what reads as "pushed
+ * right" even though both columns are mathematically centred. */
 .cmp .cmp__head,
 .cmp .cmp__grid {
-  max-width: calc(1120px + var(--gutter) * 2);
+  max-width: calc(940px + var(--gutter) * 2);
 }
 
 .cmp__head {
@@ -424,11 +432,14 @@
    it makes the empty state read as a frame waiting for work instead of as a
    large hole the layout forgot to fill. Capped against the viewport so the
    frame cannot push the composer's own controls off a short screen. */
+/* A frame waiting for work, not a hole. Capped well under the square it would
+   otherwise draw: a 1:1 box on a wide column is taller than the composer beside
+   it, which leaves the panel reading as empty rather than as reserved. */
 .cmp__result[data-state="idle"],
 .cmp__result[data-state="running"],
 .cmp__result[data-state="error"] {
-  aspect-ratio: 1 / 1;
-  max-height: min(78vh, 720px);
+  aspect-ratio: 4 / 3;
+  max-height: min(62vh, 520px);
 }
 
 .cmp__result:focus-visible {

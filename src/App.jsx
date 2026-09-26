@@ -10,6 +10,9 @@ import GraftMcp from "./pages/Mcp/Graft.jsx";
 import Create from "./pages/Create/Create.jsx";
 import About from "./pages/About/About.jsx";
 import Explore from "./pages/Explore/Explore.jsx";
+import Models from "./pages/Models/Models.jsx";
+import Lineage from "./pages/Lineage/Lineage.jsx";
+import Library from "./pages/Library/Library.jsx";
 import Soon from "./pages/Soon/Soon.jsx";
 
 /**
@@ -52,9 +55,9 @@ export default function App() {
               than as links that go nowhere or land somewhere unrelated. */}
           <Route path="/create" element={<Create />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/lineage" element={<Soon />} />
-          <Route path="/library" element={<Soon />} />
-          <Route path="/models" element={<Soon />} />
+          <Route path="/lineage" element={<Lineage />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/models" element={<Models />} />
           <Route path="/about" element={<About />} />
 
           {/* Paths the clone owned, kept as redirects so anything already

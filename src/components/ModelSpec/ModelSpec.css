@@ -534,6 +534,12 @@
     flex-direction: row;
     gap: var(--s-2);
     overflow-x: auto;
+    /* A flex or grid item defaults to its min-content width, so without this
+       the bank grew to fit four un-shrinkable tabs instead of scrolling them,
+       and pushed the whole page ~90px wide on a phone. `overflow-x` alone does
+       not scroll a box that was allowed to become as wide as its contents. */
+    min-width: 0;
+    max-width: 100%;
     /* Room for the rail, which sits on the tab's left edge. */
     padding-left: 2px;
     scrollbar-width: none;

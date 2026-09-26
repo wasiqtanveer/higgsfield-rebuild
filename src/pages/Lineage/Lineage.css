@@ -1,0 +1,448 @@
+/**
+ * /lineage — the tree.
+ *
+ * Every row is the same object at a different depth, so the page is built on
+ * one row style and an indent, not on a card per level. Depth is carried by a
+ * hairline rail rather than by margin alone: an indent with nothing drawn in it
+ * is a gap, and the reader has to count pixels to know what descends from what.
+ *
+ * Motion here is one moment — the disclosure. Hover and selection are
+ * transitions in the low hundreds of milliseconds, because rows are moused over
+ * constantly and animation on that is noise.
+ *
+ * Namespaced `ln`.
+ */
+
+.ln {
+  padding-bottom: var(--s-10);
+}
+
+/* --- head --- */
+.ln__head {
+  padding-block: calc(var(--h-header) + var(--s-9)) var(--s-7);
+  margin-bottom: var(--s-7);
+  border-bottom: 1px solid var(--c-line);
+  background: linear-gradient(180deg, var(--c-bg-2), transparent);
+}
+
+.ln__h1 {
+  max-width: 18ch;
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+  line-height: 1.02;
+  color: var(--c-text);
+  text-wrap: balance;
+}
+
+.ln__serif {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  color: var(--c-accent-text);
+}
+
+.ln__lede {
+  max-width: 62ch;
+  margin-top: var(--s-4);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.ln__tally {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.ln__tally-sep {
+  width: 14px;
+  height: 1px;
+  background: var(--c-line-strong);
+}
+
+/* --- the tree --- */
+.ln__body {
+  max-width: min(84ch, 100%);
+}
+
+.ln__tree,
+.ln__kids {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ln__tree > div {
+  margin-bottom: var(--s-3);
+}
+
+.ln__node {
+  min-width: 0;
+}
+
+.ln__row {
+  display: grid;
+  grid-template-columns: 22px 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  box-shadow: inset 0 1px 0 var(--c-line-lit);
+  /* Named properties, never `all`. */
+  transition: border-color var(--d-fast) var(--e-standard),
+    background var(--d-fast) var(--e-standard);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ln__row:hover {
+    background: var(--c-surface-2);
+    border-color: var(--c-line-strong);
+  }
+}
+
+/* A row with forks is the point of the page, so it carries the accent on its
+   left edge -- 1px, a hairline rather than a coloured slab. */
+.ln__row.has-kids {
+  border-left-color: var(--c-accent-wash-strong);
+}
+
+.ln__toggle {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-sm);
+  color: var(--c-accent-text);
+  background: transparent;
+  transition: background var(--d-fast) var(--e-standard);
+}
+
+.ln__toggle:hover {
+  background: var(--c-accent-wash);
+}
+
+.ln__chev {
+  display: grid;
+  place-items: center;
+}
+
+/* A leaf keeps the toggle's column so every row's thumbnail lands on one
+   vertical line regardless of whether it opens. */
+.ln__leaf {
+  width: 22px;
+  height: 22px;
+  position: relative;
+}
+
+.ln__leaf::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: var(--r-pill);
+  background: var(--c-text-3);
+  transform: translate(-50%, -50%);
+}
+
+.ln__thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  display: block;
+  background: var(--c-bg-2);
+}
+
+.ln__thumb.is-bare {
+  border: 1px dashed var(--c-line);
+}
+
+.ln__text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ln__prompt.ln__prompt {
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  line-height: 1.4;
+  color: var(--c-text);
+  font-feature-settings: "liga" 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ln__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.ln__who {
+  color: var(--c-text-2);
+}
+
+.ln__dot {
+  width: 2px;
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.ln__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--c-accent-text);
+}
+
+.ln__take {
+  padding: 5px var(--s-3);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--c-text-2);
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-line);
+  white-space: nowrap;
+  transition: color var(--d-fast) var(--e-standard),
+    background var(--d-fast) var(--e-standard);
+}
+
+.ln__take:hover {
+  color: var(--c-text-on-accent);
+  background: var(--c-accent);
+  border-color: transparent;
+}
+
+/* --- descent ---
+ * The rail is what makes depth readable. Without it the indent is just a gap
+ * and the reader counts pixels to work out what descends from what. */
+.ln__kids {
+  overflow: hidden;
+}
+
+.ln__branch {
+  position: relative;
+  margin-left: var(--s-5);
+  padding-left: var(--s-5);
+  padding-top: var(--s-3);
+  border-left: 1px solid var(--c-line-strong);
+}
+
+.ln__branch:last-child {
+  border-left-color: transparent;
+}
+
+/* The elbow: the horizontal run from the rail to the child row. On the last
+   child it also redraws the vertical stub the transparent border gave up. */
+.ln__branch::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--s-5);
+  height: 34px;
+  border-left: 1px solid var(--c-line-strong);
+  border-bottom: 1px solid var(--c-line-strong);
+  border-bottom-left-radius: var(--r-sm);
+}
+
+/* --- the edit on a branch --- */
+.ln__edit.ln__edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+  padding-left: var(--s-1);
+  font-size: var(--t-xs);
+  font-feature-settings: "liga" 0;
+}
+
+.ln__edit-out {
+  color: var(--c-text-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--c-danger);
+  text-decoration-thickness: 1px;
+}
+
+.ln__edit-to {
+  color: var(--c-text-3);
+}
+
+.ln__edit-in {
+  color: var(--c-accent-text);
+  font-weight: 500;
+}
+
+/* --- skeletons --- */
+.ln__skels {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.ln__skel {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  border: 1px solid var(--c-line);
+}
+
+.ln__skel-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-sm);
+}
+
+.ln__skel-lines {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.ln__skel-line {
+  height: 10px;
+  border-radius: var(--r-xs);
+}
+
+.ln__skel-line.is-short {
+  width: 42%;
+}
+
+.ln__skel-thumb,
+.ln__skel-line {
+  background: linear-gradient(
+      90deg,
+      var(--c-surface) 0%,
+      var(--c-surface-2) 40%,
+      var(--c-surface) 80%
+    )
+    0 0 / 300% 100%;
+  animation: ln-sheen 1.6s var(--e-standard) infinite;
+}
+
+@keyframes ln-sheen {
+  to {
+    background-position: -150% 0;
+  }
+}
+
+/* --- states --- */
+.ln__state {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  padding: var(--s-9) var(--s-5);
+  text-align: center;
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-2);
+}
+
+.ln__state-icon {
+  color: var(--c-accent-text);
+}
+
+.ln__state-h {
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.ln__state-p {
+  max-width: 44ch;
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+.ln__cta {
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--r-pill);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--c-text-on-accent);
+  background: var(--c-accent);
+  box-shadow: var(--sh-glow);
+  transition: background var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-out);
+}
+
+.ln__cta:hover {
+  background: var(--c-accent-hover);
+}
+
+.ln__cta:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 720px) {
+  .ln__head {
+    padding-block: calc(var(--h-header) + var(--s-7)) var(--s-6);
+  }
+
+  .ln__row {
+    grid-template-columns: 20px 40px minmax(0, 1fr);
+    row-gap: var(--s-2);
+  }
+
+  .ln__thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* The action drops to its own line rather than squeezing the prompt. */
+  .ln__take {
+    grid-column: 2 / -1;
+    justify-self: start;
+  }
+
+  .ln__branch {
+    margin-left: var(--s-3);
+    padding-left: var(--s-4);
+  }
+
+  .ln__branch::before {
+    width: var(--s-4);
+  }
+}
+
+/* Reduced motion: the disclosure still happens, it just stops travelling.
+   Framer handles the JS side; this covers the sheen, which is the only
+   authored CSS motion on the page. */
+@media (prefers-reduced-motion: reduce) {
+  .ln__skel-thumb,
+  .ln__skel-line {
+    animation-duration: 3s;
+  }
+}
