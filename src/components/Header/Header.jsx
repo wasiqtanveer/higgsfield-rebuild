@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth, useAuthStatus } from "../../lib/auth.js";
 import UserMenu from "../UserMenu/UserMenu.jsx";
@@ -83,6 +83,13 @@ const MENU = [
 /* How far down the page the wordmark gives up its space. */
 const CONDENSE_AT = 48;
 const CYCLE_MS = 3400;
+
+/* `useLayoutEffect` warns when React renders on the server, where there is no
+   layout to read and the effect cannot run at all. The header is measured
+   during the smoke render, so it uses the layout effect in the browser and a
+   plain effect on the server -- where it is inert either way. */
+const useIsoLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 function prefersReducedMotion() {
   return (
@@ -174,6 +181,85 @@ function useScrollProgress() {
 }
 
 /**
+ * Where the active dot should sit, in pixels along the link row.
+ *
+ * The dot used to be a `::after` on whichever link was current, which means it
+ * did not move at all — it was destroyed on one element and constructed on
+ * another, and construction is not a thing you can ease. One marker that
+ * outlives the route change can be told to travel; five pseudo-elements taking
+ * turns cannot.
+ *
+ * So the row owns a single marker and this measures where to put it. Three
+ * things it has to survive:
+ *
+ * 1. **The font.** Link widths are text widths, so a measurement taken before
+ *    the display face loads is a measurement of the fallback. `document.fonts.ready`
+ *    re-measures once the real metrics exist.
+ *
+ * 2. **The pill condensing.** The wordmark collapses past the fold and hands
+ *    its width to the links, which slides every item left underneath a marker
+ *    that would otherwise stay where it was.
+ *
+ * 3. **Having no active link.** On /about or /credits nothing in the row is
+ *    current. The marker reports null and the row hides it rather than parking
+ *    it at the left edge.
+ */
+function useActiveMarker(pathname, deps = []) {
+  const rowRef = useRef(null);
+  const [dot, setDot] = useState(null);
+  /* Until the marker has been placed once it must not animate: a dot that
+     slides in from x=0 on first paint is a transition nobody asked for. */
+  const placed = useRef(false);
+
+  const measure = useCallback(() => {
+    const row = rowRef.current;
+    if (!row) return;
+    const active = row.querySelector("[data-nav-active='true']");
+    if (!active) {
+      setDot(null);
+      /* Leaving a route with no marker re-arms the no-animation rule: coming
+         back should place the dot, not fly it in from wherever it last sat. */
+      placed.current = false;
+      return;
+    }
+    /* offsetLeft against the row, not getBoundingClientRect deltas: the row is
+       the offset parent, and rect maths would have to subtract two numbers that
+       both move when the header floats or the page scrolls. */
+    setDot({ x: active.offsetLeft + active.offsetWidth / 2, ready: placed.current });
+    placed.current = true;
+  }, []);
+
+  /* Layout effect, not effect: measuring after paint shows the dot at its old
+     position for a frame, which is a visible jump on every navigation. */
+  useIsoLayoutEffect(() => {
+    measure();
+  }, [measure, pathname, ...deps]);
+
+  useEffect(() => {
+    const row = rowRef.current;
+    if (!row) return undefined;
+
+    /* ResizeObserver rather than a resize listener: the row also changes width
+       when the wordmark collapses, which fires no window resize at all. */
+    const ro =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    ro?.observe(row);
+
+    let cancelled = false;
+    document.fonts?.ready.then(() => {
+      if (!cancelled) measure();
+    });
+
+    return () => {
+      cancelled = true;
+      ro?.disconnect();
+    };
+  }, [measure]);
+
+  return { rowRef, dot };
+}
+
+/**
  * The auth pill.
  *
  * At rest it shows one label, alternating between Log in and Sign up, because a
@@ -243,6 +329,7 @@ export default function Header({ onAuth = () => {} }) {
   const authStatus = useAuthStatus();
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef(null);
+  const { rowRef, dot } = useActiveMarker(pathname, [condensed]);
 
   // Any navigation closes the overflow menu. Without this it survives the route
   // change and hangs over the new page.
@@ -298,18 +385,33 @@ export default function Header({ onAuth = () => {} }) {
 
         <span className="hdr__rule" aria-hidden="true" />
 
-        <ul className="hdr__links">
-          {PRIMARY.map((item) => (
-            <li key={item.to}>
-              <Link
-                to={item.to}
-                className={`hdr__link${pathname === item.to ? " is-active" : ""}`}
-                aria-current={pathname === item.to ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+        <ul className="hdr__links" ref={rowRef}>
+          {/* One marker for the whole row, positioned rather than parented, so
+              moving between links is a transform on a live element instead of a
+              pseudo-element being torn down and rebuilt somewhere else. It is
+              only transitioned once it has been placed — see the hook. */}
+          <span
+            className={`hdr__dot${dot ? " is-on" : ""}${
+              dot?.ready ? " is-travelling" : ""
+            }`}
+            style={dot ? { transform: `translateX(${dot.x}px) translateX(-50%)` } : undefined}
+            aria-hidden="true"
+          />
+          {PRIMARY.map((item) => {
+            const active = pathname === item.to;
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  data-nav-active={active ? "true" : undefined}
+                  className={`hdr__link${active ? " is-active" : ""}`}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="hdr__more" ref={moreRef}>

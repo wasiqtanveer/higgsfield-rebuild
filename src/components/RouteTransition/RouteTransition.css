@@ -1,0 +1,26 @@
+/**
+ * The page wrapper for the route transition.
+ *
+ * The motion itself is framer-motion's -- see RouteTransition.jsx, which owns
+ * both halves of the move. What is left here is the one thing CSS has to
+ * guarantee for that motion to look right.
+ *
+ * `min-height` is that thing. With `mode="wait"` there is a moment between the
+ * two pages where neither is mounted and this wrapper is empty. Without a floor
+ * the document collapses to the height of the header for a frame or two, the
+ * scrollbar disappears, every centred element on the page shifts sideways by
+ * the scrollbar's width, and then it all snaps back as the new page mounts. The
+ * result reads as a flicker in the layout rather than a transition between
+ * pages, and it is the most common way this pattern goes wrong.
+ *
+ * 100dvh rather than 100vh: on mobile the dynamic unit accounts for the address
+ * bar, so the floor does not itself become a source of layout shift as that bar
+ * collapses on scroll.
+ */
+.rt__page {
+  min-height: 100dvh;
+  /* The exiting page is taken out of flow by framer-motion only after its
+     animation ends, so nothing here should establish a containing block that
+     the outgoing page's transform could be measured against. */
+  transform-origin: 50% 0%;
+}

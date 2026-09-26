@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header/Header.jsx";
 import AuthModal from "./components/AuthModal/AuthModal.jsx";
 import SiteFoot from "./components/SiteFoot/SiteFoot.jsx";
+import BootScreen from "./components/BootScreen/BootScreen.jsx";
+import RouteTransition from "./components/RouteTransition/RouteTransition.jsx";
 import { loadSession } from "./lib/auth.js";
 import Home from "./pages/Home/Home.jsx";
 import Credits from "./pages/Credits/Credits.jsx";
@@ -46,31 +48,39 @@ export default function App() {
       </a>
       <Header onAuth={setAuthMode} />
       <main id="main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/credits" element={<Credits />} />
-          <Route path="/mcp" element={<GraftMcp />} />
+        {/* RouteTransition owns the moment between two pages: it resets the
+            scroll before the new route paints, and gives it its entrance. The
+            routes render against the location it hands down so that both stay
+            tied to one value that changes exactly once per navigation. */}
+        <RouteTransition>
+          {(shown) => (
+            <Routes location={shown}>
+              <Route path="/" element={<Home />} />
+              <Route path="/credits" element={<Credits />} />
+              <Route path="/mcp" element={<GraftMcp />} />
 
-          {/* Designed, not built. These render as an honest "next" page rather
-              than as links that go nowhere or land somewhere unrelated. */}
-          <Route path="/create" element={<Create />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/lineage" element={<Lineage />} />
-          <Route path="/library" element={<Library />} />
-          <Route path="/models" element={<Models />} />
-          <Route path="/about" element={<About />} />
+              {/* Designed, not built. These render as an honest "next" page rather
+                  than as links that go nowhere or land somewhere unrelated. */}
+              <Route path="/create" element={<Create />} />
+              <Route path="/explore" element={<Explore />} />
+              <Route path="/lineage" element={<Lineage />} />
+              <Route path="/library" element={<Library />} />
+              <Route path="/models" element={<Models />} />
+              <Route path="/about" element={<About />} />
 
-          {/* Paths the clone owned, kept as redirects so anything already
-              linked to them lands on the surface that replaced it rather than
-              on a dead end. */}
-          <Route path="/pricing" element={<Navigate to="/credits" replace />} />
-          <Route path="/api" element={<Navigate to="/mcp" replace />} />
-          <Route path="/landing" element={<Navigate to="/" replace />} />
-          <Route path="/video" element={<Navigate to="/" replace />} />
-          <Route path="/audio" element={<Navigate to="/" replace />} />
+              {/* Paths the clone owned, kept as redirects so anything already
+                  linked to them lands on the surface that replaced it rather than
+                  on a dead end. */}
+              <Route path="/pricing" element={<Navigate to="/credits" replace />} />
+              <Route path="/api" element={<Navigate to="/mcp" replace />} />
+              <Route path="/landing" element={<Navigate to="/" replace />} />
+              <Route path="/video" element={<Navigate to="/" replace />} />
+              <Route path="/audio" element={<Navigate to="/" replace />} />
 
-          <Route path="*" element={<Soon />} />
-        </Routes>
+              <Route path="*" element={<Soon />} />
+            </Routes>
+          )}
+        </RouteTransition>
       </main>
 
       {/* Mounted once here rather than per page. Two of nine surfaces carried
@@ -81,6 +91,11 @@ export default function App() {
       {authMode && (
         <AuthModal mode={authMode} onClose={() => setAuthMode(null)} />
       )}
+
+      {/* The first-visit entrance. Mounted last and stacked above everything,
+          so nothing later in source order can paint over it. Shown once per
+          session, never between pages. */}
+      <BootScreen />
     </>
   );
 }

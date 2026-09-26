@@ -172,6 +172,7 @@
 
 /* --- links -------------------------------------------------------------- */
 .hdr__links {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--s-1);
@@ -205,17 +206,55 @@
 }
 
 /* The active marker is a dot, not an underline. An underline inside a pill
-   fights the pill's own curve; a dot reads at this size and costs no height. */
-.hdr__link.is-active::after {
-  content: "";
+   fights the pill's own curve; a dot reads at this size and costs no height.
+ *
+ * It is one element for the row rather than a pseudo-element per link, because
+ * the dot has to *travel* between sections and a pseudo-element cannot: it
+ * would be destroyed on the old link and constructed on the new one, which is
+ * a cut, not a move. JS positions this along the row; the transition below is
+ * what turns that repositioning into a slide.
+ *
+ * `left: 0` with the offset carried entirely in the transform: animating
+ * `left` lays out every frame, while a transform stays on the compositor. */
+.hdr__dot {
   position: absolute;
-  left: 50%;
+  left: 0;
   bottom: 3px;
   width: 3px;
   height: 3px;
   border-radius: var(--r-pill);
   background: var(--c-accent);
-  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  /* Above the links, not under them. The active link paints a filled pill as
+     its background and the marker is three pixels tall sitting inside that
+     pill's box -- in source order the links come later, so without this the
+     dot is painted and then covered by the very item it is marking. */
+  z-index: 1;
+}
+
+.hdr__dot.is-on {
+  opacity: 1;
+}
+
+/* Only once it has been placed. The first paint on a route puts the dot under
+   its link with no transition, so it appears where it belongs instead of
+   sliding in from the row's left edge.
+ *
+ * The dot leads slightly on the way out and settles on arrival, which is what
+ * `--e-out` buys here: the travel reads as the marker being pulled to the new
+ * section rather than as a box being tweened between two numbers. */
+.hdr__dot.is-travelling {
+  transition: transform var(--d-base) var(--e-out),
+    opacity var(--d-fast) var(--e-standard);
+}
+
+/* Travel is the whole point of this element, so under reduced motion it does
+   not travel — it cuts. The marker is still correct on every route. */
+@media (prefers-reduced-motion: reduce) {
+  .hdr__dot.is-travelling {
+    transition: opacity var(--d-fast) var(--e-standard);
+  }
 }
 
 /* --- more ---------------------------------------------------------------- */

@@ -1,0 +1,108 @@
+/**
+ * The first-visit entrance.
+ *
+ * The top of the stack, above the header and the auth dialog. It is the only
+ * thing in the product that covers the whole viewport, and it does so for a
+ * moment when there is genuinely nothing underneath worth showing.
+ */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  background: var(--c-bg);
+  /* A very slight warm centre, so the screen is not a flat black rectangle
+     before the mark appears. Radial rather than linear: it puts the light
+     exactly where the glyph is about to be drawn. */
+  background-image: radial-gradient(
+    120% 80% at 50% 45%,
+    var(--c-accent-wash) 0%,
+    transparent 58%
+  );
+  transform-origin: 50% 50%;
+}
+
+.boot__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+
+/* --- the mark draws itself --------------------------------------------- */
+.boot__glyph {
+  width: 56px;
+  height: 56px;
+  color: var(--c-accent);
+  /* The glow is on the element rather than on each stroke: a filter per path
+     would composite three layers where one will do. */
+  filter: drop-shadow(0 0 18px var(--c-accent-glow));
+}
+
+/* 40 is comfortably longer than any of the three paths, so each one is fully
+   hidden at offset 40 and fully drawn at 0. Measuring them exactly would buy
+   nothing — the dash just has to outrun the stroke. */
+.boot__stroke {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: boot-draw 0.72s var(--e-out) forwards;
+}
+
+/* The two feeding strokes draw together and the outgoing one follows, because
+   that is the order the shape means: two things arrive, then one leaves. */
+.boot__stroke--a {
+  animation-delay: 0.06s;
+}
+.boot__stroke--b {
+  animation-delay: 0.14s;
+}
+.boot__stroke--c {
+  animation-delay: 0.46s;
+}
+
+@keyframes boot-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* --- type --------------------------------------------------------------- */
+.boot__word {
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: var(--t-display-sm);
+  line-height: 1;
+  letter-spacing: var(--ls-display);
+  color: var(--c-text);
+}
+
+.boot__line {
+  max-width: 34ch;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--c-text-3);
+}
+
+/* --- the run ------------------------------------------------------------ */
+.boot__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--c-accent-wash-strong), var(--c-accent));
+  transform-origin: 0 50%;
+}
+
+/* The component does not mount under this setting at all — JS decides, so a
+   returning visitor is never shown a stalled entrance. This is the brace: if
+   the markup is ever present, it is present composed and still. */
+@media (prefers-reduced-motion: reduce) {
+  .boot {
+    display: none;
+  }
+}
