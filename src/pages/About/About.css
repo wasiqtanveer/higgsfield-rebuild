@@ -1,0 +1,740 @@
+/**
+ * /about — the page as its own lineage tree.
+ *
+ * Namespace: every class here is `.abt`-prefixed. That is not style, it is a
+ * project rule with four real bugs behind it — a generic class name silently
+ * loses to another component's by import order, and `.hero`, `.wall`, `.composer`
+ * and `.pricing` have each already done it here.
+ *
+ * Colour budget for this whole page, spent deliberately and fully:
+ *   1. the lineage threads joining a node to its children
+ *   2. the insertions in a diff — the revision arriving
+ *   3. the single action at the terminus
+ * All three are the same two things DESIGN.md permits: the lineage thread, and
+ * the primary action. Deletions are dimmed rather than red, because nothing here
+ * is wrong — the parent clause was a choice that another choice replaced.
+ *
+ * No drop shadow separates anything on this page. On `#08090c` a drop shadow has
+ * nothing darker to be darker than; surfaces separate by stepping up the
+ * near-black ramp and taking a 1px lit top edge.
+ */
+
+/* The band claims its own vertical rhythm, so the page wrapper gives it none:
+   `--s-9` stacked on a section that already paces itself is a screen of nothing
+   between the headline and the thing it introduces. */
+.abt {
+  position: relative;
+  padding-top: calc(var(--h-header) + var(--s-9));
+  padding-bottom: var(--s-10);
+  overflow-x: clip;
+}
+
+/* A warm pool behind the tree, low and wide. Not a shadow and not decoration:
+   on a near-black ground the mono blocks have nothing to be lit against, and the
+   bloom is what gives the column a place to sit. Same mechanism as `#feed`'s. */
+.abt::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 18vh;
+  width: 120vw;
+  max-width: 1400px;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    circle at center,
+    var(--c-accent-wash) 0%,
+    transparent 62%
+  );
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * The head.
+ * ------------------------------------------------------------------------- */
+
+/* --s-7, not --s-9. The tree below opens with the spine, which is a row of
+   small dim type — at --s-9 the gap between the lede and the first thing the
+   page does read as a screen of nothing, and the eye lost the thread between
+   the instruction ("open any of them") and the thing to open. */
+.abt__head {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--s-7);
+}
+
+.abt__title {
+  max-width: 22ch;
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: var(--ls-display);
+  color: var(--c-text);
+  text-wrap: balance;
+}
+
+/* The one serif italic word. At 1.1em because the italic sits optically small
+   beside a geometric sans at display weight — matched by eye, not by number. */
+.abt__title em {
+  font-family: var(--f-serif);
+  font-size: 1.1em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.abt__lede {
+  max-width: 54ch;
+  margin: var(--s-5) 0 0;
+  font-family: var(--f-sans);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* ---------------------------------------------------------------------------
+ * The tree column.
+ *
+ * Narrower than the page: the artifact is a line of mono at reading size, and a
+ * line of mono set to 1240px is a line nobody finishes. The column is sized to
+ * the artifact, and the artifact decides the composition.
+ * ------------------------------------------------------------------------- */
+
+/* The column is sized to the artifact, not to the page. A line of mono set
+   across 1100px is a line nobody finishes, and it also left the node panel half
+   empty on the right — a wide box with all its ink in the left two thirds reads
+   as a layout that ran out of content. 820px puts the mono line at roughly 76ch
+   and the prose under it at its own 62ch without either fighting the other. */
+/* `.page` also sets a max-width and centres itself, and at equal specificity it
+   wins on import order, so this has to out-specify it rather than sit beside it.
+   The column is narrowed to the artifact's own measure but stays LEFT-ALIGNED
+   with the headline above: centring it inside the page put a 220px indent
+   between the head and the tree that read as an accident, and left the spine
+   stranded away from the sentence it descends from. The page has one left edge
+   and everything hangs off it. */
+.abt .abt__tree {
+  position: relative;
+  z-index: 1;
+  /* Keeps `.page`'s own centring so the left edge lands exactly where the
+     headline's does, then narrows on the RIGHT only: the head's full page width
+     minus the amount the column gives back. `margin-inline: 0` was wrong — with
+     no `.page` wrapper around this element it hung off the viewport edge rather
+     than the headline's. */
+  max-width: var(--w-page);
+  padding-right: calc(var(--gutter) + max(0px, (var(--w-page) - var(--gutter) * 2 - 880px)));
+}
+
+/* ---------------------------------------------------------------------------
+ * The spine — the path already walked.
+ * ------------------------------------------------------------------------- */
+
+.abt__spine {
+  list-style: none;
+  margin: 0 0 var(--s-6);
+  padding: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+
+.abt__spine-row {
+  position: relative;
+}
+
+/* Each ancestor keeps a hairline thread down its left so the collapsed path
+   reads as one continuous descent rather than as a stack of rows. */
+.abt__spine-row:last-child::after {
+  content: none;
+}
+
+.abt__spine-row::after {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 100%;
+  width: 2px;
+  height: var(--s-1);
+  background: var(--c-line-strong);
+}
+
+.abt__spine-btn {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s-4);
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--d-base) var(--e-standard),
+    border-color var(--d-base) var(--e-standard);
+  /* Reading order: the spine rows are the path, counted downward, and they are
+     already in place when the page loads — the stagger is only for the rows a
+     promotion adds. */
+  animation: abt-spine-in var(--d-slow) var(--e-out) backwards;
+  animation-delay: calc(var(--row, 0) * 60ms);
+}
+
+.abt__spine-depth {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-3);
+}
+
+/* The ancestor's line is truncated on purpose: it is a waypoint, not the
+   artifact. The artifact is the one node at focus, and two full-length mono
+   lines competing for that role is what made the first version unreadable. */
+.abt__spine-line {
+  overflow: hidden;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--c-text-2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* --c-text-3 measures 3.81:1 here and fails. The spine is the path already
+     walked and it has to stay readable, so it takes --c-text-2. */
+  color: var(--c-text-2);
+  transition: color var(--d-base) var(--e-standard);
+}
+
+.abt__spine-label {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  transition: color var(--d-base) var(--e-standard);
+}
+
+/* Two properties, never one: on near-black a single small change is the easiest
+   thing on the page to miss. */
+.abt__spine-btn:hover {
+  background: var(--c-bg-2);
+  border-color: var(--c-line);
+}
+
+.abt__spine-btn:hover .abt__spine-line,
+.abt__spine-btn:hover .abt__spine-label {
+  color: var(--c-text);
+}
+
+@keyframes abt-spine-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * The focus node.
+ *
+ * One step up the ramp from the page, with a lit top edge giving it thickness,
+ * and a 2px accent rail down its left — this node is the lineage thread's
+ * current position, which is one of the two things the accent is allowed to mark.
+ * ------------------------------------------------------------------------- */
+
+.abt__node {
+  position: relative;
+  padding: var(--s-6) var(--s-6) var(--s-6) var(--s-7);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-surface);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* The rail. Inset from the corners so it reads as a thread passing through the
+   node rather than as a coloured border on a card — a thick coloured left border
+   on a panel is the category's callout pattern and says nothing. */
+.abt__node::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--s-5);
+  bottom: var(--s-5);
+  width: 2px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  box-shadow: 0 0 18px -2px var(--c-accent-glow);
+}
+
+.abt__node-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  margin-bottom: var(--s-5);
+}
+
+.abt__depth {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.abt__depth-num {
+  font-family: var(--f-mono);
+  font-size: var(--t-lg);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--c-accent-text);
+}
+
+.abt__depth-unit,
+.abt__node-label {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+.abt__node-label {
+  margin-left: auto;
+  color: var(--c-text-2);
+}
+
+/* The artifact. The largest mono on the page, deliberately: this line is the
+   subject of the section, so it is set as the authored data it is rather than as
+   a caption about something else. */
+.abt__node-line {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: clamp(var(--t-md), 1.7vw, var(--t-lg));
+  font-feature-settings: "liga" 0;
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+.abt__node-body {
+  max-width: 62ch;
+  margin: var(--s-5) 0 0;
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* The cost. Set apart by a hairline above rather than by a box: it is the same
+   register as the body, arriving after it, and a second panel inside this one
+   would be a nested card. */
+.abt__cost {
+  max-width: 62ch;
+  margin: var(--s-5) 0 0;
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--c-line);
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  /* Measured, not assumed: --c-text-3 on --c-surface is 3.81:1 and fails the
+     4.5:1 floor. This is running prose, so it takes --c-text-2 at 7.86:1 and is
+     set apart from the body above by the rule and the label instead. */
+  color: var(--c-text-2);
+}
+
+.abt__cost-label {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+}
+
+/* The node's own arrival on promotion. It is keyed by node id in JSX, so this
+   runs from its start state on every promotion instead of interpolating out of
+   the previous node's position. Four properties reading one curve: lift, scale
+   from the TOP origin, unblur, and opacity — scaling from the top is what makes
+   it read as arriving out of the page rather than growing from its middle. */
+.abt__node:not(.is-still) {
+  animation: abt-node-in var(--d-slower) var(--e-out) backwards;
+}
+
+@keyframes abt-node-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.988);
+    filter: blur(5px);
+  }
+  /* The blur clears early on purpose: four properties finishing on the same
+     frame is what makes an arrival read as one mechanical move. */
+  60% {
+    filter: blur(0);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * The diff.
+ *
+ * Tokens keep their box and change their ink. A width or display transition on a
+ * dozen tokens at once janks, and a line that re-wraps mid-animation destroys
+ * the one reading the whole page depends on — that ONE clause moved.
+ * ------------------------------------------------------------------------- */
+
+.abt__line {
+  display: inline;
+}
+
+/* A changed token never breaks across lines. The page's whole reading is "ONE
+   clause moved", and a struck clause split over a line break stops looking like
+   one move — the first capture had "a caption" broken across two lines and the
+   swap read as two unrelated edits. Unchanged words wrap freely. */
+.abt__tok {
+  display: inline;
+}
+
+.abt__tok--del,
+.abt__tok--ins {
+  white-space: nowrap;
+}
+
+.abt__tok-ink {
+  display: inline-block;
+  transition: opacity var(--d-slow) var(--e-out),
+    color var(--d-slow) var(--e-out),
+    transform var(--d-slow) var(--e-out),
+    text-decoration-color var(--d-slow) var(--e-out);
+  transition-delay: var(--tok-delay, 0ms);
+}
+
+/* Deletion, before it resolves: still live text at full weight, because it is
+   the line the visitor was reading a moment ago. */
+.abt__tok--del .abt__tok-ink {
+  color: var(--c-text-2);
+  text-decoration-line: line-through;
+  text-decoration-thickness: 1px;
+  text-decoration-color: transparent;
+}
+
+/* …and after. Struck and dimmed rather than removed: a diff whose deletions
+   disappear is not a diff, it is a replacement, and the page's argument is that
+   you can see what changed. */
+.abt__tok--del.is-resolved .abt__tok-ink {
+  color: var(--c-text-3);
+  text-decoration-color: var(--c-text-3);
+}
+
+/* Insertion, before it arrives: holding its space, out of the ink. */
+.abt__tok--ins .abt__tok-ink {
+  opacity: 0;
+  color: var(--c-accent-text);
+  transform: translateY(-0.18em);
+}
+
+.abt__tok--ins.is-resolved .abt__tok-ink {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------------------------------------
+ * The children.
+ *
+ * Positions on one fork, not a row of cards. Each child hangs off its own
+ * accent thread from the node above, and the threads draw themselves downward in
+ * reading order — the stagger's direction is the argument, exactly as `#how`'s
+ * beats count down and `#models`' ladder counts from the left.
+ * ------------------------------------------------------------------------- */
+
+.abt__children {
+  display: grid;
+  grid-template-columns: repeat(var(--count, 3), minmax(0, 1fr));
+  gap: var(--s-4);
+  margin-top: var(--s-7);
+}
+
+.abt__child {
+  position: relative;
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  border: 1px solid var(--c-line);
+  border-top-color: var(--c-line-lit);
+  border-radius: var(--r-lg);
+  background: var(--c-bg-2);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--d-base) var(--e-standard),
+    border-color var(--d-base) var(--e-standard),
+    transform var(--d-base) var(--e-out);
+  animation: abt-child-in var(--d-slower) var(--e-out) backwards;
+  animation-delay: calc(360ms + var(--child, 0) * 90ms);
+}
+
+/* The thread: from the node above down into this child's top edge. Drawn with
+   scaleY from the top so it grows downward, which is the direction the lineage
+   actually runs. */
+.abt__thread {
+  position: absolute;
+  left: var(--s-5);
+  bottom: 100%;
+  width: 2px;
+  height: var(--s-7);
+  border-radius: var(--r-pill);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--c-accent) 38%,
+    var(--c-accent)
+  );
+  box-shadow: 0 0 16px -4px var(--c-accent-glow);
+  transform-origin: top;
+  animation: abt-thread-draw var(--d-slower) var(--e-out) backwards;
+  animation-delay: calc(300ms + var(--child, 0) * 90ms);
+}
+
+.abt__child-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--c-accent-text);
+}
+
+.abt__child-label {
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+}
+
+.abt__child-depth {
+  margin-left: auto;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-3);
+}
+
+/* The child's line, clamped to three: enough to read what the revision says,
+   not enough to compete with the focus node's full artifact. */
+.abt__child-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  font-family: var(--f-mono);
+  font-size: var(--t-sm);
+  font-feature-settings: "liga" 0;
+  line-height: 1.5;
+  color: var(--c-text-2);
+  transition: color var(--d-base) var(--e-standard);
+}
+
+/* The affordance names the gesture, and it is the product's own word. "Learn
+   more" would be a link on any page; "Fork this line" is only true here. */
+.abt__child-go {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--f-sans);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--ls-caps);
+  text-transform: uppercase;
+  color: var(--c-text-2);
+  transition: color var(--d-base) var(--e-standard),
+    transform var(--d-base) var(--e-out);
+}
+
+.abt__child:hover {
+  background: var(--c-surface);
+  border-color: var(--c-line-strong);
+  transform: translateY(-2px);
+}
+
+.abt__child:hover .abt__child-line {
+  color: var(--c-text);
+}
+
+.abt__child:hover .abt__child-go {
+  color: var(--c-accent-text);
+  transform: translateX(2px);
+}
+
+.abt__child:active {
+  transform: scale(0.988);
+}
+
+@keyframes abt-child-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes abt-thread-draw {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * The terminus.
+ *
+ * The page's only action, and it appears only here — a branch that ends is what
+ * earns the invitation. A CTA in the first viewport would be asking before the
+ * page has shown anything.
+ * ------------------------------------------------------------------------- */
+
+.abt__terminus {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: var(--s-5);
+  margin-top: var(--s-7);
+  padding-left: var(--s-5);
+}
+
+.abt__thread--end {
+  left: 0;
+  height: var(--s-7);
+  /* Fades out downward: the thread stops here rather than being cut off, which
+     is the difference between an ending and a truncation. */
+  background: linear-gradient(
+    to bottom,
+    var(--c-accent),
+    var(--c-accent) 40%,
+    transparent
+  );
+}
+
+.abt__terminus-note {
+  max-width: 48ch;
+  margin: 0;
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  color: var(--c-text-2);
+}
+
+/* Filled accent, so it carries near-black ink: white on `#ff5c1a` measures about
+   3.1:1 and fails. */
+.abt__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  height: 2.9rem;
+  padding: 0 var(--s-5);
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  box-shadow: 0 8px 30px -10px var(--c-accent-glow);
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--c-text-on-accent);
+  text-decoration: none;
+  transition: background var(--d-fast) var(--e-standard),
+    box-shadow var(--d-base) var(--e-out);
+}
+
+/* The light lags the fill a little: colour at --d-fast, glow at --d-base. */
+.abt__action:hover {
+  background: var(--c-accent-hover);
+  box-shadow: 0 12px 40px -10px var(--c-accent-glow);
+}
+
+/* The default focus orange is invisible on the accent it would sit on, so a
+   filled accent control overrides the ring to the ink colour. */
+.abt__action:focus-visible {
+  outline: 2px solid var(--c-text-on-accent);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Responsive.
+ * ------------------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  /* Three positions on one fork stop being positions when each is 180px wide,
+     so they stack and the threads run down the left of the column instead of
+     dropping into three tops. */
+  .abt__children {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+
+  .abt__thread {
+    height: var(--s-6);
+  }
+}
+
+@media (max-width: 720px) {
+  .abt {
+    padding-top: calc(var(--h-header) + var(--s-8));
+    padding-bottom: var(--s-9);
+  }
+
+  .abt__head {
+    margin-bottom: var(--s-8);
+  }
+
+  .abt__node {
+    padding: var(--s-5) var(--s-5) var(--s-5) var(--s-6);
+  }
+
+  /* The label stops sitting on the meta row's right at this width — a
+     right-aligned uppercase label beside a depth readout in 340px of space
+     collides with it. */
+  .abt__node-meta {
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+
+  .abt__node-label {
+    margin-left: 0;
+  }
+
+  /* The ancestor line is the first thing to go: at this width the depth number
+     and the label are the waypoint, and a truncated mono line adds nothing. */
+  .abt__spine-btn {
+    grid-template-columns: auto 1fr;
+    gap: var(--s-3);
+  }
+
+  .abt__spine-line {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Reduced motion.
+ *
+ * Honoured in CSS *and* at source in the JS that arms it. A CSS-paused animation
+ * still runs its JS timer, and a reveal that merely runs instantly still starts
+ * from a transformed state, which is a visible jump on a slow paint. Under the
+ * setting the page has no armed motion at all — the diff resolves immediately,
+ * every node is composed, and nothing travels.
+ * ------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .abt__node:not(.is-still),
+  .abt__child,
+  .abt__thread,
+  .abt__spine-btn {
+    animation: none;
+  }
+
+  .abt__tok-ink {
+    transition: none;
+  }
+
+  .abt__child:hover {
+    transform: none;
+  }
+
+  .abt__child:hover .abt__child-go {
+    transform: none;
+  }
+}

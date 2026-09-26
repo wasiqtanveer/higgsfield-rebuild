@@ -1,0 +1,689 @@
+/**
+ * /create — the composer.
+ *
+ * Every class here is prefixed `cmp` (and `cmp__` for parts). That is not style
+ * preference: `.composer`, `.hero` and `.wall` have each already caused a real
+ * bug in this repo by colliding across a shared global namespace, and one of
+ * them made this very page's Generate button enormous.
+ *
+ * Every colour, space, radius, type step and easing resolves to a variable in
+ * tokens.css. No hardcoded hex.
+ *
+ * The section is NOT wrapped in `Arrive`, deliberately. Arrive is for bands you
+ * scroll down onto; this page is a tool you land directly in and immediately
+ * type into, and running an arrival animation over a form the visitor is already
+ * reaching for delays the one thing they came to do.
+ */
+
+.cmp {
+  padding-block: calc(var(--h-header) + var(--s-8)) var(--s-9);
+}
+
+/* --- head ---------------------------------------------------------------- */
+
+.cmp__head {
+  margin-bottom: var(--s-7);
+}
+
+.cmp__h1 {
+  font-family: var(--f-display);
+  font-size: var(--t-display-sm);
+  letter-spacing: var(--ls-display);
+  line-height: 1.02;
+  margin: 0 0 var(--s-3);
+  color: var(--c-text);
+}
+
+/* The one serif italic word per headline. 1.1em because Instrument Serif runs
+   optically smaller than Space Grotesk at the same size. */
+.cmp__h1 em {
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 1.1em;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.cmp__lede {
+  max-width: 46ch;
+  margin: 0;
+  font-size: var(--t-md);
+  line-height: 1.55;
+  color: var(--c-text-2);
+}
+
+/* --- the two columns -----------------------------------------------------
+ * The composer is fixed-ish and the result takes the rest: a prompt column that
+ * grows with the viewport just gets long lines, while the image benefits from
+ * every pixel it can have. minmax(0,…) on the result so a wide data-URL image
+ * cannot force the grid wider than the page. */
+
+.cmp__grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 400px) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
+}
+
+/* Cap the result against the viewport rather than letting a 1024² image set the
+   page height. Without this the picture runs taller than the composer beside
+   it, which leaves a column of dead space under the controls and pushes the
+   receipt below the fold — the receipt is the evidence the backend is real, so
+   it should be on screen with the thing it describes. */
+@media (min-width: 1021px) {
+  .cmp__result {
+    max-height: calc(100vh - var(--h-header) - var(--s-8));
+  }
+
+  .cmp__done {
+    min-height: 0;
+  }
+
+  .cmp__figure {
+    /* Let the frame give up height to the receipt below it instead of holding
+       a rigid square. */
+    aspect-ratio: auto;
+    min-height: 0;
+    flex: 1;
+  }
+}
+
+/* --- shared panel -------------------------------------------------------- */
+
+.cmp__panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-line);
+  /* Depth from light, not shadow: the lit top edge is what gives a raised
+     surface its thickness on a near-black ground. */
+  box-shadow: inset 0 1px 0 var(--c-line-lit), var(--sh-2);
+  border-radius: var(--r-lg);
+}
+
+.cmp__compose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  padding: var(--s-5);
+  /* Sticks while the result scrolls: on a tall result the prompt is the thing
+     you keep editing, so it should not leave the screen. */
+  position: sticky;
+  top: calc(var(--h-header) + var(--s-4));
+}
+
+/* --- lineage strip -------------------------------------------------------
+ * The accent marks exactly two things on this product: the primary action and
+ * the lineage thread. This is the thread, so it earns the accent — but only
+ * when there is a real parent. A root prompt gets the quiet treatment, because
+ * dressing "no parent" in lineage colour would assert a descent that does not
+ * exist. */
+
+.cmp__lineage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-md);
+  background: var(--c-accent-wash);
+  border-left: 2px solid var(--c-accent);
+}
+
+.cmp__lineage[data-root="true"] {
+  background: var(--c-surface-2);
+  border-left-color: var(--c-line-strong);
+}
+
+.cmp__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--c-accent-text);
+}
+
+.cmp__lineage[data-root="true"] .cmp__tag {
+  color: var(--c-text-3);
+}
+
+.cmp__parent {
+  margin: 0;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--c-text-2);
+  /* Two lines of the parent, then clipped. It is context, not the subject of
+     this screen. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The no-parent case is prose, not a prompt, so it drops the mono and sits
+   quieter — it is explaining the state rather than quoting anything. */
+.cmp__parent--empty {
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+}
+
+/* --- the prompt field ---------------------------------------------------- */
+
+.cmp__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  position: relative;
+}
+
+.cmp__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.cmp__input {
+  width: 100%;
+  min-height: 7.5rem;
+  padding: var(--s-4);
+  padding-bottom: var(--s-6);
+  resize: none;
+  overflow-y: auto;
+  background: var(--c-bg-2);
+  color: var(--c-text);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-md);
+  font-size: var(--t-base);
+  line-height: 1.6;
+  transition: border-color var(--d-fast) var(--e-standard),
+    box-shadow var(--d-fast) var(--e-standard);
+}
+
+.cmp__input::placeholder {
+  color: var(--c-text-3);
+}
+
+/* Hover lifts the edge before you commit to clicking in — the field is the
+   main target on this side of the page and should feel reachable. */
+.cmp__input:hover:not(:focus) {
+  border-color: var(--c-line-strong);
+  background: var(--c-surface-2);
+}
+
+.cmp__input:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-wash);
+}
+
+/* Sits inside the textarea's reserved bottom padding so it never pushes the
+   field's own height around as the count grows. */
+.cmp__count {
+  position: absolute;
+  right: var(--s-3);
+  bottom: var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  pointer-events: none;
+}
+
+.cmp__count.is-near {
+  color: var(--c-accent-text);
+}
+
+/* --- steps + seed -------------------------------------------------------- */
+
+.cmp__controls {
+  display: grid;
+  gap: var(--s-5);
+}
+
+.cmp__control {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.cmp__val {
+  color: var(--c-text);
+  font-size: var(--t-sm);
+  letter-spacing: 0;
+}
+
+.cmp__hint {
+  font-size: var(--t-xs);
+  line-height: 1.45;
+  color: var(--c-text-3);
+}
+
+/* Range, styled in both engines. Left unstyled it inherits an OS blue that
+   belongs to no part of this system. */
+.cmp__range {
+  width: 100%;
+  height: 2px;
+  margin-block: var(--s-2);
+  appearance: none;
+  background: var(--c-surface-3);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+}
+
+.cmp__range::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  border: none;
+  box-shadow: var(--sh-1);
+  transition: transform var(--d-fast) var(--e-out);
+}
+
+.cmp__range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  box-shadow: var(--sh-1);
+}
+
+.cmp__range:hover::-webkit-slider-thumb {
+  transform: scale(1.15);
+}
+
+.cmp__seed {
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-bg-2);
+  color: var(--c-text);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-sm);
+  font-size: var(--t-sm);
+}
+
+.cmp__seed::placeholder {
+  color: var(--c-text-3);
+}
+
+.cmp__seed:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-wash);
+}
+
+/* --- run ----------------------------------------------------------------- */
+
+.cmp__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+/* The primary action, and the only filled accent control on the page.
+   Near-black ink, not white: white on #ff5c1a sits at ~3.1:1 and fails. */
+.cmp__run {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  min-height: 42px;
+  background: var(--c-accent);
+  color: var(--c-text-on-accent);
+  border: none;
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: var(--ls-tight);
+  cursor: pointer;
+  box-shadow: var(--sh-glow);
+  transition: background var(--d-fast) var(--e-standard),
+    transform var(--d-fast) var(--e-out);
+}
+
+.cmp__run:hover:not(:disabled) {
+  background: var(--c-accent-hover);
+  transform: translateY(-1px);
+}
+
+.cmp__run:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cmp__run:disabled {
+  background: var(--c-surface-3);
+  color: var(--c-text-3);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.cmp__spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--r-pill);
+  animation: cmp-spin 640ms linear infinite;
+}
+
+@keyframes cmp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cmp__cost {
+  margin: 0;
+  font-size: var(--t-xs);
+  color: var(--c-text-3);
+  /* Shrink rather than wrap onto its own line: it is a footnote to the button
+     and reads as a caption beside it, not as a second row of content. */
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.cmp__pending {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  margin: 0;
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-line);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--c-text-3);
+}
+
+.cmp__pending svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+/* --- the result ---------------------------------------------------------- */
+
+.cmp__result {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Before anything is generated the panel holds the SQUARE the image will
+   occupy, rather than an arbitrary tall box. Two reasons, and the second is the
+   one that matters: it stops the page lurching when the first image lands, and
+   it makes the empty state read as a frame waiting for work instead of as a
+   large hole the layout forgot to fill. Capped against the viewport so the
+   frame cannot push the composer's own controls off a short screen. */
+.cmp__result[data-state="idle"],
+.cmp__result[data-state="running"],
+.cmp__result[data-state="error"] {
+  aspect-ratio: 1 / 1;
+  max-height: min(78vh, 720px);
+}
+
+.cmp__result:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+.cmp__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+  padding: var(--s-7) var(--s-5);
+  text-align: center;
+  /* A dashed inset edge, so the void reads as the frame the picture will fill
+     rather than as unfinished layout. Inside the panel's own padding so the two
+     borders do not sit on top of each other. */
+  margin: var(--s-4);
+  border: 1px dashed var(--c-line-strong);
+  border-radius: var(--r-md);
+  background: var(--c-bg-2);
+}
+
+/* Once something has been generated the dashed frame has done its job — the
+   error panel keeps it, because that slot is still empty of a picture. */
+.cmp__empty--error {
+  border-color: var(--c-danger-wash);
+}
+
+.cmp__empty-h {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: var(--t-lg);
+  letter-spacing: var(--ls-tight);
+  color: var(--c-text);
+}
+
+.cmp__empty-b {
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: var(--c-text-3);
+}
+
+.cmp__empty--error .cmp__empty-h {
+  color: var(--c-danger);
+}
+
+.cmp__detail {
+  margin: var(--s-2) 0 0;
+  padding: var(--s-3) var(--s-4);
+  list-style: none;
+  text-align: left;
+  background: var(--c-danger-wash);
+  border-radius: var(--r-sm);
+  font-size: var(--t-xs);
+  line-height: 1.6;
+  color: var(--c-text-2);
+  max-width: 52ch;
+}
+
+/* Indeterminate. It reports that something is happening, never how much of it
+   is done. */
+.cmp__bar {
+  width: 140px;
+  height: 2px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface-3);
+  overflow: hidden;
+  position: relative;
+}
+
+.cmp__bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  animation: cmp-slide 1200ms var(--e-standard) infinite;
+}
+
+@keyframes cmp-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+/* Wraps the finished state so AnimatePresence has one node to swap, and so the
+   image, receipt and follow-up actions move as a unit. */
+.cmp__done {
+  display: flex;
+  flex-direction: column;
+}
+
+.cmp__figure {
+  margin: 0;
+  background: var(--c-bg-2);
+  /* The frame holds a square before the bytes arrive, so a landing image does
+     not reflow the panel under the visitor's cursor. */
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.cmp__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* The receipt: which provider, which seed, how many steps. */
+.cmp__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-5);
+  margin: 0;
+  padding: var(--s-4) var(--s-5);
+  border-top: 1px solid var(--c-line);
+}
+
+.cmp__meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.cmp__meta-row dd {
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--c-text);
+}
+
+.cmp__after {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: 0 var(--s-5) var(--s-5);
+}
+
+/* Fork is the lineage action, so it carries the accent — the one other thing
+   besides the primary action allowed to. Outlined rather than filled: Generate
+   is still the page's primary, and two filled accent buttons would compete. */
+.cmp__fork {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  min-height: 36px;
+  background: var(--c-accent-wash);
+  color: var(--c-accent-text);
+  border: 1px solid var(--c-accent-wash-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--d-fast) var(--e-standard),
+    border-color var(--d-fast) var(--e-standard);
+}
+
+.cmp__fork:hover {
+  background: var(--c-accent-wash-strong);
+  border-color: var(--c-accent);
+}
+
+.cmp__retry {
+  margin-top: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-4);
+  min-height: 36px;
+  background: transparent;
+  color: var(--c-text);
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  font-family: var(--f-sans);
+  font-size: var(--t-sm);
+  cursor: pointer;
+  transition: border-color var(--d-fast) var(--e-standard);
+}
+
+.cmp__retry:hover {
+  border-color: var(--c-accent);
+}
+
+.cmp__note {
+  margin: 0;
+  flex: 1 1 22ch;
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--c-text-3);
+}
+
+/* --- narrow -------------------------------------------------------------- */
+
+@media (max-width: 1020px) {
+  .cmp__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The result goes ABOVE the composer here. On a phone the generated image is
+     the answer to the question you just asked; making you scroll past your own
+     form to see it is the wrong order. Only once there is something to show —
+     an empty frame above the form would just push the form off the screen. */
+  .cmp__result[data-state="done"],
+  .cmp__result[data-state="running"] {
+    order: -1;
+  }
+
+  .cmp__compose {
+    position: static;
+  }
+
+  .cmp__result {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .cmp {
+    padding-block: calc(var(--h-header) + var(--s-6)) var(--s-8);
+  }
+
+  .cmp__compose,
+  .cmp__empty {
+    padding: var(--s-4);
+  }
+
+  .cmp__meta {
+    gap: var(--s-4);
+    padding: var(--s-4);
+  }
+
+  .cmp__after {
+    padding: 0 var(--s-4) var(--s-4);
+  }
+}
+
+/* --- reduced motion -----------------------------------------------------
+ * Honoured in CSS as well as in the JS that arms the status pacing. The
+ * spinner and the indeterminate bar both stop: they are the two things here
+ * that loop indefinitely, which is exactly what this setting exists to end.
+ * Neither carries information on its own — the status text says what is
+ * happening — so stopping them removes no meaning. */
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp__spinner,
+  .cmp__bar::after {
+    animation: none;
+  }
+
+  .cmp__bar::after {
+    width: 100%;
+  }
+
+  .cmp__run:hover:not(:disabled),
+  .cmp__range:hover::-webkit-slider-thumb {
+    transform: none;
+  }
+}

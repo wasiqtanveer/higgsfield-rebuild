@@ -3,6 +3,8 @@ import Header from "./components/Header/Header.jsx";
 import Home from "./pages/Home/Home.jsx";
 import Credits from "./pages/Credits/Credits.jsx";
 import GraftMcp from "./pages/Mcp/Graft.jsx";
+import Create from "./pages/Create/Create.jsx";
+import About from "./pages/About/About.jsx";
 import Soon from "./pages/Soon/Soon.jsx";
 
 /**
@@ -31,12 +33,12 @@ export default function App() {
 
           {/* Designed, not built. These render as an honest "next" page rather
               than as links that go nowhere or land somewhere unrelated. */}
-          <Route path="/create" element={<Soon />} />
+          <Route path="/create" element={<Create />} />
           <Route path="/explore" element={<Soon />} />
           <Route path="/lineage" element={<Soon />} />
           <Route path="/library" element={<Soon />} />
           <Route path="/models" element={<Soon />} />
-          <Route path="/about" element={<Soon />} />
+          <Route path="/about" element={<About />} />
 
           {/* Paths the clone owned, kept as redirects so anything already
               linked to them lands on the surface that replaced it rather than

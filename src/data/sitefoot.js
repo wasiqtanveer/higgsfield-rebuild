@@ -51,7 +51,9 @@ export const SF_COLUMNS = [
       { to: "/models", label: "Models" },
       { to: "/api", label: "API & MCP" },
       { to: "/credits", label: "Credits" },
-      { to: "/pricing", label: "Pricing" },
+      /* No "Pricing" row. `/pricing` redirects to `/credits`, so the two were
+         one destination listed twice — and the label promised a price on a
+         product that has no currency anywhere in it. */
     ],
   },
   {
