@@ -1,0 +1,13 @@
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m789[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5189[22m/[39m
+[2m  [32m➜[39m  [1mNetwork[22m[2m: use [22m[1m--host[22m[2m to expose[22m
+[2m2:13:29 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/_lib/generate-core.js[22m
+[2m2:27:38 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/fork.js[22m
+[2m2:28:09 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/fork.js[22m
+[2m2:28:47 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/pages/Create/Create.jsx[22m
+[2m2:33:49 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/_lib/generate-core.js[22m
+[2m2:34:26 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/_lib/generate-core.js[22m
+[2m2:41:08 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/_lib/generate-core.js[22m
+[2m2:41:44 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2mapi/_lib/generate-core.js[22m
